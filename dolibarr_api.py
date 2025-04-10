@@ -19,23 +19,31 @@ urlBase = open("url-dolibarr.txt", 'r').read()
 
 
 # l'url correspond à l'adresse de du site ainsi que le chemin de l'api
-url = urlBase + "products?limit=100"
-rRandomProduct = requests.get(url, headers=headers, verify=False)
-if rRandomProduct.status_code != 200:
-	print('Erreur lors de la récupération du produit', r.status_code)
+def fill_random_products():
+	url = urlBase + "products?limit=100"
+	rRandomProduct = requests.get(url, headers=headers, verify=False)
+	if rRandomProduct.status_code != 200:
+		print('Erreur lors de la récupération du produit', rRandomProduct.status_code)
+		print (rRandomProduct.text)
+		exit()
 
-retDataProduct = rRandomProduct.json()
-def get_random_product():
+	retDataProduct = rRandomProduct.json()
+	return retDataProduct
+
+def get_random_product(retDataProduct):
 	# on retourne les infos du produit
 	return retDataProduct[random.randint(1, len(retDataProduct)-1)] #['id']
 
-# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
-url = urlBase + "thirdparties?limit=100"
-rRandomClient = requests.get(url, headers=headers, verify=False)
-if rRandomClient.status_code != 200:
-	print('Erreur lors de la récupération du produit', r.status_code)
-retDataCLient = rRandomClient.json()
-def get_random_client():
+def fill_random_thirdparties():
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "thirdparties?limit=100"
+	rRandomClient = requests.get(url, headers=headers, verify=False)
+	if rRandomClient.status_code != 200:
+		print('Erreur lors de la récupération du produit', rRandomClient.status_code)
+	retDataCLient = rRandomClient.json()
+	return retDataCLient
+
+def get_random_client(retDataCLient):
 	return retDataCLient[random.randint(1, len(retDataCLient)-1)]['id']
 
 
