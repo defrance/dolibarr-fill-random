@@ -1,3 +1,4 @@
+
 from faker import Faker
 import random
 import string
@@ -14,12 +15,17 @@ from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
+# on commence par créer les clients et les produits
 nbNewCLient=0
-nbNewProduit=250
-nbNewFacture=0
+nbNewProduit=0
+
+# puis le reste des données basée sur les clients et produits
+nbNewBill=0
 nbNewOrder=0
 nbNewProposal=0
-yearToFill=2025
+nbNewFichinter=500
+yearToFill=2023
+dateinterval = 3
 
 def generate_customer():
 
@@ -87,7 +93,7 @@ def generate_product():
         "ref": str(ref),
         "label" :name,
         "tva_tx" : random.choice([5, 10, 20]), # taux de TVA aléatoire entre 5 et 20%
-        "type" : 1, #  random.choice([0, 1]), # produit ou service
+        "type" : random.choice([0, 1]), # produit ou service
         "price" : price,
         "price_min" : price_min,
         "status" : 1, # produit actif
@@ -118,6 +124,10 @@ def generate_product():
 
     return 1
 
+retDataProduct = fill_random_products()
+
+retDataThirdParties = fill_random_thirdparties()
+
 def generate_bills(datefacture):
     url = urlBase + "invoices"
 
@@ -126,7 +136,7 @@ def generate_bills(datefacture):
     data = {
         "type": "0",
         "date" :datefacture.strftime('%Y-%m-%d'),
-        "socid": get_random_client(),
+        "socid": get_random_client(retDataThirdParties),
     }
     r = requests.post(url, headers=headers, json=data)
     invoiceID = r.text
@@ -140,7 +150,7 @@ def generate_bills(datefacture):
         qty = random.randint(1, 10)
         # si il y a un tiret on récupère le produit avant
         # on récupère le produit
-        productRandom = get_random_product()
+        productRandom = get_random_product(retDataProduct)
         # ajoute la ligne de facture
         data = {
             "fk_product": productRandom['id'],
@@ -165,7 +175,7 @@ def generate_orders(dateorder):
     url = urlBase + "orders"
 
     data = {
-        "socid": get_random_client(),
+        "socid": get_random_client(retDataThirdParties),
         "date": dateorder.strftime('%Y-%m-%d'),
     }
     r = requests.post(url, headers=headers, json=data)
@@ -180,7 +190,7 @@ def generate_orders(dateorder):
         qty = random.randint(1, 10)
         # si il y a un tiret on récupère le produit avant
         # on récupère le produit
-        productRandom = get_random_product()
+        productRandom = get_random_product(retDataProduct)
         # ajoute la ligne de facture
         data = {
             "fk_product": productRandom['id'],
@@ -207,7 +217,7 @@ def generate_proposals(dateproposal):
     date_finvalidite = dateproposal + timedelta(days=5)  
     
     data = {
-        "socid": get_random_client(),
+        "socid": get_random_client(retDataThirdParties),
         "date": dateproposal.strftime('%Y-%m-%d'),
         "duree_validite": 10,
         "fin_validite": date_finvalidite.strftime('%Y-%m-%d'),
@@ -225,7 +235,7 @@ def generate_proposals(dateproposal):
         qty = random.randint(1, 10)
         # si il y a un tiret on récupère le produit avant
         # on récupère le produit
-        productRandom = get_random_product()
+        productRandom = get_random_product(retDataProduct)
         # ajoute la ligne de facture
         data = {
             "fk_product": productRandom['id'],
@@ -271,13 +281,65 @@ def generate_proposals(dateproposal):
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
-            print (r.text)
+            #print (r.text)
 
 
 
     # print (r.text)
     return 1
 
+def generate_interventionals(dateintervention):
+    url = urlBase + "interventions"
+
+    data = {
+        "socid": get_random_client(retDataThirdParties),
+        "fk_project": 0,
+        "description": fake.catch_phrase(),
+        #"date": dateintervention.strftime('%Y-%m-%d'),
+    }
+    r = requests.post(url, headers=headers, json=data)
+    orderID = r.text
+    #print ('intervention créée: ', r.text)
+
+    # on ajoute les lignes
+    urlLine = urlBase + "interventions/" + str(orderID) + "/lines"
+    jours_a_ajouter = 0
+    for i in range(random.randint(1, 5)):
+
+        jours_a_ajouter += random.randint(0, 1)
+        nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
+        nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
+        # print (nouvelle_date)
+        # ajoute la ligne d'inteventio
+        data = {
+            "description": fake.catch_phrase(),
+            "date": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "duree": random.randint(1, 4) * 3600, # en secondes
+        }
+        r = requests.post(urlLine, headers=headers, json=data)
+
+    # si la date est inférieur à l'année en cours
+    if nouvelle_date.year < 2025:
+        url = urlBase + "interventions/" + str(orderID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)  
+
+        url = urlBase + "interventions/" + str(orderID) + "/close"
+        r = requests.post(url, headers=headers, json={})
+
+    else:
+        if random.choice([0, 1]) == 1:
+            url = urlBase + "interventions/" + str(orderID) + "/validate"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data)  
+            #print (r.text)
+
+
+    return 1
 
 
 for _ in range(nbNewProduit):
@@ -287,14 +349,18 @@ for _ in range(nbNewCLient):
     client = generate_customer()
 
 
-listFactureGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewFacture, max_interval=3)
+listFactureGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewBill, max_interval = dateinterval)
 for dateFact in listFactureGen:
     facture = generate_bills(dateFact)
 
-listOrderGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewOrder, max_interval=3)
+listOrderGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewOrder, max_interval = dateinterval)
 for dateOrder in listOrderGen:
     commande = generate_orders(dateOrder)
 
-listProposalGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewProposal, max_interval=3)
+listProposalGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewProposal, max_interval = dateinterval)
 for dateProposal in listProposalGen:
-    commande = generate_proposals(dateProposal)
+    propal = generate_proposals(dateProposal)
+
+listInterventionGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewFichinter, max_interval = dateinterval)
+for dateInter in listInterventionGen:
+    fichinter = generate_interventionals(dateInter)
