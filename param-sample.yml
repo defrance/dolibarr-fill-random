@@ -17,3 +17,4 @@ elements:
 others:
   year_to_fill : 2023
   date_interval : 3
+  nb_country : 1

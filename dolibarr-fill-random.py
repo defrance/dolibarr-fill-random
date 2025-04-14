@@ -23,6 +23,7 @@ nbNewFichinter=config['elements']['new_fichinter']
 
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
+nbCountry = config['others']['nb_country']
 
 # récupération de l'année enccours
 yearNow = datetime.now().year
@@ -41,7 +42,7 @@ def generate_customer(dateCreate):
         # "contact name": df['contact name'][index],
         # "emailcontact": df['emailcontact'][index],
         "client": typeTiers,
-        "country_id": 1,
+        "country_id": random.randint(1, nbCountry),
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
         # "useraffected": df['useraffected'][index],
         # "dateupdate": df['dateupdate'][index],
@@ -324,7 +325,7 @@ def generate_proposals(dateproposal):
 
         r = requests.post(url, headers=headers, json=data)
 
-        if signed == 2 and date_finvalidite.year == 2023:
+        if signed == 2 and date_finvalidite.year == yearNow - 2:
             url = urlBase + "proposals/" + str(orderID) + "/setinvoiced"
             data = {
             }

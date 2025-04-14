@@ -15,6 +15,7 @@ date_interval va conditionner le nombre moyen d'elements à créer mensuellement
 ## Elements créable par l'application
 
 - Tiers
+    possibilité de gérer plusieurs pays (ou on reste en france)
 - Contact 
     Création aléatoire associé a un tiers
 
