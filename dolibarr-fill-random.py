@@ -24,6 +24,9 @@ nbNewFichinter=config['elements']['new_fichinter']
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 
+# récupération de l'année enccours
+yearNow = datetime.now().year
+
 
 def generate_customer(dateCreate):
     # on boucle sur les lignes
@@ -72,7 +75,6 @@ def generate_customer(dateCreate):
 
     return 1
 
-
 def generate_warehouse(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "warehouses"
@@ -96,8 +98,6 @@ def generate_warehouse(dateCreate):
         return None
 
     return 1
-
-retDataWarehouse = fill_random_warehouses()
 
 def generate_product(dateCreate):
     # Référence produit alphanumérique
@@ -163,10 +163,6 @@ def generate_product(dateCreate):
 
     return 1
 
-# on récupère les produits et les tiers existants pour les utiliser dans les éléments
-retDataProduct = fill_random_products()
-retDataThirdParties = fill_random_thirdparties()
-
 def generate_bills(datefacture):
     url = urlBase + "invoices"
 
@@ -224,7 +220,6 @@ def generate_orders(dateorder):
     # on ajoute les lignes
     urlLine = urlBase + "orders/" + str(orderID) + "/lines"
     for i in range(random.randint(1, 10)):
-
         # la quantité se trouve en fin de ligne entre parenthèse
         qty = random.randint(1, 10)
         # si il y a un tiret on récupère le produit avant
@@ -241,11 +236,34 @@ def generate_orders(dateorder):
         # print (data)
         r = requests.post(urlLine, headers=headers, json=data)
 
-    # on met à jour la facture avec les données supplémentaires
-    # url = urlBase + "orders/" + str(orderID)
-    # data = {
-    #     "statut": dateorder.strftime('%Y-%m-%d'),
-    # }
+    if dateorder.year < yearNow:
+        # pour les dates antiérieurs à l'année en cours, on valide la commande
+        url = urlBase + "orders/" + str(orderID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)
+
+        url = urlBase + "orders/" + str(orderID) + "/close"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)
+        print (r.text)
+    else:
+        # pour l'année en cours, on ne valide pas toute les commandes
+        if random.choice([0, 1]) == 1:
+            url = urlBase + "orders/" + str(orderID) + "/validate"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data)  
+            # et on ne facture pas toute les commandes
+            if random.choice([0, 1]) == 1:
+                url = urlBase + "orders/" + str(orderID) + "/setinvoiced"
+                data = {
+                }
+                r = requests.post(url, headers=headers, json=data)  
 
     return 1
 
@@ -297,7 +315,7 @@ def generate_proposals(dateproposal):
     r = requests.put(url, headers=headers, json=data)
 
     # si la date est inférieur à l'année en cours
-    if date_finvalidite.year < 2025:
+    if date_finvalidite.year < yearNow:
         signed = random.choice([2, 3])
         url = urlBase + "proposals/" + str(orderID) + "/close"
         data = {
@@ -358,7 +376,7 @@ def generate_interventionals(dateintervention):
         r = requests.post(urlLine, headers=headers, json=data)
 
     # si la date est inférieur à l'année en cours
-    if nouvelle_date.year < 2025:
+    if nouvelle_date.year < yearNow:
         url = urlBase + "interventions/" + str(orderID) + "/validate"
         data = {
             "notrigger": 1,
@@ -408,6 +426,8 @@ if nbNewWarehouse > 0:
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
 
+retDataWarehouse = fill_random_warehouses()
+
 if nbNewProduct > 0:
     listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
     for dateCreate in listProductGen:
@@ -417,6 +437,10 @@ if nbNewCLient > 0:
     listClientGen = gen_randow_following_date(yearToFill, nbNewCLient, max_interval = dateinterval)
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
+
+# on récupère les produits et les tiers existants pour les utiliser dans les éléments
+retDataProduct = fill_random_products()
+retDataThirdParties = fill_random_thirdparties()
 
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
