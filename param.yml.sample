@@ -1,0 +1,19 @@
+connection:
+  urlbase: http://127.0.0.1/dolibarr-21.0.1/htdocs/api/index.php/
+  apitoken: 570e9KHTzbTi2M1WgI49fMSYniBuup24
+
+
+# puis le reste des données basée sur les clients et produits
+elements:
+  new_cLient : 0
+  new_product : 0
+  new_bill : 0
+  new_order : 0
+  new_proposal : 0
+  new_fichinter : 3
+  new_warehouse : 0
+  new_stock_movement : 0
+
+others:
+  year_to_fill : 2023
+  date_interval : 3

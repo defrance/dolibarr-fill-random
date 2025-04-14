@@ -1,34 +1,31 @@
-
 from faker import Faker
 import random
 import string
-import os
 import requests
 import base64
-import pandas as pd
 
-import pathlib											# utilisation de la bibliothèque pathlib
-myFolderpath= pathlib.Path(__file__).parent.resolve()	# on récupère le chemin du programme
-os.chdir(myFolderpath)									# on se positionne dans le bon dossier
 
 from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
+
 # on commence par créer les clients et les produits
-nbNewCLient=0
-nbNewProduit=0
-
+nbNewCLient=config['elements']['new_cLient']
+nbNewProduct=config['elements']['new_product']
+nbNewWarehouse=config['elements']['new_warehouse']
+nbNewStockMovement=config['elements']['new_stock_movement']
 # puis le reste des données basée sur les clients et produits
-nbNewBill=0
-nbNewOrder=0
-nbNewProposal=0
-nbNewFichinter=500
-yearToFill=2023
-dateinterval = 3
+nbNewBill=config['elements']['new_bill']
+nbNewOrder=config['elements']['new_order']
+nbNewProposal=config['elements']['new_proposal']
+nbNewFichinter=config['elements']['new_fichinter']
 
-def generate_customer():
+yearToFill=config['others']['year_to_fill']
+dateinterval = config['others']['date_interval']
 
+
+def generate_customer(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
@@ -42,8 +39,8 @@ def generate_customer():
         # "emailcontact": df['emailcontact'][index],
         "client": typeTiers,
         "country_id": 1,
+        "date_creation": dateCreate.strftime('%Y-%m-%d'),
         # "useraffected": df['useraffected'][index],
-        # "datec": df['datecreated'][index].isoformat(),
         # "dateupdate": df['dateupdate'][index],
         # "proprietaire": df['proprietaire'][index],
     }
@@ -59,22 +56,50 @@ def generate_customer():
     # si il y a une address de facturation
     url = urlBase + "contacts/"
 
+    for i in range(random.randint(0, 3)):
+        # on rajoute une adresse de facturation
+        data = {
+            "lastname" : fake.last_name(),
+            "firstname" : fake.first_name(),
+            "socid" : idSoc,
+            "address": fake.address(),
+            "phone": fake.phone_number(),
 
-    data = {
-        "lastname" : fake.last_name(),
-        "firstname" : fake.first_name(),
-        "address": fake.address(),
-        "phone": fake.phone_number(),
+            "country_id": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)
+        #print (r.text)
 
-        "country_id": 1,
-    }
-    r = requests.post(url, headers=headers, json=data)
-    #print (r.text)
-    
-        
     return 1
 
-def generate_product():
+
+def generate_warehouse(dateCreate):
+    # on boucle sur les lignes
+    url = urlBase + "warehouses"
+    data = {
+        "label": fake.company(),
+        "address": fake.address(),
+        # "zip": df['zip'][index],
+        "town": fake.city(),
+        "phone": fake.phone_number(),
+        "statut": 1, # actif
+        # "contact name": df['contact name'][index],
+        # "emailcontact": df['emailcontact'][index],
+        "country_id": 1,
+        "date_creation": dateCreate.strftime('%Y-%m-%d'),
+    }
+    #print (data)
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print('Erreur lors de la création du tiers', r.status_code)
+        print (r.text)
+        return None
+
+    return 1
+
+retDataWarehouse = fill_random_warehouses()
+
+def generate_product(dateCreate):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
@@ -88,7 +113,7 @@ def generate_product():
 
     urlProduct = urlBase + "products"
 
-    # on ajoute la ligne à la facture
+    # on cree le produit
     data = {
         "ref": str(ref),
         "label" :name,
@@ -97,6 +122,7 @@ def generate_product():
         "price" : price,
         "price_min" : price_min,
         "status" : 1, # produit actif
+        "date_creation": dateCreate.strftime('%Y-%m-%d'),
         "status_buy" : random.choice([0, 1]),
         "price_base_type" : "HT",
         "price_min_ttc" : 13,
@@ -122,10 +148,23 @@ def generate_product():
     # print (data)
     r = requests.put(urlProduct, headers=headers, json=data)
 
+    # ajout de mouvement de stock initial
+    urlProduct = urlBase + "stockmovements/" + productId
+    data = {
+        "product_id" : productId,
+        "warehouse_id" : get_random_warehouse(retDataWarehouse),
+        "qty" : random.randint(5, 100) ,
+        "type" : 0, # au début on ajoute random.randint(0, 3), 
+        "datem" : dateCreate.strftime('%Y-%m-%d'),
+    }
+    r = requests.post(urlProduct, headers=headers, json=data)
+
+
+
     return 1
 
+# on récupère les produits et les tiers existants pour les utiliser dans les éléments
 retDataProduct = fill_random_products()
-
 retDataThirdParties = fill_random_thirdparties()
 
 def generate_bills(datefacture):
@@ -310,7 +349,7 @@ def generate_interventionals(dateintervention):
         nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
         nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
         # print (nouvelle_date)
-        # ajoute la ligne d'inteventio
+        # ajoute la ligne d'intevention
         data = {
             "description": fake.catch_phrase(),
             "date": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
@@ -329,6 +368,14 @@ def generate_interventionals(dateintervention):
         url = urlBase + "interventions/" + str(orderID) + "/close"
         r = requests.post(url, headers=headers, json={})
 
+        # On met à jour les dates pour les stats
+        url = urlBase + "interventions/" + str(orderID)
+        date_close = nouvelle_date + timedelta(days=jours_a_ajouter)
+        data = {
+            "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "datet": date_close.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        r = requests.put(url, headers=headers, json=data)
     else:
         if random.choice([0, 1]) == 1:
             url = urlBase + "interventions/" + str(orderID) + "/validate"
@@ -336,31 +383,57 @@ def generate_interventionals(dateintervention):
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
-            #print (r.text)
+
+            # On met à jour les dates pour les stats
+            url = urlBase + "interventions/" + str(orderID)
+            data = {
+                "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            r = requests.put(url, headers=headers, json=data)
+
+    # On met à jour les dates pour les stats
+    url = urlBase + "interventions/" + str(orderID)
+    print ("url", url)
+    data = {
+        "datec": dateintervention.strftime('%Y-%m-%d'),
+    }
+    r = requests.put(url, headers=headers, json=data)
+    print (r.text)
 
 
     return 1
 
+if nbNewWarehouse > 0:
+    listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
+    for dateCreate in listWareHouseGen:
+        warehouse = generate_warehouse(dateCreate)
 
-for _ in range(nbNewProduit):
-    produit = generate_product()
+if nbNewProduct > 0:
+    listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
+    for dateCreate in listProductGen:
+        product = generate_product(dateCreate)
 
-for _ in range(nbNewCLient):
-    client = generate_customer()
+if nbNewCLient > 0:
+    listClientGen = gen_randow_following_date(yearToFill, nbNewCLient, max_interval = dateinterval)
+    for dateCreate in listClientGen:
+        client = generate_customer(dateCreate)
 
+if nbNewBill > 0:
+    listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
+    for dateFact in listFactureGen:
+        facture = generate_bills(dateFact)
 
-listFactureGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewBill, max_interval = dateinterval)
-for dateFact in listFactureGen:
-    facture = generate_bills(dateFact)
+if nbNewOrder > 0:
+    listOrderGen = gen_randow_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
+    for dateOrder in listOrderGen:
+        commande = generate_orders(dateOrder)
 
-listOrderGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewOrder, max_interval = dateinterval)
-for dateOrder in listOrderGen:
-    commande = generate_orders(dateOrder)
+if nbNewProposal > 0:
+    listProposalGen = gen_randow_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+    for dateProposal in listProposalGen:
+        propal = generate_proposals(dateProposal)
 
-listProposalGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewProposal, max_interval = dateinterval)
-for dateProposal in listProposalGen:
-    propal = generate_proposals(dateProposal)
-
-listInterventionGen = dates_aleatoires_qui_se_suivent(yearToFill, nbNewFichinter, max_interval = dateinterval)
-for dateInter in listInterventionGen:
-    fichinter = generate_interventionals(dateInter)
+if nbNewFichinter > 0:
+    listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
+    for dateInter in listInterventionGen:
+        fichinter = generate_interventionals(dateInter)

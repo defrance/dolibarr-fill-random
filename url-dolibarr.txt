@@ -1,1 +1,0 @@
-http://127.0.0.1/dolibarr-21.0.1/htdocs/api/index.php/
