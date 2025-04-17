@@ -11,7 +11,8 @@ fake = Faker('fr_FR')
 
 
 # on commence par créer les clients et les produits
-nbNewCLient=config['elements']['new_cLient']
+nbNewUser=config['elements']['new_user']
+nbNewClient=config['elements']['new_client']
 nbNewProduct=config['elements']['new_product']
 nbNewWarehouse=config['elements']['new_warehouse']
 nbNewStockMovement=config['elements']['new_stock_movement']
@@ -27,6 +28,70 @@ nbCountry = config['others']['nb_country']
 
 # récupération de l'année enccours
 yearNow = datetime.now().year
+
+def generate_user(dateCreate):
+    # on boucle sur les lignes
+    url = urlBase + "users"
+    gender = random.choice(['man', 'woman', 'other'])
+    lastname = fake.last_name()
+    if gender == 'man':
+        firstname = fake.first_name_male()
+    elif gender == 'woman':
+        firstname = fake.first_name_female()
+    else:
+        firstname = fake.first_name()
+    login = firstname[0:1]+ '.'+ lastname
+    data = {
+        "login": login,
+        "lastname" : lastname,
+        "firstname" : firstname,
+        'gender' : gender,
+        "address": fake.address(),
+        "town": fake.city(),
+        "phone": fake.phone_number(),
+    }
+    #print (data)
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de l'utilisateur", r.status_code)
+        print (r.text)
+        return None
+    else:
+        idSoc= r.text
+
+    return 1
+
+def generate_bank(dateCreate):
+    # on boucle sur les lignes
+    url = urlBase + "bankaccounts"
+    gender = random.choice(['man', 'woman', 'other'])
+    lastname = fake.last_name()
+    if gender == 'man':
+        firstname = fake.first_name_male()
+    elif gender == 'woman':
+        firstname = fake.first_name_female()
+    else:
+        firstname = fake.first_name()
+    login = firstname[0:1]+ '.'+ lastname
+    data = {
+        "country_id": 1,
+        "ref" : lastname,
+        "label": fake.phone_number(),
+        "date_solde" : firstname,
+        'iban_prefix' : fake.iban(),
+        "address": fake.address(),
+        
+    }
+    #print (data)
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de la bankf", r.status_code)
+        print (r.text)
+        return None
+    else:
+        idSoc= r.text
+
+    return 1
 
 
 def generate_customer(dateCreate):
@@ -57,9 +122,17 @@ def generate_customer(dateCreate):
     else:
         idSoc= r.text
 
-    # si il y a une address de facturation
-    url = urlBase + "contacts/"
+    # ajout de contact
+    url = urlBase + "thirdparties/" + idSoc + "/representative/"
+    for i in range(random.randint(0, 2)):
+        # on rajoute un utilisateur référent 
+        userRandom = get_random_user(retDataUser)
+        data = { }
+        r = requests.post(url + userRandom['id'], headers=headers, json=data)
 
+    
+    # ajout de contact
+    url = urlBase + "contacts/"
     for i in range(random.randint(0, 3)):
         # on rajoute une adresse de facturation
         data = {
@@ -109,22 +182,25 @@ def generate_product(dateCreate):
     
     price = random.randint(5, 20)  # prix aléatoire entre 5 et 20€
     price_min = price - random.randint(1, 5)  # prix minimum aléatoire entre 1 et 5€ de moins que le prix normal
+    status_buy = random.choice([0, 1])  # à l'achat ou non
+    # utilisation pour le premier mouvement de stock
+    buying_price = price_min - round(price_min * (random.randint(10, 50)/100))  
     # Description plus longue
     description = fake.paragraph(nb_sentences=3)
 
     urlProduct = urlBase + "products"
-
+    typeProduct = random.choice([0, 1]) # produit ou service
     # on cree le produit
     data = {
         "ref": str(ref),
         "label" :name,
         "tva_tx" : random.choice([5, 10, 20]), # taux de TVA aléatoire entre 5 et 20%
-        "type" : random.choice([0, 1]), # produit ou service
+        "type" : typeProduct,
         "price" : price,
         "price_min" : price_min,
         "status" : 1, # produit actif
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
-        "status_buy" : random.choice([0, 1]),
+        "status_buy" : status_buy,
         "price_base_type" : "HT",
         "price_min_ttc" : 13,
     }
@@ -146,20 +222,37 @@ def generate_product(dateCreate):
     data = {
         "description" : description,
     }
-    # print (data)
-    r = requests.put(urlProduct, headers=headers, json=data)
 
-    # ajout de mouvement de stock initial
-    urlProduct = urlBase + "stockmovements/" + productId
-    data = {
-        "product_id" : productId,
-        "warehouse_id" : get_random_warehouse(retDataWarehouse),
-        "qty" : random.randint(5, 100) ,
-        "type" : 0, # au début on ajoute random.randint(0, 3), 
-        "datem" : dateCreate.strftime('%Y-%m-%d'),
-    }
-    r = requests.post(urlProduct, headers=headers, json=data)
+    if typeProduct == 1:
+        # on rajoute le champ pour les services 
+        data["duration_value"] = random.randint(1, 7) * 3600
+        data["duration_unit"] = "h" # heures
+    else:
+        # on affecte un poids au produit
+        data["weight"] = random.randint(1, 10) 
+        data["weight_unit"] = "0" # kg
 
+
+    # en php 8 l'action se fait mais on a une erreur et on ne récupère que l'id modifié
+    # le format n'est pas le bon sur l'update, on intercepte l'erreur
+    try :
+        r = requests.put(urlProduct, headers=headers, json=data)
+    except Exception as e:
+        # on continue le traitement
+        pass
+
+    if typeProduct == 0:
+        # ajout de mouvement de stock initial
+        urlProduct = urlBase + "stockmovements" 
+        data = {
+            "product_id" : productId,
+            "warehouse_id" : get_random_warehouse(retDataWarehouse),
+            "qty" : random.randint(5, 100) ,
+            "type" : 0, # au début on ajoute random.randint(0, 3), 
+            "datem" : dateCreate.strftime('%Y-%m-%d'),
+            "price" : buying_price,
+        }
+        r = requests.post(urlProduct, headers=headers, json=data)
 
 
     return 1
@@ -198,13 +291,27 @@ def generate_bills(datefacture):
         # print (data)
         r = requests.post(urlLine, headers=headers, json=data)
 
-    # on met à jour la facture avec les données supplémentaires
-    # url = urlBase + "invoices/" + str(invoiceID)
-    # data = {
-    #     "date_creation": df['datecreation'][index].isoformat(),
-    # }
-    # r = requests.put(url, headers=headers, json=data)
+    if datefacture.year < yearNow:
+        # pour les dates antiérieurs à l'année en cours, on valide la commande
+        url = urlBase + "invoices/" + str(invoiceID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)
 
+        url = urlBase + "invoices/" + str(invoiceID) + "/settopaid"
+        data = {
+        }
+        r = requests.post(url, headers=headers, json=data)
+        print (r.text)
+    else:
+        # pour l'année en cours, on ne valide pas toute les commandes
+        if random.choice([0, 1]) == 1:
+            url = urlBase + "invoices/" + str(invoiceID) + "/validate"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data)
     return 1
 
 def generate_orders(dateorder):
@@ -250,7 +357,7 @@ def generate_orders(dateorder):
             "notrigger": 1,
         }
         r = requests.post(url, headers=headers, json=data)
-        print (r.text)
+        # print (r.text)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -422,26 +529,41 @@ def generate_interventionals(dateintervention):
 
     return 1
 
+
+# on mémorise l'heure de début de l'alimentation
+start_time = datetime.now()
+print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
+
 if nbNewWarehouse > 0:
     listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
 
+# on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
 retDataWarehouse = fill_random_warehouses()
+
+if nbNewUser > 0:
+    listUserGen = gen_randow_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
+    for dateCreate in listUserGen:
+        product = generate_user(dateCreate)
+
+retDataUser = fill_random_users()
 
 if nbNewProduct > 0:
     listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
     for dateCreate in listProductGen:
         product = generate_product(dateCreate)
 
-if nbNewCLient > 0:
-    listClientGen = gen_randow_following_date(yearToFill, nbNewCLient, max_interval = dateinterval)
+if nbNewClient > 0:
+    listClientGen = gen_randow_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
 
 # on récupère les produits et les tiers existants pour les utiliser dans les éléments
 retDataProduct = fill_random_products()
 retDataThirdParties = fill_random_thirdparties()
+retDataBank = fill_random_banks()
+
 
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
@@ -462,3 +584,11 @@ if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
         fichinter = generate_interventionals(dateInter)
+
+
+start_stop = datetime.now()
+print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
+
+# on affiche la durée
+duration = start_stop - start_time
+print("Durée de l'alimentation : ", duration)

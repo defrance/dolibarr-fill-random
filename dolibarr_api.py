@@ -33,6 +33,34 @@ headers = {
 
 ### URL du server Dolibarr
 
+def fill_random_users():
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "users?limit=100"
+	rRandomUser = requests.get(url, headers=headers, verify=False)
+	if rRandomUser.status_code != 200:
+		print('Erreur lors de la récupération des utilisateurs', rRandomUser.status_code)
+		print (rRandomUser.text)
+		exit()
+
+	retDataUser = rRandomUser.json()
+	return retDataUser
+
+def fill_random_banks():
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "bankaccounts?limit=100"
+	rRandomBank = requests.get(url, headers=headers, verify=False)
+	if rRandomBank.status_code != 200:
+		print('Erreur lors de la récupération des banks', rRandomBank.status_code)
+		print (rRandomBank.text)
+		exit()
+
+	retDataBank = rRandomBank.json()
+	return retDataBank
+
+def get_random_user(retDataUser):
+	# on retourne les infos du produit
+	return retDataUser[random.randint(1, len(retDataUser)-1)]
+
 def fill_random_warehouses():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "warehouses?limit=100"
@@ -47,7 +75,7 @@ def fill_random_warehouses():
 
 def get_random_warehouse(retDataWareHouse):
 	# on retourne les infos du produit
-	return retDataWareHouse[random.randint(1, len(retDataWareHouse)-1)] #['id']
+	return retDataWareHouse[random.randint(1, len(retDataWareHouse)-1)]['id']
 
 
 # l'url correspond à l'adresse de du site ainsi que le chemin de l'api
@@ -95,10 +123,11 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
     return dates
 
 if __name__ == "__main__":
+	retDataUser = fill_random_users()
 	retDataProduct = fill_random_products()
 	retDataCLient = fill_random_thirdparties()
 	retDataWareHouse = fill_random_warehouses()
-	print ("retDataWareHouse", retDataWareHouse)
 	for _ in range(2):
 		print(get_random_product(retDataProduct))
 		print(get_random_client(retDataCLient))
+		print(get_random_user(retDataUser))

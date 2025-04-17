@@ -5,7 +5,8 @@ connection:
 
 # puis le reste des données basée sur les clients et produits
 elements:
-  new_cLient : 0
+  new_client : 0
+  new_user : 0
   new_product : 0
   new_bill : 0
   new_order : 0

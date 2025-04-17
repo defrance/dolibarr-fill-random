@@ -11,17 +11,25 @@ le fichier param.yml contient le paramétrage du programme avec 3 parties :
   - date_interval : l'interval maximum entre deux dates
 
 date_interval va conditionner le nombre moyen d'elements à créer mensuellement, avec 3 on a une quinzaine d'éléments par mois.
+compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 
 ## Elements créable par l'application
 
+- Utilisateurs
+    - Création des utilisateurs
 - Tiers
-    possibilité de gérer plusieurs pays (ou on reste en france)
+    - possibilité de gérer plusieurs pays (ou on reste en france)
+    - gestion des commerciaux affectés
 - Contact 
-    Création aléatoire associé a un tiers
-
+    - Création aléatoire associé a un tiers 
 - Entrepot
+    - Création aléatoire
+- Banque
+    - Création aléatoire
+
 - Produit et Service
     - Création d'un stock initial pour les produits dans l'un des entrepots
+    - définition d'une durée pour les services
 
 - Devis
     - les devis peuvent ne pas être signées
@@ -35,4 +43,4 @@ date_interval va conditionner le nombre moyen d'elements à créer mensuellement
     - les éléments de l'année en cours sont soit brouillon soit validé
 
 - Intervention
-    - la ventialition sur les mois nécessite la Version 22 de dolibarr
+    - la ventilation sur les mois nécessite la Version 22 de dolibarr
