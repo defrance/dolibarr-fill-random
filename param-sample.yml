@@ -2,18 +2,31 @@ connection:
   urlbase: http://127.0.0.1/dolibarr-21.0.1/htdocs/api/index.php/
   apitoken: 570e9KHTzbTi2M1WgI49fMSYniBuup24
 
+connection-test2:
+  urlbase: http://127.0.0.1/dolibarr-21.0.0/htdocs/api/index.php/
+  apitoken: cRduhj3B0b15diN04MN95rOvnC9ZV3yO
+
+
 
 # puis le reste des données basée sur les clients et produits
 elements:
-  new_client : 0
   new_user : 0
+  new_client : 0
   new_product : 0
+  new_warehouse : 0
+  new_stock_movement : 0
+  new_bank : 0
   new_bill : 0
   new_order : 0
   new_proposal : 0
-  new_fichinter : 3
-  new_warehouse : 0
-  new_stock_movement : 0
+  new_fichinter : 0
+  new_ticket : 0
+  new_knowledge : 0
+
+project:
+  new_project : 0
+  new_task : 0
+  new_task_time : 0
 
 others:
   year_to_fill : 2023

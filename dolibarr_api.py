@@ -31,7 +31,6 @@ headers = {
 	'Accept': 'application/json'
 }
 
-### URL du server Dolibarr
 
 def fill_random_users():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
@@ -77,8 +76,6 @@ def get_random_warehouse(retDataWareHouse):
 	# on retourne les infos du produit
 	return retDataWareHouse[random.randint(1, len(retDataWareHouse)-1)]['id']
 
-
-# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 def fill_random_products():
 	url = urlBase + "products?limit=100"
 	rRandomProduct = requests.get(url, headers=headers, verify=False)
@@ -106,7 +103,6 @@ def fill_random_thirdparties():
 def get_random_client(retDataCLient):
 	return retDataCLient[random.randint(1, len(retDataCLient)-1)]['id']
 
-
 def gen_randow_following_date(annee, nombre, max_interval=3):
     # Date de départ fixée au 1er janvier de l'année en cours
     # annee_en_cours = datetime.today().year
@@ -121,6 +117,7 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
         dates.append(nouvelle_date)
 
     return dates
+
 
 if __name__ == "__main__":
 	retDataUser = fill_random_users()

@@ -21,6 +21,12 @@ nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']
 nbNewProposal=config['elements']['new_proposal']
 nbNewFichinter=config['elements']['new_fichinter']
+nbNewTicket=config['elements']['new_ticket']
+
+# infos lies au projet
+nbNewProject=config['project']['new_project']
+nbNewTask=config['project']['new_task']
+nbNewTaskTime=config['project']['new_task_time']
 
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
@@ -529,6 +535,43 @@ def generate_interventionals(dateintervention):
 
     return 1
 
+def generate_ticket(dateticket):
+    print ("date ticket", dateticket.strftime('%Y-%m-%d %H:%M:%S'))
+    url = urlBase + "tickets"
+    data = {
+        "fk_soc": get_random_client(retDataThirdParties),
+        'subject': fake.catch_phrase(),
+        "message": fake.catch_phrase(),
+        "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
+        "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
+        "datec": dateticket.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+    r = requests.post(url, headers=headers, json=data)
+    ticketID = r.text
+
+    # si la date est inférieur à l'année en cours on valide le ticket
+    if dateticket.year < yearNow:
+        url = urlBase + "tickets/" + str(ticketID)
+        date_close = dateticket + timedelta(days=random.randint(1, 5))
+        data = {
+            "status" : random.choice([8, 9]),
+            "resolution" : fake.catch_phrase(),
+            "fk_user_assign": get_random_user(retDataUser),
+            "date_close" : date_close.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        r = requests.put(url, headers=headers, json=data)  
+    else:
+        status = random.choice([0, 1, 2, 3, 5, 7])
+        if status != 0:
+            url = urlBase + "tickets/" + str(ticketID)
+            date_close = dateticket + timedelta(days=random.randint(1, 5))
+            data = {
+                "status" : status,
+                "fk_user_assign": get_random_user(retDataUser),
+            }
+            r = requests.put(url, headers=headers, json=data)  
+
+    return 1
 
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()
@@ -584,6 +627,13 @@ if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
         fichinter = generate_interventionals(dateInter)
+
+if nbNewTicket > 0:
+    listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
+    for dateTicket in listTicketGen:
+        ticket = generate_ticket(dateTicket)
+
+
 
 
 start_stop = datetime.now()
