@@ -44,3 +44,13 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 
 - Intervention
     - la ventilation sur les mois nécessite la Version 22 de dolibarr
+
+
+# PR réalisées sur le dolistore pour certaines fonctions :
+
+    - Mise à jour des interventions (date d'opération)
+    https://github.com/Dolibarr/dolibarr/pull/33835
+    https://github.com/Dolibarr/dolibarr/pull/33836
+
+    - Date de création transmise aux ticket
+    https://github.com/Dolibarr/dolibarr/pull/33937

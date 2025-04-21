@@ -3,6 +3,7 @@ import random
 import string
 import requests
 import base64
+import datetime
 
 
 from dolibarr_api import *
@@ -31,6 +32,8 @@ nbNewTaskTime=config['project']['new_task_time']
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
+fill_contactInt = config['others']['fill_contact_interne']
+fill_contactExt = config['others']['fill_contact_externe']
 
 # récupération de l'année enccours
 yearNow = datetime.now().year
@@ -98,7 +101,6 @@ def generate_bank(dateCreate):
         idSoc= r.text
 
     return 1
-
 
 def generate_customer(dateCreate):
     # on boucle sur les lignes
@@ -536,7 +538,9 @@ def generate_interventionals(dateintervention):
     return 1
 
 def generate_ticket(dateticket):
-    print ("date ticket", dateticket.strftime('%Y-%m-%d %H:%M:%S'))
+    # la date doit etre un timestamp
+    dateticketts  =dateticket.timestamp()
+        
     url = urlBase + "tickets"
     data = {
         "fk_soc": get_random_client(retDataThirdParties),
@@ -544,7 +548,7 @@ def generate_ticket(dateticket):
         "message": fake.catch_phrase(),
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
-        "datec": dateticket.strftime('%Y-%m-%d %H:%M:%S'),
+        "datec": dateticketts,
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
@@ -557,9 +561,11 @@ def generate_ticket(dateticket):
             "status" : random.choice([8, 9]),
             "resolution" : fake.catch_phrase(),
             "fk_user_assign": get_random_user(retDataUser),
+            "progress" : 100,
             "date_close" : date_close.strftime('%Y-%m-%d %H:%M:%S'),
         }
         r = requests.put(url, headers=headers, json=data)  
+        
     else:
         status = random.choice([0, 1, 2, 3, 5, 7])
         if status != 0:
@@ -567,10 +573,11 @@ def generate_ticket(dateticket):
             date_close = dateticket + timedelta(days=random.randint(1, 5))
             data = {
                 "status" : status,
+                "progress" : random.randint(0, 100),
                 "fk_user_assign": get_random_user(retDataUser),
             }
             r = requests.put(url, headers=headers, json=data)  
-
+            
     return 1
 
 # on mémorise l'heure de début de l'alimentation
