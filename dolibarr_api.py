@@ -23,6 +23,7 @@ config = load_config()
 #  on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']
 urlBase = config['connection']['urlbase']
+dol_version=config['connection']['dol_version']
 
 headers = {
 	'DOLAPIKEY': apiToken,
@@ -74,7 +75,10 @@ def fill_random_warehouses():
 
 def get_random_warehouse(retDataWareHouse):
 	# on retourne les infos du produit
-	return retDataWareHouse[random.randint(1, len(retDataWareHouse)-1)]['id']
+	if (len(retDataWareHouse) > 1):
+		return retDataWareHouse[random.	randint(1, len(retDataWareHouse)-1)]['id']
+	else:
+		return 0
 
 def fill_random_products():
 	url = urlBase + "products?limit=100"
@@ -87,9 +91,16 @@ def fill_random_products():
 	retDataProduct = rRandomProduct.json()
 	return retDataProduct
 
-def get_random_product(retDataProduct):
-	# on retourne les infos du produit
-	return retDataProduct[random.randint(1, len(retDataProduct)-1)] #['id']
+# all = -1, product = 0, service = 1
+def get_random_product(retDataProduct, type = -1):
+	if type == -1:
+		return retDataProduct[random.randint(1, len(retDataProduct)-1)] 
+	# on recherche le bon type de produit
+	while True:
+		random_product = retDataProduct[random.randint(1, len(retDataProduct)-1)]
+		if random_product['type'] == str(type) :
+			return random_product
+
 
 def fill_random_thirdparties():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api

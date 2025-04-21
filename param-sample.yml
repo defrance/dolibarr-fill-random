@@ -19,6 +19,7 @@ elements:
   new_bill : 0
   new_order : 0
   new_proposal : 0
+  new_contract : 0
   new_fichinter : 0
   new_ticket : 0
   new_knowledge : 0
@@ -32,5 +33,5 @@ others:
   year_to_fill : 2023
   date_interval : 3
   nb_country : 1
-  fill_contact_externe : 0
-  fill_contact_interne : 0
+  fill_contact_externe : 1
+  fill_contact_interne : 2

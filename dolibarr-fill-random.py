@@ -21,13 +21,17 @@ nbNewStockMovement=config['elements']['new_stock_movement']
 nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']
 nbNewProposal=config['elements']['new_proposal']
+nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
+
 
 # infos lies au projet
 nbNewProject=config['project']['new_project']
 nbNewTask=config['project']['new_task']
 nbNewTaskTime=config['project']['new_task_time']
+
+# autres infos 
 
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
@@ -233,7 +237,7 @@ def generate_product(dateCreate):
 
     if typeProduct == 1:
         # on rajoute le champ pour les services 
-        data["duration_value"] = random.randint(1, 7) * 3600
+        data["duration_value"] = random.randint(1, 7) #* 3600
         data["duration_unit"] = "h" # heures
     else:
         # on affecte un poids au produit
@@ -311,7 +315,7 @@ def generate_bills(datefacture):
         data = {
         }
         r = requests.post(url, headers=headers, json=data)
-        print (r.text)
+        # print (r.text)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -539,7 +543,7 @@ def generate_interventionals(dateintervention):
 
 def generate_ticket(dateticket):
     # la date doit etre un timestamp
-    dateticketts  =dateticket.timestamp()
+    dateticketTs  =dateticket.timestamp()
         
     url = urlBase + "tickets"
     data = {
@@ -548,24 +552,33 @@ def generate_ticket(dateticket):
         "message": fake.catch_phrase(),
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
-        "datec": dateticketts,
+        "datec": dateticketTs,
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
 
+    if dol_version > 20:
+        statutField = "status"
+    else:
+        statutField = "fk_statut"
+
+    userAssign = get_random_user(retDataUser)
     # si la date est inférieur à l'année en cours on valide le ticket
     if dateticket.year < yearNow:
         url = urlBase + "tickets/" + str(ticketID)
+        print (url)
         date_close = dateticket + timedelta(days=random.randint(1, 5))
+        # on affecte un utilisateur au ticket
+        status = random.choice([8, 9])
         data = {
-            "status" : random.choice([8, 9]),
+            "status" : status,
+            "fk_statut" : status,
             "resolution" : fake.catch_phrase(),
-            "fk_user_assign": get_random_user(retDataUser),
+            "fk_user_assign": userAssign['id'],
             "progress" : 100,
             "date_close" : date_close.strftime('%Y-%m-%d %H:%M:%S'),
         }
-        r = requests.put(url, headers=headers, json=data)  
-        
+        r = requests.put(url, headers=headers, json=data) 
     else:
         status = random.choice([0, 1, 2, 3, 5, 7])
         if status != 0:
@@ -573,12 +586,124 @@ def generate_ticket(dateticket):
             date_close = dateticket + timedelta(days=random.randint(1, 5))
             data = {
                 "status" : status,
+                "fk_statut" : status,
                 "progress" : random.randint(0, 100),
-                "fk_user_assign": get_random_user(retDataUser),
+                "fk_user_assign": userAssign['id'],
             }
             r = requests.put(url, headers=headers, json=data)  
-            
     return 1
+
+def generate_contracts(datecontract):
+    url = urlBase + "contracts"
+
+    data = {
+        "socid": get_random_client(retDataThirdParties),
+        "date_contrat": datecontract.strftime('%Y-%m-%d'),
+        "commercial_signature_id": get_random_user(retDataUser)['id'],
+        "commercial_suivi_id": get_random_user(retDataUser)['id'],
+    }
+    r = requests.post(url, headers=headers, json=data)
+    contractID = r.text
+    status = "Draft"
+    url = urlBase + "contracts/" + str(contractID) + "/validate"
+    data = {
+        "notrigger": 1,
+    }
+    if datecontract.year < yearNow :
+        r = requests.post(url, headers=headers, json=data)
+        # pour les dates antiérieurs à l'année en cours, on valide la commande
+        status = "Closed"
+    else:
+        #pour l'année en cours, on ne valide pas toute les commandes
+        if random.choice([0, 1]) == 1:
+            r = requests.post(url, headers=headers, json=data)  
+            # if datecontract.year < yearNow :
+            #     status = "Closed"
+            # else:
+            status = "Open"
+
+    # on ajoute les lignes de services
+    urlLine = urlBase + "contracts/" + str(contractID) + "/lines"
+    for i in range(random.randint(1, 3)):
+        # la quantité se trouve en fin de ligne entre parenthèse
+        qty = random.randint(1, 10)
+        # si il y a un tiret on récupère le produit avant
+        # on récupère le service
+        productRandom = get_random_product(retDataProduct, 1)
+        # ajoute la ligne de contract
+        # prevoir date start et date fin
+        data = {
+            "fk_product": productRandom['id'],
+            "qty": qty,
+            "desc" : fake.catch_phrase(),
+            "subprice": productRandom['price'],
+            "subprice_excl_tax": productRandom['price'],
+            "tva_tx": productRandom['tva_tx'],
+            'price_base_type': 'HT',
+            "remise_percent":0,
+            "localtax1_tx": 0,
+            "localtax2_tx": 0,
+            "date_start": datecontract.strftime('%Y-%m-%d'),
+            "date_end": datecontract.strftime('%Y-%m-%d'),
+            "info_bits": 0,
+            "fk_fournprice": 0,
+            "pa_ht": 0,
+            "array_options": 0,
+            "fk_unit": 0,
+            "rang": 0,
+
+
+
+
+        }
+        r = requests.post(urlLine, headers=headers, json=data)
+        lineID = r.text
+
+        datestart = datecontract + timedelta(days=random.randint(1, 30)) 
+        datestartTs  =datestart.timestamp()
+        dateend = datestart + timedelta(days=random.randint(1, 365)) 
+        dateendTs  =dateend.timestamp()
+        dateclose = datecontract + timedelta(days=random.randint(1, 365)) 
+        datecloseTs  =dateclose.timestamp()
+        if status == "Open":
+            if random.choice([0, 1]) == 1:
+                url = urlBase + "contracts/" + str(contractID) + "/lines/" + str(lineID) + "/activate"
+                data = {
+                    "notrigger": 1,
+                    "datestart": datestartTs,
+                    "dateend": dateendTs,
+                }
+                r = requests.put(url, headers=headers, json=data)
+
+
+        if status == "Closed":
+            url = urlBase + "contracts/" + str(contractID) + "/lines/" + str(lineID) + "/activate"
+            data = {
+                "notrigger": 1,
+                "datestart": datestartTs,
+                "dateend": dateendTs,
+            }
+            r = requests.put(url, headers=headers, json=data)
+
+            # on ferme le contrat
+            url = urlBase + "contracts/" + str(contractID) + "/lines/" + str(lineID) + "/unactivate"
+            dateclose = datecontract + timedelta(days=random.randint(1, 365)) 
+            data = {
+                "notrigger": 1,
+                "datestart": datecloseTs,
+            }
+            r = requests.put(url, headers=headers, json=data)
+
+    return 1
+
+
+
+# pour ajouter  des contacts interne
+def add_contact_interne(element, idSoc, idUser):
+    # on rajoute un contact interne
+    url = urlBase + "thirdparties/" + idSoc + "/representative/"
+    data = { }
+    r = requests.post(url + idUser, headers=headers, json=data)
 
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()
@@ -629,6 +754,11 @@ if nbNewProposal > 0:
     listProposalGen = gen_randow_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
         propal = generate_proposals(dateProposal)
+
+if nbNewContract > 0:
+    listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
+    for dateContract in listContractGen:
+        contract = generate_contracts(dateContract)
 
 if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
