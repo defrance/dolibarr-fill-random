@@ -17,32 +17,46 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 
 - Utilisateurs
     - Création des utilisateurs
+
 - Tiers
     - possibilité de gérer plusieurs pays (ou on reste en france)
     - gestion des commerciaux affectés
+
 - Contact 
     - Création aléatoire associé a un tiers 
+
 - Entrepot
     - Création aléatoire
+
 - Banque
     - Création aléatoire
 
 - Produit et Service
     - Création d'un stock initial pour les produits dans l'un des entrepots
-    - définition d'une durée pour les services
+    - définition d'une durée pour les services et d'un poids pour les produits
 
 - Devis
     - les devis peuvent ne pas être signées
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
+
 - Commandes
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
+    
 - Facture
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
 
+- Contrat
+    - soucis sur la création des ligne de contrat (warning)
+    - on ouvre les services sur une période et on les fermes aussi
+
 - Intervention
+    - on rajoute le lien des interventions à des contrats
+    - la ventilation sur les mois nécessite la Version 22 de dolibarr
+
+- Ticket
     - la ventilation sur les mois nécessite la Version 22 de dolibarr
 
 
