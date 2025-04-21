@@ -468,9 +468,17 @@ def generate_proposals(dateproposal):
 def generate_interventionals(dateintervention):
     url = urlBase + "interventions"
 
+    socid= get_random_client(retDataThirdParties)
+    fk_contract = 0
+    if random.randint(0, 1) == 1:
+        contracts = fill_random_contracts(socid)
+        fk_contract = get_random_contract(contracts)
+
+
     data = {
         "socid": get_random_client(retDataThirdParties),
         "fk_project": 0,
+        "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
         #"date": dateintervention.strftime('%Y-%m-%d'),
     }
@@ -482,7 +490,6 @@ def generate_interventionals(dateintervention):
     urlLine = urlBase + "interventions/" + str(orderID) + "/lines"
     jours_a_ajouter = 0
     for i in range(random.randint(1, 5)):
-
         jours_a_ajouter += random.randint(0, 1)
         nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
         nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
@@ -531,12 +538,10 @@ def generate_interventionals(dateintervention):
 
     # On met à jour les dates pour les stats
     url = urlBase + "interventions/" + str(orderID)
-    print ("url", url)
     data = {
         "datec": dateintervention.strftime('%Y-%m-%d'),
     }
     r = requests.put(url, headers=headers, json=data)
-    print (r.text)
 
 
     return 1
@@ -740,6 +745,7 @@ retDataThirdParties = fill_random_thirdparties()
 retDataBank = fill_random_banks()
 
 
+
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
@@ -769,8 +775,6 @@ if nbNewTicket > 0:
     listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
         ticket = generate_ticket(dateTicket)
-
-
 
 
 start_stop = datetime.now()
