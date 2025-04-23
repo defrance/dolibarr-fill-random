@@ -24,6 +24,7 @@ nbNewProposal=config['elements']['new_proposal']
 nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
+nbNewKnowledge=config['elements']['new_knowledge']
 
 
 # infos lies au projet
@@ -598,6 +599,48 @@ def generate_ticket(dateticket):
             r = requests.put(url, headers=headers, json=data)  
     return 1
 
+def generate_knowledge(dateknowledge):
+    # la date doit etre un timestamp
+    dateknowledgeTs  =dateknowledge.timestamp()
+        
+    url = urlBase + "knowledgemanagement/knowledgerecords"
+    data = {
+        'question': fake.catch_phrase(),
+        "lang": "fr_FR",
+        "answer": fake.catch_phrase(),
+        "date_creation": dateknowledgeTs,
+        "status": 0,
+    }
+    r = requests.post(url, headers=headers, json=data)
+    knowledgeID = r.text
+    print (r.text)
+
+    # si la date est inférieur à l'année en cours on valide le ticket
+    if dateknowledge.year < yearNow:
+        url = urlBase + "knowledgemanagement/" + str(knowledgeID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data) 
+
+        status = random.choice([0, 1])
+        if status != 0:
+            url = urlBase + "knowledgemanagement/" + str(knowledgeID) + "/cancel"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data) 
+    else:
+        status = random.choice([0, 1])
+        if status != 0:
+            url = urlBase + "knowledgemanagement/" + str(knowledgeID) + "/validate"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data)  
+    return 1
+
+
 def generate_contracts(datecontract):
     url = urlBase + "contracts"
 
@@ -775,6 +818,11 @@ if nbNewTicket > 0:
     listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
         ticket = generate_ticket(dateTicket)
+
+if nbNewKnowledge > 0:
+    listArticleGen = gen_randow_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
+    for dateknowledge in listArticleGen:
+        ticket = generate_knowledge(dateknowledge)
 
 
 start_stop = datetime.now()

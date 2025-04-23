@@ -1,5 +1,5 @@
 # dolibarr-fill-random
-Programme python créant de la data dans dolibarr via les api natives
+Programme python créant de la data dans dolibarr via les api natives, le but étant d'avoir un jeu d'essai consistant pour réaliser des tests
 
 
 ## paramétrage 
@@ -43,7 +43,7 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 - Commandes
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
-    
+
 - Facture
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
@@ -59,6 +59,11 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 - Ticket
     - la ventilation sur les mois nécessite la Version 22 de dolibarr
 
+- Article (base de connaissance)
+    - ajout de l'info sur ma widget de stat de dolibarr
+    - nécessite la Version 22 de dolibarr pour la validation et l'annulation
+    
+
 
 # PR réalisées sur le dolistore pour certaines fonctions :
 
@@ -72,3 +77,6 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - Date de création transmise aux ticket
     https://github.com/Dolibarr/dolibarr/pull/33937
 
+    - infos et modification sur la base de connaissance
+    https://github.com/Dolibarr/dolibarr/pull/33960
+    https://github.com/Dolibarr/dolibarr/pull/33962
