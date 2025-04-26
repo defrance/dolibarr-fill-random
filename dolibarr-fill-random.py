@@ -563,19 +563,15 @@ def generate_ticket(dateticket):
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
 
-    if dol_version > 20:
-        statutField = "status"
-    else:
-        statutField = "fk_statut"
 
     userAssign = get_random_user(retDataUser)
     # si la date est inférieur à l'année en cours on valide le ticket
     if dateticket.year < yearNow:
         url = urlBase + "tickets/" + str(ticketID)
-        print (url)
         date_close = dateticket + timedelta(days=random.randint(1, 5))
         # on affecte un utilisateur au ticket
         status = random.choice([8, 9])
+        # on met status et fk_statut pour gérer la retrocompatibilité
         data = {
             "status" : status,
             "fk_statut" : status,
@@ -613,7 +609,7 @@ def generate_knowledge(dateknowledge):
     }
     r = requests.post(url, headers=headers, json=data)
     knowledgeID = r.text
-    print (r.text)
+    
 
     # si la date est inférieur à l'année en cours on valide le ticket
     if dateknowledge.year < yearNow:
