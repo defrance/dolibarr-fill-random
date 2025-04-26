@@ -63,6 +63,11 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
 - Article (base de connaissance)
     - ajout de l'info sur ma widget de stat de dolibarr
     - nécessite la Version 22 de dolibarr pour la validation et l'annulation
+
+- Categories
+    - produit
+    - tiers
+    - contact
     
 # Installation préalable
 Le programme utilise faker pour générer des données aléatoire

@@ -26,6 +26,11 @@ nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
 
+newCategory=config['categories']['new_category']
+newCategoryProduct=config['categories']['new_category_product']
+newCategoryCustomer=config['categories']['new_category_customer']
+newCategorySocpeople=config['categories']['new_category_socpeople']
+
 
 # infos lies au projet
 nbNewProject=config['project']['new_project']
@@ -33,7 +38,6 @@ nbNewTask=config['project']['new_task']
 nbNewTaskTime=config['project']['new_task_time']
 
 # autres infos 
-
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
@@ -393,20 +397,19 @@ def generate_proposals(dateproposal):
 
     # on rajoute 5 jours à la date de la proposition
     date_finvalidite = dateproposal + timedelta(days=5)  
-    
+    dateproposalTs  = dateproposal.timestamp()
+
     data = {
         "socid": get_random_client(retDataThirdParties),
-        "date": dateproposal.strftime('%Y-%m-%d'),
-        "duree_validite": 10,
-        "fin_validite": date_finvalidite.strftime('%Y-%m-%d'),
-        # "duree_validite": random.randint(5, 15),
+        "date": dateproposalTs,
+        "duree_validite": random.randint(5, 15),
     }
     r = requests.post(url, headers=headers, json=data)
-    orderID = r.text
-    # print ('Commande créée: ', orderID)
+    proposalID = r.text
+
 
     # on ajoute les lignes attention, pour les propal, il faut utiliser line et pas lines
-    urlLine = urlBase + "proposals/" + str(orderID) + "/line"
+    urlLine = urlBase + "proposals/" + str(proposalID) + "/line"
     for i in range(random.randint(1, 10)):
 
         # la quantité se trouve en fin de ligne entre parenthèse
@@ -426,19 +429,10 @@ def generate_proposals(dateproposal):
         r = requests.post(urlLine, headers=headers, json=data)
         # print (r.text)
 
-    # on met à jour la facture avec les données supplémentaires
-    url = urlBase + "proposals/" + str(orderID)
-    data = {
-        "duree_validite": 10,
-        "fin_validite": date_finvalidite.strftime('%Y-%m-%d'),
-    }
-
-    r = requests.put(url, headers=headers, json=data)
-
     # si la date est inférieur à l'année en cours
     if date_finvalidite.year < yearNow:
         signed = random.choice([2, 3])
-        url = urlBase + "proposals/" + str(orderID) + "/close"
+        url = urlBase + "proposals/" + str(proposalID) + "/close"
         data = {
             "status": signed,
         }
@@ -446,7 +440,7 @@ def generate_proposals(dateproposal):
         r = requests.post(url, headers=headers, json=data)
 
         if signed == 2 and date_finvalidite.year == yearNow - 2:
-            url = urlBase + "proposals/" + str(orderID) + "/setinvoiced"
+            url = urlBase + "proposals/" + str(proposalID) + "/setinvoiced"
             data = {
             }
             r = requests.post(url, headers=headers, json=data)  
@@ -454,7 +448,7 @@ def generate_proposals(dateproposal):
         # print (r.text)
     else:
         if random.choice([0, 1]) == 1:
-            url = urlBase + "proposals/" + str(orderID) + "/validate"
+            url = urlBase + "proposals/" + str(proposalID) + "/validate"
             data = {
                 "notrigger": 1,
             }
@@ -636,7 +630,6 @@ def generate_knowledge(dateknowledge):
             r = requests.post(url, headers=headers, json=data)  
     return 1
 
-
 def generate_contracts(datecontract):
     url = urlBase + "contracts"
 
@@ -740,7 +733,40 @@ def generate_contracts(datecontract):
 
     return 1
 
+# type possible :
+# 'product'      => 0,
+# 'supplier'     => 1,
+# 'customer'     => 2,
+# 'member'       => 3,
+# 'contact'      => 4,
+# 'bank_account' => 5,
+# 'project'      => 6,
+# 'user'         => 7,
+# 'bank_line'    => 8,
+# 'warehouse'    => 9,
+# 'actioncomm'   => 10,
+# 'website_page' => 11,
+# 'ticket'       => 12,
+# 'knowledgemanagement' => 13,
+# 'fichinter' => 14,
 
+def generate_categories(type):
+    # on boucle sur les lignes
+    url = urlBase + "categories"
+    data = {
+        "label": fake.company(),
+        "description": fake.catch_phrase(),
+        "type": type,
+        "status": 1, # actif
+    }
+    #print (data)
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print('Erreur lors de la création de la catégorie', r.status_code)
+        print (r.text)
+        return None
+
+    return 1
 
 # pour ajouter  des contacts interne
 def add_contact_interne(element, idSoc, idUser):
@@ -752,6 +778,15 @@ def add_contact_interne(element, idSoc, idUser):
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()
 print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
+
+# creation des catégories
+if newCategory > 0:
+    for i in range(random.randint(0, newCategory)):
+        generate_categories("product")
+    for i in range(random.randint(0, newCategory)):
+        generate_categories("customer")
+    for i in range(random.randint(0, newCategory)):
+        generate_categories("contact")
 
 if nbNewWarehouse > 0:
     listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
@@ -767,6 +802,10 @@ if nbNewUser > 0:
         product = generate_user(dateCreate)
 
 retDataUser = fill_random_users()
+# on récupère les produits et les tiers existants pour les utiliser dans les éléments
+retDataCategProduct = fill_random_categories("product")
+retDataCategCustomer = fill_random_categories("customer")
+retDataCategContact = fill_random_categories("contact")
 
 if nbNewProduct > 0:
     listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
@@ -778,7 +817,7 @@ if nbNewClient > 0:
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
 
-# on récupère les produits et les tiers existants pour les utiliser dans les éléments
+
 retDataProduct = fill_random_products()
 retDataThirdParties = fill_random_thirdparties()
 retDataBank = fill_random_banks()

@@ -61,6 +61,18 @@ def get_random_user(retDataUser):
 	# on retourne les infos du produit
 	return retDataUser[random.randint(1, len(retDataUser)-1)]
 
+
+def fill_random_categories(type) :
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "categories?limit=100&type=" + type 
+	rRandomCategory = requests.get(url, headers=headers, verify=False)
+	if rRandomCategory.status_code != 200:
+		print('Erreur lors de la récupération des categories', rRandomCategory.status_code)
+		print (rRandomCategory.text)
+		exit()
+	retDataCategory = rRandomCategory.json()
+	return retDataCategory
+
 def fill_random_warehouses():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "warehouses?limit=100"
