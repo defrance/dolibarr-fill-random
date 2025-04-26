@@ -10,20 +10,20 @@ connection-test2:
 
 # puis le reste des données basée sur les clients et produits
 elements:
-  new_user : 0
-  new_client : 0
-  new_product : 0
-  new_warehouse : 0
-  new_stock_movement : 0
-  new_bank : 0
-  new_bill : 0
-  new_order : 0
-  new_proposal : 0
-  new_contract : 0
-  new_fichinter : 0
-  new_ticket : 0
-  new_knowledge : 0
-
+  new_user : 10
+  new_client : 420
+  new_product : 200
+  new_warehouse : 3
+  new_stock_movement : 3
+  new_bank : 2
+  new_bill : 420
+  new_order : 420
+  new_proposal : 420
+  new_contract : 420
+  new_fichinter : 420
+  new_ticket : 420
+  new_knowledge : 420
+  
 project:
   new_project : 0
   new_task : 0

@@ -1,6 +1,7 @@
 # dolibarr-fill-random
 Programme python créant de la data dans dolibarr via les api natives, le but étant d'avoir un jeu d'essai consistant pour réaliser des tests
 
+En terme de performance, le programme met environ 30 minutes sur un macbook air M1 pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
 
 ## paramétrage 
 le fichier param.yml contient le paramétrage du programme avec 3 parties :
@@ -63,10 +64,17 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - ajout de l'info sur ma widget de stat de dolibarr
     - nécessite la Version 22 de dolibarr pour la validation et l'annulation
     
+# Installation préalable
+Le programme utilise faker pour générer des données aléatoire
+Il utilise aussi yaml pour le fichier de paramétrage
 
+il faut donc réaliser les commandes suivantes: 
+pip install faker
+pip install pyyaml
 
-# PR réalisées sur le dolistore pour certaines fonctions :
-
+# PR réalisées sur le core de dolibarr pour activer certaines fonctions :
+Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 22, il sera nécessaire de réaliser les correctifs suivants :
+ 
     - creation des lignes de contrats
     https://github.com/Dolibarr/dolibarr/pull/33938
 
