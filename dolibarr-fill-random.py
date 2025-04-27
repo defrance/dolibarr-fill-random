@@ -30,6 +30,7 @@ newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
 newCategoryCustomer=config['categories']['new_category_customer']
 newCategorySocpeople=config['categories']['new_category_socpeople']
+# newCategoryTicket=config['categories']['new_category_ticket']
 
 
 # infos lies au projet
@@ -68,7 +69,7 @@ def generate_user(dateCreate):
         "town": fake.city(),
         "phone": fake.phone_number(),
     }
-    #print (data)
+
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print("Erreur lors de la création de l'utilisateur", r.status_code)
@@ -100,7 +101,6 @@ def generate_bank(dateCreate):
         "address": fake.address(),
         
     }
-    #print (data)
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print("Erreur lors de la création de la bankf", r.status_code)
@@ -130,7 +130,6 @@ def generate_customer(dateCreate):
         # "dateupdate": df['dateupdate'][index],
         # "proprietaire": df['proprietaire'][index],
     }
-    #print (data)
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print('Erreur lors de la création du tiers', r.status_code)
@@ -151,7 +150,7 @@ def generate_customer(dateCreate):
     # ajout de contact
     url = urlBase + "contacts/"
     for i in range(random.randint(0, 3)):
-        # on rajoute une adresse de facturation
+        # on rajoute des contacts externes
         data = {
             "lastname" : fake.last_name(),
             "firstname" : fake.first_name(),
@@ -162,7 +161,23 @@ def generate_customer(dateCreate):
             "country_id": 1,
         }
         r = requests.post(url, headers=headers, json=data)
-        #print (r.text)
+        idContact = r.text 
+        # gestion des catégories de contact
+        if newCategorySocpeople > 0:
+            for i in range(random.randint(0, newCategorySocpeople)):
+                # on rajoute une catégorie aléatoire
+                url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/contact/" + str(idContact)
+                data = { }
+                r = requests.post(url, headers=headers, json=data)
+
+    # gestion des catégories de tiers
+    if newCategoryCustomer > 0:
+        for i in range(random.randint(0, newCategoryCustomer)):
+            # on rajoute une catégorie aléatoire
+            #categories/5/objects/product/100
+            url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/customer/" + str(idSoc)
+            data = { }
+            r = requests.post(url, headers=headers, json=data)
 
     return 1
 
@@ -181,7 +196,6 @@ def generate_warehouse(dateCreate):
         "country_id": 1,
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
     }
-    #print (data)
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print('Erreur lors de la création du tiers', r.status_code)
@@ -231,7 +245,6 @@ def generate_product(dateCreate):
         return None
     else:
         productId = r.text
-        # print (r.text)
 
 
     # on transmet le reste des données par update
@@ -258,19 +271,61 @@ def generate_product(dateCreate):
         # on continue le traitement
         pass
 
+    # sur les produits on rajoute des mouvements de stock
     if typeProduct == 0:
+        initWarehouse = get_random_warehouse(retDataWarehouse)
         # ajout de mouvement de stock initial
         urlProduct = urlBase + "stockmovements" 
         data = {
             "product_id" : productId,
-            "warehouse_id" : get_random_warehouse(retDataWarehouse),
-            "qty" : random.randint(5, 100) ,
-            "type" : 0, # au début on ajoute random.randint(0, 3), 
+            "warehouse_id" : initWarehouse,
+            "qty" : random.randint(50, 100) ,
+            "type" : 0, # au début on ajoute du stock
             "datem" : dateCreate.strftime('%Y-%m-%d'),
+            "movementcode": "INIT-" + productId,
+            "movementlabel": "Initial stock",
             "price" : buying_price,
         }
         r = requests.post(urlProduct, headers=headers, json=data)
 
+        # si on a plusieurs entrepots, on ventile le stock sur un autre entrepot
+        if len(retDataProduct) > 0:
+            # on ventile une partie du stock sur un autre entrepot
+            qtyMoved = random.randint(10, 50) ,
+            data = {
+                "product_id" : productId,
+                "warehouse_id" : initWarehouse,
+                "qty" : qtyMoved,
+                "movementcode": "MOVEOUT-" + productId,
+                "movementlabel": "Moving stock out",
+                "type" : 1, # au début on enleve du stock
+                "datem" : dateCreate.strftime('%Y-%m-%d'),
+                "price" : buying_price,
+            }
+            r = requests.post(urlProduct, headers=headers, json=data)
+
+            # on ventile une partie du stock sur un autre entrepot
+            data = {
+                "product_id" : productId,
+                "warehouse_id" : get_random_warehouse(retDataWarehouse),
+                "movementcode": "MOVEIN-" + productId,
+                "movementlabel": "Moving stock IN",
+                "qty" : qtyMoved,
+                "type" : 0, # au début on enleve du stock
+                "datem" : dateCreate.strftime('%Y-%m-%d'),
+                "price" : buying_price,
+            }
+            r = requests.post(urlProduct, headers=headers, json=data)
+
+
+    # gestion des catégories de produit
+    if newCategoryProduct > 0:
+        for i in range(random.randint(0, newCategoryProduct)):
+            # on rajoute une catégorie aléatoire
+            #categories/5/objects/product/100
+            url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/product/" + str(productId)
+            data = { }
+            r = requests.post(url, headers=headers, json=data)
 
     return 1
 
@@ -286,7 +341,7 @@ def generate_bills(datefacture):
     }
     r = requests.post(url, headers=headers, json=data)
     invoiceID = r.text
-    # print ('Facture créée: ', invoiceID)
+
 
     # on ajoute les lignes
     urlLine = urlBase + "invoices/" + str(invoiceID) + "/lines"
@@ -305,7 +360,6 @@ def generate_bills(datefacture):
             "tva_tx": productRandom['tva_tx'],
             'price_base_type': 'HT',
         }
-        # print (data)
         r = requests.post(urlLine, headers=headers, json=data)
 
     if datefacture.year < yearNow:
@@ -320,7 +374,6 @@ def generate_bills(datefacture):
         data = {
         }
         r = requests.post(url, headers=headers, json=data)
-        # print (r.text)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -340,7 +393,6 @@ def generate_orders(dateorder):
     }
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
-    # print ('Commande créée: ', orderID)
 
     # on ajoute les lignes
     urlLine = urlBase + "orders/" + str(orderID) + "/lines"
@@ -358,7 +410,6 @@ def generate_orders(dateorder):
             "tva_tx": productRandom['tva_tx'],
             'price_base_type': 'HT',
         }
-        # print (data)
         r = requests.post(urlLine, headers=headers, json=data)
 
     if dateorder.year < yearNow:
@@ -374,7 +425,6 @@ def generate_orders(dateorder):
             "notrigger": 1,
         }
         r = requests.post(url, headers=headers, json=data)
-        # print (r.text)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -425,9 +475,7 @@ def generate_proposals(dateproposal):
             "tva_tx": productRandom['tva_tx'],
             'price_base_type': 'HT',
         }
-        # print (data)
         r = requests.post(urlLine, headers=headers, json=data)
-        # print (r.text)
 
     # si la date est inférieur à l'année en cours
     if date_finvalidite.year < yearNow:
@@ -444,8 +492,6 @@ def generate_proposals(dateproposal):
             data = {
             }
             r = requests.post(url, headers=headers, json=data)  
-            # print (r.text)
-        # print (r.text)
     else:
         if random.choice([0, 1]) == 1:
             url = urlBase + "proposals/" + str(proposalID) + "/validate"
@@ -453,11 +499,7 @@ def generate_proposals(dateproposal):
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
-            #print (r.text)
 
-
-
-    # print (r.text)
     return 1
 
 def generate_interventionals(dateintervention):
@@ -479,7 +521,6 @@ def generate_interventionals(dateintervention):
     }
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
-    #print ('intervention créée: ', r.text)
 
     # on ajoute les lignes
     urlLine = urlBase + "interventions/" + str(orderID) + "/lines"
@@ -488,8 +529,7 @@ def generate_interventionals(dateintervention):
         jours_a_ajouter += random.randint(0, 1)
         nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
         nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
-        # print (nouvelle_date)
-        # ajoute la ligne d'intevention
+        # ajoute la ligne d'intrvention
         data = {
             "description": fake.catch_phrase(),
             "date": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
@@ -586,7 +626,18 @@ def generate_ticket(dateticket):
                 "progress" : random.randint(0, 100),
                 "fk_user_assign": userAssign['id'],
             }
-            r = requests.put(url, headers=headers, json=data)  
+            r = requests.put(url, headers=headers, json=data)
+
+    # gestion des catégories, pas opérationnelle sur les tickets
+    # if newCategoryTicket > 0:
+    #     for i in range(random.randint(0, newCategoryTicket)):
+    #         # on rajoute une catégorie aléatoire
+    #         url = urlBase + "categories/" + str(random.choice(retDataCategTicket)['id']) + "/object/ticket/" + str(ticketID)
+    #         data = {
+    #             "id": random.choice(retDataCategTicket)['id'],
+    #         }
+    #         r = requests.post(url, headers=headers, json=data)
+
     return 1
 
 def generate_knowledge(dateknowledge):
@@ -748,7 +799,7 @@ def generate_contracts(datecontract):
 # 'website_page' => 11,
 # 'ticket'       => 12,
 # 'knowledgemanagement' => 13,
-# 'fichinter' => 14,
+# 'fichinter' => 14,  ON dolibarr 22 only
 
 def generate_categories(type):
     # on boucle sur les lignes
@@ -759,7 +810,6 @@ def generate_categories(type):
         "type": type,
         "status": 1, # actif
     }
-    #print (data)
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print('Erreur lors de la création de la catégorie', r.status_code)
@@ -787,6 +837,13 @@ if newCategory > 0:
         generate_categories("customer")
     for i in range(random.randint(0, newCategory)):
         generate_categories("contact")
+    for i in range(random.randint(0, newCategory)):
+        generate_categories("ticket")
+
+retDataCategProduct = fill_random_categories("product")
+retDataCategCustomer = fill_random_categories("customer")
+retDataCategContact = fill_random_categories("contact")
+retDataCategTicket = fill_random_categories("ticket")
 
 if nbNewWarehouse > 0:
     listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
@@ -803,9 +860,7 @@ if nbNewUser > 0:
 
 retDataUser = fill_random_users()
 # on récupère les produits et les tiers existants pour les utiliser dans les éléments
-retDataCategProduct = fill_random_categories("product")
-retDataCategCustomer = fill_random_categories("customer")
-retDataCategContact = fill_random_categories("contact")
+
 
 if nbNewProduct > 0:
     listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)

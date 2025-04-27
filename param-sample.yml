@@ -24,6 +24,13 @@ elements:
   new_ticket : 420
   new_knowledge : 420
   
+categories:
+  new_category : 10
+  new_category_product : 3
+  new_category_customer : 3
+  new_category_socpeople : 3
+  new_category_ticket : 3
+
 project:
   new_project : 0
   new_task : 0

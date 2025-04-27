@@ -64,7 +64,7 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - ajout de l'info sur ma widget de stat de dolibarr
     - nécessite la Version 22 de dolibarr pour la validation et l'annulation
 
-- Categories
+- Categories (attention toute ne sont pas développé dans l'API)
     - produit
     - tiers
     - contact
