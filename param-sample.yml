@@ -25,11 +25,14 @@ elements:
   new_knowledge : 420
   
 categories:
-  new_category : 10
+  new_category : 0
   new_category_product : 3
   new_category_customer : 3
   new_category_socpeople : 3
-  new_category_ticket : 3
+#  new_category_user : 3 // pas encore implémenté
+#  new_category_ticket : 3 // pas encore implémenté
+#  new_category_knowledgemanagement : 3 // pas encore implémenté
+#  new_category_warehouse : 3 // pas encore implémenté
 
 project:
   new_project : 0
@@ -40,5 +43,6 @@ others:
   year_to_fill : 2023
   date_interval : 3
   nb_country : 1
+  nb_shipping : 1 # active les expéditions
   fill_contact_externe : 1
   fill_contact_interne : 2

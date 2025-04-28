@@ -45,6 +45,11 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
 
+- Expedition
+    - associée a une commande
+    - les éléments antérieur à l'année en cours sont traité
+    - les éléments de l'année en cours sont soit brouillon soit validé
+
 - Facture
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
@@ -93,3 +98,6 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     - infos et modification sur la base de connaissance
     https://github.com/Dolibarr/dolibarr/pull/33960
     https://github.com/Dolibarr/dolibarr/pull/33962
+
+    - date de création des expeditions ok 
+    https://github.com/Dolibarr/dolibarr/pull/33995
