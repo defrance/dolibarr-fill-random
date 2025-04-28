@@ -46,7 +46,7 @@ nb_shipping = config['others']['nb_shipping']
 
 # chagement des contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
-nbProposal_contactExt = config['others']['proposal_externe']
+nbProposal_contactExt = config['contacts']['proposal_externe']
 
 # récupération de l'année enccours
 yearNow = datetime.now().year
@@ -525,9 +525,9 @@ def generate_proposals(dateproposal):
     # on rajoute 5 jours à la date de la proposition
     date_finvalidite = dateproposal + timedelta(days=5)  
     dateproposalTs  = dateproposal.timestamp()
-
+    socID = get_random_client(retDataThirdParties)
     data = {
-        "socid": get_random_client(retDataThirdParties),
+        "socid": socID,
         "date": dateproposalTs,
         "duree_validite": random.randint(5, 15),
     }
@@ -576,6 +576,36 @@ def generate_proposals(dateproposal):
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
+
+    # ajout de contact interne ou externe
+    if nbProposal_contactInt > 0:
+        arrayTypeContactInterne = get_contact_types("propal", "internal")
+        
+        if len(arrayTypeContactInterne) >= 1:
+            if len(arrayTypeContactInterne) == 1:
+                code = arrayTypeContactInterne[0]['code']
+            else:
+                code = arrayTypeContactInterne[random.randint(1, len(arrayTypeContactInterne)-1)]['code']
+            userID = get_random_user(retDataUser)['id']
+            url = urlBase + "proposals/" + str(proposalID) + "/contact/" + userID +"/"+ str(code) + "/internal"
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
+
+    if nbProposal_contactExt > 0:
+        arrayTypeContactExterne = get_contact_types("propal", "external")
+        arrayuser = get_random_socpeople(socID)
+        if len(arrayuser) > 0:
+            if len(arrayuser) == 1:
+                userID = arrayuser[0]['id']
+            else:
+                userID = arrayuser[random.randint(0, len(arrayuser)-1)]['id']
+            code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
+            url = urlBase + "proposals/" + str(proposalID) + "/contact/" + userID +"/"+ str(code) + "/external"
+            print (url)
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
+            print (r.text)
+
 
     return 1
 
@@ -895,12 +925,6 @@ def generate_categories(type):
 
     return 1
 
-# pour ajouter  des contacts interne
-def add_contact_interne(element, idSoc, idUser):
-    # on rajoute un contact interne
-    url = urlBase + "thirdparties/" + idSoc + "/representative/"
-    data = { }
-    r = requests.post(url + idUser, headers=headers, json=data)
 
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()

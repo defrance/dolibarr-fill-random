@@ -61,6 +61,30 @@ def get_random_user(retDataUser):
 	# on retourne les infos du produit
 	return retDataUser[random.randint(1, len(retDataUser)-1)]
 
+def get_contact_types(type, source):
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "setup/dictionary/contact_types?type=" + type
+	url = url + "&sqlfilters=(t.source:=:'" + source + "')"
+	rRandomContactType = requests.get(url, headers=headers, verify=False)
+	if rRandomContactType.status_code != 200:
+		print('Erreur lors de la récupération des contact types', rRandomContactType.status_code)
+		print (rRandomContactType.text)
+		exit()
+	retDataContactType = rRandomContactType.json()
+	return retDataContactType
+
+def get_random_socpeople(socID):
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "contacts?limit=10&thirdparty_ids=" + str(socID)
+	print (url)
+	rRandomSocPeople = requests.get(url, headers=headers, verify=False)
+	print (rRandomSocPeople.text)
+	if rRandomSocPeople.status_code != 200:
+		print('Erreur lors de la récupération des contact ', rRandomSocPeople.status_code)
+		print (rRandomSocPeople.text)
+		exit()
+	retDataSocPeople = rRandomSocPeople.json()
+	return retDataSocPeople
 
 def fill_random_categories(type) :
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
