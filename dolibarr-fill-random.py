@@ -43,8 +43,10 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
-fill_contactInt = config['others']['fill_contact_interne']
-fill_contactExt = config['others']['fill_contact_externe']
+
+# chagement des contacts
+nbProposal_contactInt = config['contacts']['proposal_interne']
+nbProposal_contactExt = config['others']['proposal_externe']
 
 # récupération de l'année enccours
 yearNow = datetime.now().year

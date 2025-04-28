@@ -34,6 +34,15 @@ categories:
 #  new_category_knowledgemanagement : 3 // pas encore implémenté
 #  new_category_warehouse : 3 // pas encore implémenté
 
+# seulement implémenté pour les devis, commandes et factures
+contacts:
+  proposal_interne : 0
+  proposal_externe : 0
+  order_interne : 0
+  order_externe : 0
+  invoice_interne : 0
+  invoice_externe : 0
+  
 project:
   new_project : 0
   new_task : 0
