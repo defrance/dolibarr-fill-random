@@ -10,44 +10,6 @@ from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
-
-# on commence par créer les clients et les produits
-nbNewUser=config['elements']['new_user']
-nbNewClient=config['elements']['new_client']
-nbNewProduct=config['elements']['new_product']
-nbNewWarehouse=config['elements']['new_warehouse']
-nbNewStockMovement=config['elements']['new_stock_movement']
-# puis le reste des données basée sur les clients et produits
-nbNewBill=config['elements']['new_bill']
-nbNewOrder=config['elements']['new_order']
-nbNewProposal=config['elements']['new_proposal']
-nbNewContract=config['elements']['new_contract']
-nbNewFichinter=config['elements']['new_fichinter']
-nbNewTicket=config['elements']['new_ticket']
-nbNewKnowledge=config['elements']['new_knowledge']
-
-newCategory=config['categories']['new_category']
-newCategoryProduct=config['categories']['new_category_product']
-newCategoryCustomer=config['categories']['new_category_customer']
-newCategorySocpeople=config['categories']['new_category_socpeople']
-# newCategoryTicket=config['categories']['new_category_ticket']
-
-
-# infos lies au projet
-nbNewProject=config['project']['new_project']
-nbNewTask=config['project']['new_task']
-nbNewTaskTime=config['project']['new_task_time']
-
-# autres infos 
-yearToFill=config['others']['year_to_fill']
-dateinterval = config['others']['date_interval']
-nbCountry = config['others']['nb_country']
-nb_shipping = config['others']['nb_shipping']
-
-# chagement des contacts
-nbProposal_contactInt = config['contacts']['proposal_interne']
-nbProposal_contactExt = config['contacts']['proposal_externe']
-
 # récupération de l'année enccours
 yearNow = datetime.now().year
 
@@ -332,15 +294,15 @@ def generate_product(dateCreate):
 
     return 1
 
-def generate_bills(datefacture):
+def generate_invoices(datefacture):
     url = urlBase + "invoices"
 
     paye = random.choice([0, 1])
-
+    socId = get_random_client(retDataThirdParties)
     data = {
         "type": "0",
         "date" :datefacture.strftime('%Y-%m-%d'),
-        "socid": get_random_client(retDataThirdParties),
+        "socid": socId,
     }
     r = requests.post(url, headers=headers, json=data)
     invoiceID = r.text
@@ -385,6 +347,35 @@ def generate_bills(datefacture):
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)
+
+
+    # ajout de contact interne ou externe
+    if nbInvoice_contactInt > 0:
+        arrayTypeContactInterne = get_contact_types("facture", "internal")
+        
+        if len(arrayTypeContactInterne) >= 1:
+            if len(arrayTypeContactInterne) == 1:
+                code = arrayTypeContactInterne[0]['code']
+            else:
+                code = arrayTypeContactInterne[random.randint(1, len(arrayTypeContactInterne)-1)]['code']
+            userID = get_random_user(retDataUser)['id']
+            url = urlBase + "orders/" + str(invoiceID) + "/contact/" + userID +"/"+ str(code) + "/internal"
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
+
+    if nbInvoice_contactExt > 0:
+        arrayTypeContactExterne = get_contact_types("facture", "external")
+        arrayuser = get_random_socpeople(socId)
+        if len(arrayuser) > 0:
+            if len(arrayuser) == 1:
+                userID = arrayuser[0]['id']
+            else:
+                userID = arrayuser[random.randint(0, len(arrayuser)-1)]['id']
+            code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
+            url = urlBase + "orders/" + str(invoiceID) + "/contact/" + userID +"/"+ str(code) + "/external"
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
+
     return 1
 
 def generate_orders(dateorder):
@@ -516,6 +507,32 @@ def generate_orders(dateorder):
                 }
                 r = requests.post(url, headers=headers, json=data)  
 
+    # ajout de contact interne ou externe
+    if nbOrder_contactInt > 0:
+        arrayTypeContactInterne = get_contact_types("commande", "internal")
+        
+        if len(arrayTypeContactInterne) >= 1:
+            if len(arrayTypeContactInterne) == 1:
+                code = arrayTypeContactInterne[0]['code']
+            else:
+                code = arrayTypeContactInterne[random.randint(1, len(arrayTypeContactInterne)-1)]['code']
+            userID = get_random_user(retDataUser)['id']
+            url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/internal"
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
+
+    if nbOrder_contactExt > 0:
+        arrayTypeContactExterne = get_contact_types("commande", "external")
+        arrayuser = get_random_socpeople(socId)
+        if len(arrayuser) > 0:
+            if len(arrayuser) == 1:
+                userID = arrayuser[0]['id']
+            else:
+                userID = arrayuser[random.randint(0, len(arrayuser)-1)]['id']
+            code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
+            url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/external"
+            data = {}
+            r = requests.post(url, headers=headers, json=data)
 
     return 1
 
@@ -533,7 +550,6 @@ def generate_proposals(dateproposal):
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
-
 
     # on ajoute les lignes attention, pour les propal, il faut utiliser line et pas lines
     urlLine = urlBase + "proposals/" + str(proposalID) + "/line"
@@ -601,10 +617,9 @@ def generate_proposals(dateproposal):
                 userID = arrayuser[random.randint(0, len(arrayuser)-1)]['id']
             code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
             url = urlBase + "proposals/" + str(proposalID) + "/contact/" + userID +"/"+ str(code) + "/external"
-            print (url)
             data = {}
             r = requests.post(url, headers=headers, json=data)
-            print (r.text)
+
 
 
     return 1
@@ -973,16 +988,14 @@ if nbNewClient > 0:
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
 
-
 retDataProduct = fill_random_products()
 retDataThirdParties = fill_random_thirdparties()
 retDataBank = fill_random_banks()
 
-
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
-        facture = generate_bills(dateFact)
+        facture = generate_invoices(dateFact)
 
 if nbNewOrder > 0:
     listOrderGen = gen_randow_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)

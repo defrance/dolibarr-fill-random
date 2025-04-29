@@ -20,10 +20,51 @@ def load_config(path='param.yml'):
 config = load_config()
 
 
-#  on récupère le token et le mot de passe du mail
+# on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']
 urlBase = config['connection']['urlbase']
 dol_version=config['connection']['dol_version']
+
+# on commence par créer les clients et les produits
+nbNewUser=config['elements']['new_user']
+nbNewClient=config['elements']['new_client']
+nbNewProduct=config['elements']['new_product']
+nbNewWarehouse=config['elements']['new_warehouse']
+nbNewStockMovement=config['elements']['new_stock_movement']
+# puis le reste des données basée sur les clients et produits
+nbNewBill=config['elements']['new_bill']
+nbNewOrder=config['elements']['new_order']
+nbNewProposal=config['elements']['new_proposal']
+nbNewContract=config['elements']['new_contract']
+nbNewFichinter=config['elements']['new_fichinter']
+nbNewTicket=config['elements']['new_ticket']
+nbNewKnowledge=config['elements']['new_knowledge']
+
+newCategory=config['categories']['new_category']
+newCategoryProduct=config['categories']['new_category_product']
+newCategoryCustomer=config['categories']['new_category_customer']
+newCategorySocpeople=config['categories']['new_category_socpeople']
+# newCategoryTicket=config['categories']['new_category_ticket']
+
+# infos lies au projet
+nbNewProject=config['project']['new_project']
+nbNewTask=config['project']['new_task']
+nbNewTaskTime=config['project']['new_task_time']
+
+# autres infos 
+yearToFill=config['others']['year_to_fill']
+dateinterval = config['others']['date_interval']
+nbCountry = config['others']['nb_country']
+nb_shipping = config['others']['nb_shipping']
+
+# chargement des contacts
+nbProposal_contactInt = config['contacts']['proposal_interne']
+nbProposal_contactExt = config['contacts']['proposal_externe']
+nbOrder_contactInt = config['contacts']['order_interne']
+nbOrder_contactExt = config['contacts']['order_externe']
+nbInvoice_contactInt = config['contacts']['invoice_interne']
+nbInvoice_contactExt = config['contacts']['invoice_externe']
+
 
 headers = {
 	'DOLAPIKEY': apiToken,
@@ -62,6 +103,7 @@ def get_random_user(retDataUser):
 	return retDataUser[random.randint(1, len(retDataUser)-1)]
 
 def get_contact_types(type, source):
+	# type = propal, commande, facture, contrat, fichinter, expedition, ticket,  ...
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "setup/dictionary/contact_types?type=" + type
 	url = url + "&sqlfilters=(t.source:=:'" + source + "')"
@@ -76,9 +118,7 @@ def get_contact_types(type, source):
 def get_random_socpeople(socID):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contacts?limit=10&thirdparty_ids=" + str(socID)
-	print (url)
 	rRandomSocPeople = requests.get(url, headers=headers, verify=False)
-	print (rRandomSocPeople.text)
 	if rRandomSocPeople.status_code != 200:
 		print('Erreur lors de la récupération des contact ', rRandomSocPeople.status_code)
 		print (rRandomSocPeople.text)
@@ -137,7 +177,6 @@ def get_random_product(retDataProduct, type = -1):
 		if random_product['type'] == str(type) :
 			return random_product
 
-
 def fill_random_contracts(socid):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contracts?limit=100&thirdparty_ids=" + str(socid)
@@ -181,7 +220,6 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
         dates.append(nouvelle_date)
 
     return dates
-
 
 if __name__ == "__main__":
 	retDataUser = fill_random_users()
