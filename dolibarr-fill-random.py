@@ -48,31 +48,21 @@ def generate_user(dateCreate):
 def generate_bank(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "bankaccounts"
-    gender = random.choice(['man', 'woman', 'other'])
     lastname = fake.last_name()
-    if gender == 'man':
-        firstname = fake.first_name_male()
-    elif gender == 'woman':
-        firstname = fake.first_name_female()
-    else:
-        firstname = fake.first_name()
-    login = firstname[0:1]+ '.'+ lastname
     data = {
         "country_id": 1,
         "ref" : lastname,
         "label": fake.phone_number(),
-        "date_solde" : firstname,
+        "date_solde" : dateCreate.strftime('%Y-%m-%d'),
         'iban_prefix' : fake.iban(),
         "address": fake.address(),
         
     }
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
-        print("Erreur lors de la création de la bankf", r.status_code)
+        print("Erreur lors de la création de la bank", r.status_code)
         print (r.text)
         return None
-    else:
-        idSoc= r.text
 
     return 1
 
@@ -335,10 +325,21 @@ def generate_invoices(datefacture):
         }
         r = requests.post(url, headers=headers, json=data)
 
-        url = urlBase + "invoices/" + str(invoiceID) + "/settopaid"
-        data = {
-        }
-        r = requests.post(url, headers=headers, json=data)
+        # et on réalise le paiement si on a une banque active
+        if len(retDataPayment) > 0 and len(retDataBank) > 0:
+            if len(retDataPayment) == 1:
+                PaymentTypeId = retDataPayment[0]['id']
+            else:
+                PaymentTypeId = retDataPayment[random.randint(0, len(retDataPayment)-1)]['id']
+
+            url = urlBase + "invoices/" + str(invoiceID) + "/payments"
+            data = {
+                "datepaye" : datefacture.strftime('%Y-%m-%d'),
+                "paymentid" : PaymentTypeId,
+                "closepaidinvoices" :  'yes',
+                "accountid" : get_random_bank(retDataBank)
+            }
+            r = requests.post(url, headers=headers, json=data)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -349,9 +350,10 @@ def generate_invoices(datefacture):
             r = requests.post(url, headers=headers, json=data)
 
 
+
     # ajout de contact interne ou externe
     if nbInvoice_contactInt > 0:
-        arrayTypeContactInterne = get_contact_types("facture", "internal")
+        arrayTypeContactInterne = fill_contact_types("facture", "internal")
         
         if len(arrayTypeContactInterne) >= 1:
             if len(arrayTypeContactInterne) == 1:
@@ -364,8 +366,8 @@ def generate_invoices(datefacture):
             r = requests.post(url, headers=headers, json=data)
 
     if nbInvoice_contactExt > 0:
-        arrayTypeContactExterne = get_contact_types("facture", "external")
-        arrayuser = get_random_socpeople(socId)
+        arrayTypeContactExterne = fill_contact_types("facture", "external")
+        arrayuser = fill_socpeople(socId)
         if len(arrayuser) > 0:
             if len(arrayuser) == 1:
                 userID = arrayuser[0]['id']
@@ -509,7 +511,7 @@ def generate_orders(dateorder):
 
     # ajout de contact interne ou externe
     if nbOrder_contactInt > 0:
-        arrayTypeContactInterne = get_contact_types("commande", "internal")
+        arrayTypeContactInterne = fill_contact_types("commande", "internal")
         
         if len(arrayTypeContactInterne) >= 1:
             if len(arrayTypeContactInterne) == 1:
@@ -522,8 +524,8 @@ def generate_orders(dateorder):
             r = requests.post(url, headers=headers, json=data)
 
     if nbOrder_contactExt > 0:
-        arrayTypeContactExterne = get_contact_types("commande", "external")
-        arrayuser = get_random_socpeople(socId)
+        arrayTypeContactExterne = fill_contact_types("commande", "external")
+        arrayuser = fill_socpeople(socId)
         if len(arrayuser) > 0:
             if len(arrayuser) == 1:
                 userID = arrayuser[0]['id']
@@ -595,7 +597,7 @@ def generate_proposals(dateproposal):
 
     # ajout de contact interne ou externe
     if nbProposal_contactInt > 0:
-        arrayTypeContactInterne = get_contact_types("propal", "internal")
+        arrayTypeContactInterne = fill_contact_types("propal", "internal")
         
         if len(arrayTypeContactInterne) >= 1:
             if len(arrayTypeContactInterne) == 1:
@@ -608,8 +610,8 @@ def generate_proposals(dateproposal):
             r = requests.post(url, headers=headers, json=data)
 
     if nbProposal_contactExt > 0:
-        arrayTypeContactExterne = get_contact_types("propal", "external")
-        arrayuser = get_random_socpeople(socID)
+        arrayTypeContactExterne = fill_contact_types("propal", "external")
+        arrayuser = fill_socpeople(socID)
         if len(arrayuser) > 0:
             if len(arrayuser) == 1:
                 userID = arrayuser[0]['id']
@@ -630,12 +632,10 @@ def generate_interventionals(dateintervention):
     socid= get_random_client(retDataThirdParties)
     fk_contract = 0
     if random.randint(0, 1) == 1:
-        contracts = fill_random_contracts(socid)
-        fk_contract = get_random_contract(contracts)
-
+        fk_contract = get_random_contract(retDataContract)
 
     data = {
-        "socid": get_random_client(retDataThirdParties),
+        "socid": socid,
         "fk_project": 0,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
@@ -956,10 +956,10 @@ if newCategory > 0:
     for i in range(random.randint(0, newCategory)):
         generate_categories("ticket")
 
-retDataCategProduct = fill_random_categories("product")
-retDataCategCustomer = fill_random_categories("customer")
-retDataCategContact = fill_random_categories("contact")
-retDataCategTicket = fill_random_categories("ticket")
+retDataCategProduct = fill_categories("product")
+retDataCategCustomer = fill_categories("customer")
+retDataCategContact = fill_categories("contact")
+retDataCategTicket = fill_categories("ticket")
 
 if nbNewWarehouse > 0:
     listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
@@ -967,15 +967,18 @@ if nbNewWarehouse > 0:
         warehouse = generate_warehouse(dateCreate)
 
 # on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
-retDataWarehouse = fill_random_warehouses()
+retDataWarehouse = fill_warehouses()
 
 if nbNewUser > 0:
     listUserGen = gen_randow_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
     for dateCreate in listUserGen:
         product = generate_user(dateCreate)
 
-retDataUser = fill_random_users()
-# on récupère les produits et les tiers existants pour les utiliser dans les éléments
+retDataUser = fill_users()
+retDataProduct = fill_products()
+retDataThirdParties = fill_thirdparties()
+retDataBank = fill_banks()
+retDataPayment = fill_payement_types()
 
 
 if nbNewProduct > 0:
@@ -987,10 +990,6 @@ if nbNewClient > 0:
     listClientGen = gen_randow_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
-
-retDataProduct = fill_random_products()
-retDataThirdParties = fill_random_thirdparties()
-retDataBank = fill_random_banks()
 
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
@@ -1011,6 +1010,8 @@ if nbNewContract > 0:
     listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
         contract = generate_contracts(dateContract)
+
+retDataContract = fill_contracts()
 
 if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)

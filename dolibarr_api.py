@@ -11,7 +11,7 @@ import pathlib											# utilisation de la bibliothèque pathlib
 myFolderpath= pathlib.Path(__file__).parent.resolve()	# on récupère le chemin du programme
 os.chdir(myFolderpath)									# on se positionne dans le bon dossier
 
-
+import yaml
 def load_config(path='param.yml'):
     with open(path, 'r') as file:
         config = yaml.safe_load(file)
@@ -73,10 +73,14 @@ headers = {
 	'Accept': 'application/json'
 }
 
+# Regles de nommage des fonctions
+# fill_ = on récupère les données de l'api et on retourne un tableau
+# get_random = on retourne un élément aliéatoire d'un tableau
 
-def fill_random_users():
+
+def fill_users(limit=100):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
-	url = urlBase + "users?limit=100"
+	url = urlBase + "users?limit=" + str(limit)
 	rRandomUser = requests.get(url, headers=headers, verify=False)
 	if rRandomUser.status_code != 200:
 		print('Erreur lors de la récupération des utilisateurs', rRandomUser.status_code)
@@ -86,7 +90,7 @@ def fill_random_users():
 	retDataUser = rRandomUser.json()
 	return retDataUser
 
-def fill_random_banks():
+def fill_banks():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "bankaccounts?limit=100"
 	rRandomBank = requests.get(url, headers=headers, verify=False)
@@ -98,11 +102,18 @@ def fill_random_banks():
 	retDataBank = rRandomBank.json()
 	return retDataBank
 
+def get_random_bank(retDataBank):
+	if (len(retDataBank) > 1):
+		return retDataBank[random.randint(1, len(retDataBank)-1)]['id']
+	elif (len(retDataBank) == 1):
+		return retDataBank[0]['id']
+	return 0
+
 def get_random_user(retDataUser):
 	# on retourne les infos du produit
 	return retDataUser[random.randint(1, len(retDataUser)-1)]
 
-def get_contact_types(type, source):
+def fill_contact_types(type, source):
 	# type = propal, commande, facture, contrat, fichinter, expedition, ticket,  ...
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "setup/dictionary/contact_types?type=" + type
@@ -115,7 +126,18 @@ def get_contact_types(type, source):
 	retDataContactType = rRandomContactType.json()
 	return retDataContactType
 
-def get_random_socpeople(socID):
+def fill_payement_types():
+	url = urlBase + "setup/dictionary/paymentt_types"
+	rRandomPaymentType = requests.get(url, headers=headers, verify=False)
+	if rRandomPaymentType.status_code != 200:
+		print('Erreur lors de la récupération des payement types', rRandomPaymentType.status_code)
+		print (rRandomPaymentType.text)
+		exit()
+	retDataPayementType = rRandomPaymentType.json()
+	return retDataPayementType
+
+
+def fill_socpeople(socID):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contacts?limit=10&thirdparty_ids=" + str(socID)
 	rRandomSocPeople = requests.get(url, headers=headers, verify=False)
@@ -126,7 +148,7 @@ def get_random_socpeople(socID):
 	retDataSocPeople = rRandomSocPeople.json()
 	return retDataSocPeople
 
-def fill_random_categories(type) :
+def fill_categories(type) :
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "categories?limit=100&type=" + type 
 	rRandomCategory = requests.get(url, headers=headers, verify=False)
@@ -137,7 +159,7 @@ def fill_random_categories(type) :
 	retDataCategory = rRandomCategory.json()
 	return retDataCategory
 
-def fill_random_warehouses():
+def fill_warehouses():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "warehouses?limit=100"
 	rRandomWareHouse = requests.get(url, headers=headers, verify=False)
@@ -156,7 +178,7 @@ def get_random_warehouse(retDataWareHouse):
 	else:
 		return 0
 
-def fill_random_products():
+def fill_products():
 	url = urlBase + "products?limit=100"
 	rRandomProduct = requests.get(url, headers=headers, verify=False)
 	if rRandomProduct.status_code != 200:
@@ -177,7 +199,7 @@ def get_random_product(retDataProduct, type = -1):
 		if random_product['type'] == str(type) :
 			return random_product
 
-def fill_random_contracts(socid):
+def fill_contracts(socid):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contracts?limit=100&thirdparty_ids=" + str(socid)
 	url = url + "&sqlfilters=(statut:=:1)"
@@ -194,7 +216,7 @@ def get_random_contract(retDataContract):
 	else:
 		return 0
 
-def fill_random_thirdparties():
+def fill_thirdparties():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "thirdparties?limit=100"
 	rRandomClient = requests.get(url, headers=headers, verify=False)
@@ -222,10 +244,10 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
     return dates
 
 if __name__ == "__main__":
-	retDataUser = fill_random_users()
-	retDataProduct = fill_random_products()
-	retDataCLient = fill_random_thirdparties()
-	retDataWareHouse = fill_random_warehouses()
+	retDataUser = fill_users()
+	retDataProduct = fill_products()
+	retDataCLient = fill_thirdparties()
+	retDataWareHouse = fill_warehouses()
 	for _ in range(2):
 		print(get_random_product(retDataProduct))
 		print(get_random_client(retDataCLient))
