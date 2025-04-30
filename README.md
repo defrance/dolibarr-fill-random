@@ -73,11 +73,11 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - produit
     - tiers
     - contact
+
 - Ajout de contact Externe/interne
     - présent que sur devis, commande et facture
 
-    https://github.com/Dolibarr/dolibarr/pull/34010
-    
+
 # Installation préalable
 Le programme utilise faker pour générer des données aléatoire
 Il utilise aussi yaml pour le fichier de paramétrage
@@ -108,3 +108,6 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
 
     - Ajout de contact Externe/interne (récup du type de contact)
     https://github.com/Dolibarr/dolibarr/pull/34010
+
+    - référencement et activation à distance de module
+    https://github.com/Dolibarr/dolibarr/pull/34037

@@ -127,7 +127,7 @@ def fill_contact_types(type, source):
 	return retDataContactType
 
 def fill_payement_types():
-	url = urlBase + "setup/dictionary/paymentt_types"
+	url = urlBase + "setup/dictionary/payment_types"
 	rRandomPaymentType = requests.get(url, headers=headers, verify=False)
 	if rRandomPaymentType.status_code != 200:
 		print('Erreur lors de la récupération des payement types', rRandomPaymentType.status_code)

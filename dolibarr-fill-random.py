@@ -630,6 +630,7 @@ def generate_interventionals(dateintervention):
     url = urlBase + "interventions"
 
     socid= get_random_client(retDataThirdParties)
+    retDataContract = fill_contracts(socid)
     fk_contract = 0
     if random.randint(0, 1) == 1:
         fk_contract = get_random_contract(retDataContract)
@@ -1010,8 +1011,6 @@ if nbNewContract > 0:
     listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
         contract = generate_contracts(dateContract)
-
-retDataContract = fill_contracts()
 
 if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
