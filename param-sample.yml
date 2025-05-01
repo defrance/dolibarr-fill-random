@@ -36,12 +36,12 @@ categories:
 
 # seulement implémenté pour les devis, commandes et factures
 contacts:
-  proposal_interne : 0
-  proposal_externe : 0
-  order_interne : 0
-  order_externe : 0
-  invoice_interne : 0
-  invoice_externe : 0
+  proposal_interne : 1
+  proposal_externe : 1
+  order_interne : 1
+  order_externe : 1
+  invoice_interne : 1
+  invoice_externe : 1
   
 project:
   new_project : 0
@@ -53,5 +53,4 @@ others:
   date_interval : 3
   nb_country : 1
   nb_shipping : 1 # active les expéditions
-  fill_contact_externe : 1
-  fill_contact_interne : 2
+7

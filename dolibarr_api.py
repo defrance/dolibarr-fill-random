@@ -31,6 +31,7 @@ nbNewClient=config['elements']['new_client']
 nbNewProduct=config['elements']['new_product']
 nbNewWarehouse=config['elements']['new_warehouse']
 nbNewStockMovement=config['elements']['new_stock_movement']
+nbNewBank=config['elements']['new_bank']
 # puis le reste des données basée sur les clients et produits
 nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']
@@ -164,7 +165,7 @@ def fill_warehouses():
 	url = urlBase + "warehouses?limit=100"
 	rRandomWareHouse = requests.get(url, headers=headers, verify=False)
 	if rRandomWareHouse.status_code != 200:
-		print('Erreur lors de la récupération du produit', rRandomWareHouse.status_code)
+		print('Erreur lors de la récupération entrpot', rRandomWareHouse.status_code)
 		print (rRandomWareHouse.text)
 		exit()
 
@@ -221,12 +222,12 @@ def fill_thirdparties():
 	url = urlBase + "thirdparties?limit=100"
 	rRandomClient = requests.get(url, headers=headers, verify=False)
 	if rRandomClient.status_code != 200:
-		print('Erreur lors de la récupération du produit', rRandomClient.status_code)
-	retDataCLient = rRandomClient.json()
-	return retDataCLient
+		print('Erreur lors de la récupération du tiers', rRandomClient.status_code)
+	retDataThirdParties = rRandomClient.json()
+	return retDataThirdParties
 
-def get_random_client(retDataCLient):
-	return retDataCLient[random.randint(1, len(retDataCLient)-1)]['id']
+def get_random_client(retDataThirdParties):
+	return retDataThirdParties[random.randint(1, len(retDataThirdParties)-1)]['id']
 
 def gen_randow_following_date(annee, nombre, max_interval=3):
     # Date de départ fixée au 1er janvier de l'année en cours
@@ -246,9 +247,9 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
 if __name__ == "__main__":
 	retDataUser = fill_users()
 	retDataProduct = fill_products()
-	retDataCLient = fill_thirdparties()
+	retDataThirdParties = fill_thirdparties()
 	retDataWareHouse = fill_warehouses()
 	for _ in range(2):
 		print(get_random_product(retDataProduct))
-		print(get_random_client(retDataCLient))
+		print(get_random_client(retDataThirdParties))
 		print(get_random_user(retDataUser))

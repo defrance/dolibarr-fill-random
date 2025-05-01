@@ -52,8 +52,10 @@ def generate_bank(dateCreate):
     data = {
         "country_id": 1,
         "ref" : lastname,
-        "label": fake.phone_number(),
+        "type" : random.choice([0, 2]), # 0 = banque, 1 = caisse
+        "label": fake.company(),
         "date_solde" : dateCreate.strftime('%Y-%m-%d'),
+        "currency_code" : "EUR",
         'iban_prefix' : fake.iban(),
         "address": fake.address(),
         
@@ -228,23 +230,23 @@ def generate_product(dateCreate):
 
     # sur les produits on rajoute des mouvements de stock
     if typeProduct == 0:
-        initWarehouse = get_random_warehouse(retDataWarehouse)
-        # ajout de mouvement de stock initial
-        urlProduct = urlBase + "stockmovements" 
-        data = {
-            "product_id" : productId,
-            "warehouse_id" : initWarehouse,
-            "qty" : random.randint(50, 100) ,
-            "type" : 0, # au début on ajoute du stock
-            "datem" : dateCreate.strftime('%Y-%m-%d'),
-            "movementcode": "INIT-" + productId,
-            "movementlabel": "Initial stock",
-            "price" : buying_price,
-        }
-        r = requests.post(urlProduct, headers=headers, json=data)
-
         # si on a plusieurs entrepots, on ventile le stock sur un autre entrepot
-        if len(retDataProduct) > 0:
+        if len(retDataWarehouse) > 0:
+            initWarehouse = get_random_warehouse(retDataWarehouse)
+            # ajout de mouvement de stock initial
+            urlProduct = urlBase + "stockmovements" 
+            data = {
+                "product_id" : productId,
+                "warehouse_id" : initWarehouse,
+                "qty" : random.randint(50, 100) ,
+                "type" : 0, # au début on ajoute du stock
+                "datem" : dateCreate.strftime('%Y-%m-%d'),
+                "movementcode": "INIT-" + productId,
+                "movementlabel": "Initial stock",
+                "price" : buying_price,
+            }
+            r = requests.post(urlProduct, headers=headers, json=data)
+
             # on ventile une partie du stock sur un autre entrepot
             qtyMoved = random.randint(10, 50) ,
             data = {
@@ -976,11 +978,20 @@ if nbNewUser > 0:
         product = generate_user(dateCreate)
 
 retDataUser = fill_users()
-retDataProduct = fill_products()
-retDataThirdParties = fill_thirdparties()
+
+if nbNewBank > 0:
+    listBankGen = gen_randow_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
+    for dateCreate in listBankGen:
+        bank = generate_bank(dateCreate)
+
 retDataBank = fill_banks()
 retDataPayment = fill_payement_types()
 
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_time
+print("Alimentation Initiale : ", duration)
+start_prev = datetime.now()
 
 if nbNewProduct > 0:
     listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
@@ -992,20 +1003,47 @@ if nbNewClient > 0:
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
 
+retDataProduct = fill_products()
+retDataThirdParties = fill_thirdparties()
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Tiers et produits : ", duration)
+start_prev = datetime.now()
+
 if nbNewBill > 0:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
         facture = generate_invoices(dateFact)
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Factures / Règlement: ", duration)
+start_prev = datetime.now()
 
 if nbNewOrder > 0:
     listOrderGen = gen_randow_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
     for dateOrder in listOrderGen:
         commande = generate_orders(dateOrder)
 
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Commande / Expédition : ", duration)
+start_prev = datetime.now()
+
 if nbNewProposal > 0:
     listProposalGen = gen_randow_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
         propal = generate_proposals(dateProposal)
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Devis : ", duration)
+start_prev = datetime.now()
 
 if nbNewContract > 0:
     listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
@@ -1016,6 +1054,12 @@ if nbNewFichinter > 0:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
         fichinter = generate_interventionals(dateInter)
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Contrat/ intervention : ", duration)
+start_prev = datetime.now()
 
 if nbNewTicket > 0:
     listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
