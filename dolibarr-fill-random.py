@@ -52,8 +52,9 @@ def generate_bank(dateCreate):
     data = {
         "country_id": 1,
         "ref" : lastname,
-        "type" : random.choice([0, 2]), # 0 = banque, 1 = caisse
+        "type" : random.choice([1, 2]), # 0 = epargne, 1, 2 = caisse classique
         "label": fake.company(),
+        "rappro" : 0, # pas besoin de rapprocher
         "date_solde" : dateCreate.strftime('%Y-%m-%d'),
         "currency_code" : "EUR",
         'iban_prefix' : fake.iban(),
@@ -908,23 +909,6 @@ def generate_contracts(datecontract):
             r = requests.put(url, headers=headers, json=data)
 
     return 1
-
-# type possible :
-# 'product'      => 0,
-# 'supplier'     => 1,
-# 'customer'     => 2,
-# 'member'       => 3,
-# 'contact'      => 4,
-# 'bank_account' => 5,
-# 'project'      => 6,
-# 'user'         => 7,
-# 'bank_line'    => 8,
-# 'warehouse'    => 9,
-# 'actioncomm'   => 10,
-# 'website_page' => 11,
-# 'ticket'       => 12,
-# 'knowledgemanagement' => 13,
-# 'fichinter' => 14,  ON dolibarr 22 only
 
 def generate_categories(type):
     # on boucle sur les lignes
