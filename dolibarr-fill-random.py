@@ -123,7 +123,7 @@ def generate_customer(dateCreate):
         if newCategorySocpeople > 0:
             for i in range(random.randint(0, newCategorySocpeople)):
                 # on rajoute une catégorie aléatoire
-                url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/contact/" + str(idContact)
+                url = urlBase + "categories/" + str(random.choice(retDataCategContact)['id']) + "/objects/contact/" + str(idContact)
                 data = { }
                 r = requests.post(url, headers=headers, json=data)
 
@@ -132,7 +132,7 @@ def generate_customer(dateCreate):
         for i in range(random.randint(0, newCategoryCustomer)):
             # on rajoute une catégorie aléatoire
             #categories/5/objects/product/100
-            url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/customer/" + str(idSoc)
+            url = urlBase + "categories/" + str(random.choice(retDataCategCustomer)['id']) + "/objects/customer/" + str(idSoc)
             data = { }
             r = requests.post(url, headers=headers, json=data)
 
