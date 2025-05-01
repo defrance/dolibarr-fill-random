@@ -934,13 +934,13 @@ print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
 
 # creation des catégories
 if newCategory > 0:
-    for i in range(random.randint(0, newCategory)):
+    for i in range(random.randint(1, newCategory)):
         generate_categories("product")
-    for i in range(random.randint(0, newCategory)):
+    for i in range(random.randint(1, newCategory)):
         generate_categories("customer")
-    for i in range(random.randint(0, newCategory)):
+    for i in range(random.randint(1, newCategory)):
         generate_categories("contact")
-    for i in range(random.randint(0, newCategory)):
+    for i in range(random.randint(1, newCategory)):
         generate_categories("ticket")
 
 retDataCategProduct = fill_categories("product")
