@@ -13,6 +13,12 @@ fake = Faker('fr_FR')
 # récupération de l'année enccours
 yearNow = datetime.now().year
 
+def get_random_address():
+    fulladdress = fake.address()
+    arrayaddress = fulladdress.split("\n")
+    arraycpville = arrayaddress[1].split(" ")
+    return arrayaddress[0], arraycpville[0], arraycpville[1]
+
 def generate_user(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "users"
@@ -25,13 +31,16 @@ def generate_user(dateCreate):
     else:
         firstname = fake.first_name()
     login = firstname[0:1]+ '.'+ lastname
+
+    address, zip, town = get_random_address()
     data = {
         "login": login,
         "lastname" : lastname,
         "firstname" : firstname,
         'gender' : gender,
-        "address": fake.address(),
-        "town": fake.city(),
+        "address": address,
+        "zip": zip,
+        "town": town,
         "phone": fake.phone_number(),
     }
 
@@ -73,11 +82,14 @@ def generate_customer(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
+
+    address, zip, town = get_random_address()
+
     data = {
         "name": fake.company(),
-        "address": fake.address(),
-        # "zip": df['zip'][index],
-        "town": fake.city(),
+        "address": address,
+        "zip": zip,
+        "town": town,
         "phone": fake.phone_number(),
         # "contact name": df['contact name'][index],
         # "emailcontact": df['emailcontact'][index],
@@ -109,11 +121,15 @@ def generate_customer(dateCreate):
     url = urlBase + "contacts/"
     for i in range(random.randint(0, 3)):
         # on rajoute des contacts externes
+        address, zip, town = get_random_address()
+
         data = {
             "lastname" : fake.last_name(),
             "firstname" : fake.first_name(),
             "socid" : idSoc,
-            "address": fake.address(),
+            "address": address,
+            "zip": zip,
+            "town": town,
             "phone": fake.phone_number(),
 
             "country_id": 1,
@@ -142,11 +158,12 @@ def generate_customer(dateCreate):
 def generate_warehouse(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "warehouses"
+    address, zip, town = get_random_address()
     data = {
         "label": fake.company(),
-        "address": fake.address(),
-        # "zip": df['zip'][index],
-        "town": fake.city(),
+        "address": address,
+        "zip": zip,
+        "town": town,
         "phone": fake.phone_number(),
         "statut": 1, # actif
         # "contact name": df['contact name'][index],
