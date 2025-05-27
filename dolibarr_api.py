@@ -219,7 +219,7 @@ def get_random_contract(retDataContract):
 
 def fill_thirdparties():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
-	url = urlBase + "thirdparties?limit=100"
+	url = urlBase + "thirdparties?limit=100&mode=1"
 	rRandomClient = requests.get(url, headers=headers, verify=False)
 	if rRandomClient.status_code != 200:
 		print('Erreur lors de la récupération du tiers', rRandomClient.status_code)

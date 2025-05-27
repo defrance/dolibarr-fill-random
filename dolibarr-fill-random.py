@@ -175,7 +175,7 @@ def generate_warehouse(dateCreate):
     }
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
-        print('Erreur lors de la création du tiers', r.status_code)
+        print("Erreur lors de la création de l'entrepot", r.status_code)
         print (r.text)
         return None
 
@@ -651,11 +651,10 @@ def generate_proposals(dateproposal):
 def generate_interventionals(dateintervention):
     url = urlBase + "interventions"
 
+	# on récupère les contrats associés au client si il y en a
     socid= get_random_client(retDataThirdParties)
     retDataContract = fill_contracts(socid)
-    fk_contract = 0
-    if random.randint(0, 1) == 1:
-        fk_contract = get_random_contract(retDataContract)
+    fk_contract = get_random_contract(retDataContract)
 
     data = {
         "socid": socid,
@@ -729,11 +728,16 @@ def generate_interventionals(dateintervention):
 def generate_ticket(dateticket):
     # la date doit etre un timestamp
     dateticketTs  =dateticket.timestamp()
-        
     url = urlBase + "tickets"
+    # on récupère les contrats associés au client si il y en a
+    socid= get_random_client(retDataThirdParties)
+    retDataContract = fill_contracts(socid)
+    fk_contract = get_random_contract(retDataContract)
+
     data = {
-        "fk_soc": get_random_client(retDataThirdParties),
+        "fk_soc": socid,
         'subject': fake.catch_phrase(),
+        "fk_contract": fk_contract,
         "message": fake.catch_phrase(),
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
@@ -972,8 +976,8 @@ if nbNewWarehouse > 0:
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
 
-# on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
-retDataWarehouse = fill_warehouses()
+    # on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
+    retDataWarehouse = fill_warehouses()
 
 if nbNewUser > 0:
     listUserGen = gen_randow_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
