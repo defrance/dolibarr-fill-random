@@ -11,18 +11,18 @@ connection-test2:
 # puis le reste des données basée sur les clients et produits
 elements:
   new_user : 10
-  new_client : 420
+  new_client : 460
   new_product : 200
   new_warehouse : 3
   new_stock_movement : 3
   new_bank : 2
-  new_bill : 420
-  new_order : 420
-  new_proposal : 420
-  new_contract : 420
-  new_fichinter : 420
-  new_ticket : 420
-  new_knowledge : 420
+  new_bill :  460
+  new_order : 460
+  new_proposal : 460
+  new_contract : 460
+  new_fichinter : 460
+  new_ticket : 460
+  new_knowledge : 460
   
 categories:
   new_category : 0
@@ -42,7 +42,13 @@ contacts:
   order_externe : 1
   invoice_interne : 1
   invoice_externe : 1
-  
+
+supplier:
+  create_supplier : 1 # active la création de fournisseurs
+  nb_supplier_product_price : 3 # active la création de prix fournisseurs
+  new_bill : 420
+  new_order : 420
+
 project:
   new_project : 0
   new_task : 0
@@ -51,7 +57,5 @@ project:
 others:
   year_to_fill : 2023
   date_interval : 3
-  create_supplier : 1 # active la création de fournisseurs
-  nb_country : 1
+  nb_country : 3
   nb_shipping : 1 # active les expéditions
-7

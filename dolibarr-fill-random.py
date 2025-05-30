@@ -582,7 +582,6 @@ def generate_proposals(dateproposal):
     # on ajoute les lignes attention, pour les propal, il faut utiliser line et pas lines
     urlLine = urlBase + "proposals/" + str(proposalID) + "/line"
     for i in range(random.randint(1, 10)):
-
         # la quantité se trouve en fin de ligne entre parenthèse
         qty = random.randint(1, 10)
         # si il y a un tiret on récupère le produit avant
@@ -591,12 +590,33 @@ def generate_proposals(dateproposal):
         # ajoute la ligne de facture
         data = {
             "fk_product": productRandom['id'],
+            "label": productRandom['label'],
+            "desc": productRandom['description'],
             "qty": qty,
+            "localtax1_tx": "",
+            "localtax2_tx": "",
+            "remise_percent" : 0,
+            'info_bits' : 0, 
+            "fk_remise_except" : 0, 
+            "product_type" : productRandom['type'],
+            "rang": 0, 
+            "special_code": 0, 
+            "fk_parent_line": 0,
+            'fk_fournprice' : 0,
+            'pa_ht' : 0,
+            "origin": 0, 
+            "origin_id" : "",
+            "date_start" : "",
+            "date_end" : "",
+            'multicurrency_subprice' : 0,
             "subprice": productRandom['price'],
             "tva_tx": productRandom['tva_tx'],
             'price_base_type': 'HT',
+            'array_options' : [],
+            'fk_unit' : 0,
         }
         r = requests.post(urlLine, headers=headers, json=data)
+
 
     # si la date est inférieur à l'année en cours
     if date_finvalidite.year < yearNow:
@@ -1036,7 +1056,7 @@ if nbNewBill > 0:
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Factures / Règlement: ", duration)
+print("Alimentation Factures et Règlement: ", duration)
 start_prev = datetime.now()
 
 if nbNewOrder > 0:
@@ -1047,7 +1067,7 @@ if nbNewOrder > 0:
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Commande / Expédition : ", duration)
+print("Alimentation Commande et Expédition : ", duration)
 start_prev = datetime.now()
 
 if nbNewProposal > 0:
@@ -1074,7 +1094,7 @@ if nbNewFichinter > 0:
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Contrat/ intervention : ", duration)
+print("Alimentation Contrat et intervention : ", duration)
 start_prev = datetime.now()
 
 if nbNewTicket > 0:
@@ -1089,6 +1109,9 @@ if nbNewKnowledge > 0:
 
 
 start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Alimentation Tickets et articles : ", duration)
+
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 
 # on affiche la durée

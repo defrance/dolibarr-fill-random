@@ -57,7 +57,13 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
-createSupplier = config['others']['create_supplier']
+
+# fournisseurs
+createSupplier = config['supplier']['create_supplier']
+nb_supplier_product_price = config['supplier']['nb_supplier_product_price']
+new_supplier_order = config['supplier']['new_order']
+new_supplier_bill = config['supplier']['new_bill']
+
 
 # chargement des contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
