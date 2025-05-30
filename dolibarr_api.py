@@ -57,6 +57,7 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
+createSupplier = config['others']['create_supplier']
 
 # chargement des contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
@@ -217,9 +218,14 @@ def get_random_contract(retDataContract):
 	else:
 		return 0
 
-def fill_thirdparties():
+def fill_thirdparties(Type='all'):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
-	url = urlBase + "thirdparties?limit=100&mode=1"
+	if Type == 'all':
+		url = urlBase + "thirdparties?limit=100"
+	elif Type == 'customer':
+		url = urlBase + "thirdparties?limit=100&mode=1"
+	elif Type == 'supplier':
+		url = urlBase + "thirdparties?limit=100&mode=4"
 	rRandomClient = requests.get(url, headers=headers, verify=False)
 	if rRandomClient.status_code != 200:
 		print('Erreur lors de la récupération du tiers', rRandomClient.status_code)

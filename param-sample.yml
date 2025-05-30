@@ -51,6 +51,7 @@ project:
 others:
   year_to_fill : 2023
   date_interval : 3
+  create_supplier : 1 # active la création de fournisseurs
   nb_country : 1
   nb_shipping : 1 # active les expéditions
 7

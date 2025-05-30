@@ -82,6 +82,9 @@ def generate_customer(dateCreate):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
+    typeFourn = 0
+    if createSupplier == 1:
+        typeFourn = random.choice([0, 1])
 
     address, zip, town = get_random_address()
 
@@ -95,6 +98,7 @@ def generate_customer(dateCreate):
         # "contact name": df['contact name'][index],
         # "emailcontact": df['emailcontact'][index],
         "client": typeTiers,
+        "fournisseur": typeFourn,
         "country_id": random.randint(1, nbCountry),
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
         # "useraffected": df['useraffected'][index],
@@ -1000,18 +1004,23 @@ duration = start_stop - start_time
 print("Alimentation Initiale : ", duration)
 start_prev = datetime.now()
 
-if nbNewProduct > 0:
-    listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
-    for dateCreate in listProductGen:
-        product = generate_product(dateCreate)
-
+# on cree les clients avant les produits pour associer les prix fournisseurs si besoin
 if nbNewClient > 0:
     listClientGen = gen_randow_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
         client = generate_customer(dateCreate)
 
+if nbNewProduct > 0:
+    listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
+    for dateCreate in listProductGen:
+        product = generate_product(dateCreate)
+
+
 retDataProduct = fill_products()
-retDataThirdParties = fill_thirdparties()
+retDataThirdParties = fill_thirdparties("customer")
+if createSupplier == 1:
+    retDataFournisseur = fill_thirdparties("supplier")
+
 
 start_stop = datetime.now()
 # on affiche la durée

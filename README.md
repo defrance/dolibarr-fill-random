@@ -20,8 +20,9 @@ compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
     - Création des utilisateurs
 
 - Tiers
-    - possibilité de gérer plusieurs pays (ou on reste en france)
+    - possibilité de gérer plusieurs pays (sinon on reste en france)
     - gestion des commerciaux affectés
+    - création des fournisseurs si activé
 
 - Contact 
     - Création aléatoire associé a un tiers 
