@@ -1,7 +1,7 @@
 # dolibarr-fill-random
 Programme python créant de la data dans dolibarr via les api natives, le but étant d'avoir un jeu d'essai consistant pour réaliser des tests
 
-En terme de performance, le programme met environ 30 minutes sur un macbook air M1 pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
+En terme de performance, le programme met environ 1 heure sur un macbook air M1 (et la moitié sur un M4 ^^) pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
 
 ## paramétrage 
 le fichier param.yml contient le paramétrage du programme avec 3 parties :
@@ -12,7 +12,7 @@ le fichier param.yml contient le paramétrage du programme avec 3 parties :
   - date_interval : l'interval maximum entre deux dates
 
 date_interval va conditionner le nombre moyen d'elements à créer mensuellement, avec 3 on a une quinzaine d'éléments par mois.
-compter 180 element pour 1 ans de données, 420 sur 2 ans et demi...
+compter 180 element pour 1 ans de données, 450 sur 2 ans et demi...
 
 ## Elements créable par l'application
 
@@ -110,5 +110,5 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     - Ajout de contact Externe/interne (récup du type de contact)
     https://github.com/Dolibarr/dolibarr/pull/34010
 
-    - référencement et activation à distance de module
+    - référencement et activation à distance de module (pas nécessaire pour le moment)
     https://github.com/Dolibarr/dolibarr/pull/34037
