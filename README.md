@@ -112,6 +112,6 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
 
     - référencement et activation à distance de module (pas nécessaire pour le moment)
     https://github.com/Dolibarr/dolibarr/pull/34037
-
-   - Ajout de la création des groupe d'utilisateurs
-   https://github.com/Dolibarr/dolibarr/pull/34398
+    
+    - Ajout de la création des groupe d'utilisateurs
+    https://github.com/Dolibarr/dolibarr/pull/34398
