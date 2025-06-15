@@ -144,7 +144,6 @@ def fill_payement_types():
 	retDataPayementType = rRandomPaymentType.json()
 	return retDataPayementType
 
-
 def fill_socpeople(socID):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contacts?limit=10&thirdparty_ids=" + str(socID)
@@ -255,6 +254,18 @@ def gen_randow_following_date(annee, nombre, max_interval=3):
         dates.append(nouvelle_date)
 
     return dates
+
+def get_enabled_modules():
+	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
+	url = urlBase + "setup/modules"
+	rEnabledModules = requests.get(url, headers=headers, verify=False)
+	if rEnabledModules.status_code != 200:
+		print('Erreur lors de la récupération des modules', rEnabledModules.status_code)
+		print (rEnabledModules.text)
+		exit()
+
+	retDataEnabledModules = rEnabledModules.json()
+	return retDataEnabledModules
 
 if __name__ == "__main__":
 	retDataUser = fill_users()

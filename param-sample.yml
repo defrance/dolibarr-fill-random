@@ -1,10 +1,10 @@
 connection:
-  urlbase: http://127.0.0.1/dolibarr-21.0.1/htdocs/api/index.php/
+  urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
   apitoken: 570e9KHTzbTi2M1WgI49fMSYniBuup24
   dol_version: 22
 
 connection-test2:
-  urlbase: http://127.0.0.1/dolibarr-21.0.0/htdocs/api/index.php/
+  urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
   apitoken: cRduhj3B0b15diN04MN95rOvnC9ZV3yO
   dol_version: 22
 

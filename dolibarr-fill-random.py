@@ -143,7 +143,7 @@ def generate_customer(dateCreate):
         r = requests.post(url, headers=headers, json=data)
         idContact = r.text 
         # gestion des catégories de contact
-        if newCategorySocpeople > 0:
+        if newCategorySocpeople > 0 and 'categorie' in enabledModule:
             for i in range(random.randint(0, newCategorySocpeople)):
                 # on rajoute une catégorie aléatoire
                 url = urlBase + "categories/" + str(random.choice(retDataCategContact)['id']) + "/objects/contact/" + str(idContact)
@@ -151,7 +151,7 @@ def generate_customer(dateCreate):
                 r = requests.post(url, headers=headers, json=data)
 
     # gestion des catégories de tiers
-    if newCategoryCustomer > 0:
+    if newCategoryCustomer > 0 and 'categorie' in enabledModule:
         for i in range(random.randint(0, newCategoryCustomer)):
             # on rajoute une catégorie aléatoire
             #categories/5/objects/product/100
@@ -253,7 +253,7 @@ def generate_product(dateCreate):
         pass
 
     # sur les produits on rajoute des mouvements de stock
-    if typeProduct == 0:
+    if typeProduct == 0 and 'stock' in enabledModule:
         # si on a plusieurs entrepots, on ventile le stock sur un autre entrepot
         if len(retDataWarehouse) > 0:
             initWarehouse = get_random_warehouse(retDataWarehouse)
@@ -300,7 +300,7 @@ def generate_product(dateCreate):
 
 
     # gestion des catégories de produit
-    if newCategoryProduct > 0:
+    if newCategoryProduct > 0 and 'categorie' in enabledModule:
         for i in range(random.randint(0, newCategoryProduct)):
             # on rajoute une catégorie aléatoire
             #categories/5/objects/product/100
@@ -676,9 +676,11 @@ def generate_interventionals(dateintervention):
     url = urlBase + "interventions"
 
 	# on récupère les contrats associés au client si il y en a
-    socid= get_random_client(retDataThirdParties)
-    retDataContract = fill_contracts(socid)
-    fk_contract = get_random_contract(retDataContract)
+    socid = get_random_client(retDataThirdParties)
+    fk_contract = 0
+    if 'contrat' in enabledModule:
+        retDataContract = fill_contracts(socid)
+        fk_contract = get_random_contract(retDataContract)
 
     data = {
         "socid": socid,
@@ -913,9 +915,6 @@ def generate_contracts(datecontract):
             "fk_unit": 0,
             "rang": 0,
 
-
-
-
         }
         r = requests.post(urlLine, headers=headers, json=data)
         lineID = r.text
@@ -979,8 +978,14 @@ def generate_categories(type):
 start_time = datetime.now()
 print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
 
+# récupération des modules actifs coté Dolibarr
+enabledModule = get_enabled_modules()
+print ("Liste des modules activés dans Dolibarr")
+print (enabledModule)
+
+
 # creation des catégories
-if newCategory > 0:
+if newCategory > 0 and 'categorie' in enabledModule:
     for i in range(random.randint(1, newCategory)):
         generate_categories("product")
     for i in range(random.randint(1, newCategory)):
@@ -993,9 +998,10 @@ if newCategory > 0:
 retDataCategProduct = fill_categories("product")
 retDataCategCustomer = fill_categories("customer")
 retDataCategContact = fill_categories("contact")
-retDataCategTicket = fill_categories("ticket")
+if 'ticket' in enabledModule:
+    retDataCategTicket = fill_categories("ticket")
 
-if nbNewWarehouse > 0:
+if nbNewWarehouse > 0 and 'stock' in enabledModule:
     listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
@@ -1010,13 +1016,14 @@ if nbNewUser > 0:
 
 retDataUser = fill_users()
 
-if nbNewBank > 0:
+if nbNewBank > 0 and 'banque' in enabledModule:
     listBankGen = gen_randow_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
     for dateCreate in listBankGen:
         bank = generate_bank(dateCreate)
 
-retDataBank = fill_banks()
-retDataPayment = fill_payement_types()
+if 'banque' in enabledModule:
+    retDataBank = fill_banks()
+    retDataPayment = fill_payement_types()
 
 start_stop = datetime.now()
 # on affiche la durée
@@ -1038,17 +1045,17 @@ if nbNewProduct > 0:
 
 retDataProduct = fill_products()
 retDataThirdParties = fill_thirdparties("customer")
-if createSupplier == 1:
+if createSupplier == 1  and 'fournisseur' in enabledModule:
     retDataFournisseur = fill_thirdparties("supplier")
 
 
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Tiers et produits : ", duration)
+print("Durée Alimentation Tiers et produits : ", duration)
 start_prev = datetime.now()
 
-if nbNewBill > 0:
+if nbNewBill > 0 and 'facture' in enabledModule:
     listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
         facture = generate_invoices(dateFact)
@@ -1056,10 +1063,10 @@ if nbNewBill > 0:
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Factures et Règlement: ", duration)
+print("Durée Alimentation Factures et Règlement: ", duration)
 start_prev = datetime.now()
 
-if nbNewOrder > 0:
+if nbNewOrder > 0 and 'commande' in enabledModule:
     listOrderGen = gen_randow_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
     for dateOrder in listOrderGen:
         commande = generate_orders(dateOrder)
@@ -1070,7 +1077,7 @@ duration = start_stop - start_prev
 print("Alimentation Commande et Expédition : ", duration)
 start_prev = datetime.now()
 
-if nbNewProposal > 0:
+if nbNewProposal > 0 and 'propal' in enabledModule:
     listProposalGen = gen_randow_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
         propal = generate_proposals(dateProposal)
@@ -1081,12 +1088,12 @@ duration = start_stop - start_prev
 print("Alimentation Devis : ", duration)
 start_prev = datetime.now()
 
-if nbNewContract > 0:
+if nbNewContract > 0 and 'contrat' in enabledModule:
     listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
         contract = generate_contracts(dateContract)
 
-if nbNewFichinter > 0:
+if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
     listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
         fichinter = generate_interventionals(dateInter)
@@ -1094,15 +1101,15 @@ if nbNewFichinter > 0:
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Contrat et intervention : ", duration)
+print("Durée Alimentation Contrat et intervention : ", duration)
 start_prev = datetime.now()
 
-if nbNewTicket > 0:
+if nbNewTicket > 0  and 'ticket' in enabledModule:
     listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
         ticket = generate_ticket(dateTicket)
 
-if nbNewKnowledge > 0:
+if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
     listArticleGen = gen_randow_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
     for dateknowledge in listArticleGen:
         ticket = generate_knowledge(dateknowledge)
