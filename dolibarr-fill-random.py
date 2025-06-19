@@ -510,6 +510,7 @@ def generate_orders(dateorder):
             "date_shipping": dateExpedition.strftime('%Y-%m-%d'),
             "origin_id": orderID,
             "origin_type": 'commande',
+            "origin": 'commande',     # pour les versions antérieures à la 22
             "lines": productRandomList
         }
         r = requests.post(url, headers=headers, json=data)
