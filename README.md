@@ -14,6 +14,11 @@ le fichier param.yml contient le paramétrage du programme avec 3 parties :
 date_interval va conditionner le nombre moyen d'elements à créer mensuellement, avec 3 on a une quinzaine d'éléments par mois.
 compter 180 element pour 1 ans de données, 450 sur 2 ans et demi...
 
+## Paramétrage Dolibarr
+il faut activer les modules et donner à l'utilisateur associé aux token les les droits sur celui-ci
+Attention, l'utilisateur doit etre admin
+
+
 ## Elements créable par l'application
 
 - Utilisateurs
