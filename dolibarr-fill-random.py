@@ -516,7 +516,7 @@ def generate_orders(dateorder):
         r = requests.post(url, headers=headers, json=data)
         shippingId = r.text
         if dateorder.year < yearNow:
-            # pour les dates antiérieurs à l'année en cours, on valide la commande
+            # pour les dates antérieurs à l'année en cours, on valide la commande
             url = urlBase + "shipments/" + str(shippingId) + "/validate"
             data = {
                 "notrigger": 1,
