@@ -111,6 +111,8 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
 
     - date de création des expeditions ok 
     https://github.com/Dolibarr/dolibarr/pull/33995
+    - date de livraison mise à jour à la cloture au lieu de celle de l'éxpédition
+    https://github.com/Dolibarr/dolibarr
 
     - Ajout de contact Externe/interne (récup du type de contact)
     https://github.com/Dolibarr/dolibarr/pull/34010
