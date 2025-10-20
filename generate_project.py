@@ -33,9 +33,9 @@ def generate_projects(dateCreate):
         "date_start": dateStart,
         "date_end": dateEnd,
         "date_close": dateClose if status == 2 else None,
-        "date_c": dateCreation, # fonctionne pas 
+        #"datec": dateCreation, # fonctionne pas 
         "status": status,
-        "fk_soc": 13 # en cours
+        #"socid":
     }
 
     
@@ -46,12 +46,30 @@ def generate_projects(dateCreate):
         return None
     else:
         print("Création du projet : ", data)
-        print (r)
+        print (r.text)
+
     return 1
 
 
+def generate_tasks():
+    url = urlBase + "tasks"
+    ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    data = {
+        "ref":str(ref),
+        "label": fake.sentence(nb_words=4),
+        "fk_project": 24 # A modifier pour randomiser a partir des projets existants
+    }
 
-    
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de la tâche", r.status_code)
+        print (r.text)
+        return None
+    else:
+        print("Création de la tâche : ", data)
+        print (r.text)
+
+    return 1
 
 
 # on mémorise l'heure de début de l'alimentation
@@ -63,7 +81,8 @@ duration = start_stop - start_time
 print("Alimentation Initiale : ", duration)
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 
-nbNewProject = 2
+nbNewProject = 0
+nbNewTask = 5
 
 # Génération des projets
 
@@ -73,6 +92,11 @@ if nbNewProject > 0 : # and 'project' in enabledModule:
     for dateProject in listProjectGen:
         generate_projects(dateProject)
 
+
+if nbNewTask > 0 : # and 'project' in enabledModule:
+
+    for _ in range(nbNewTask):
+        generate_tasks()
 
 """
 
