@@ -974,6 +974,64 @@ def generate_categories(type):
 
     return 1
 
+def generate_projects(dateCreate):
+
+    dateStart = dateCreate.timestamp()
+    dateCreation = dateCreate.strftime('%Y-%m-%d') # fonctionne pas
+    dateEnd = dateStart + random.randint(5*24*3600, 30*24*3600)
+    url = urlBase + "projects"
+
+    # Référence produit alphanumérique
+    ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    
+    status = random.choice([0, 1, 2])  # 0=draft, 1=opened, 2=closed
+
+    if status == 2:
+        dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
+    data = {
+        "ref": str(ref),
+        #"fk_project": ,
+        #"description": ,
+        "title" : fake.sentence(nb_words=4),
+        "date_start": dateStart,
+        "date_end": dateEnd,
+        "date_close": dateClose if status == 2 else None,
+        #"datec": dateCreation, # fonctionne pas 
+        "status": status,
+        # users assigned to the project (en attente API)
+        
+    }
+    
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création du projet", r.status_code)
+        print (r.text)
+        return None
+    else:
+        print("Création du projet : ", data)
+        print (r.text)
+
+    return 1
+
+def generate_tasks():
+    url = urlBase + "tasks"
+    ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    data = {
+        "ref":str(ref),
+        "label": fake.sentence(nb_words=4),
+        "fk_project": 24 # A modifier pour randomiser a partir des projets existants créer get_random_project
+    }
+
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de la tâche", r.status_code)
+        print (r.text)
+        return None
+    else:
+        print("Création de la tâche : ", data)
+        print (r.text)
+
+    return 1
 
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()
@@ -1120,8 +1178,32 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Alimentation Tickets et articles : ", duration)
 
+# Alimentation des projets et tâches
+start_prev = datetime.now()
+    # Génération des projets
+nbNewProject = 2
+
+if nbNewProject > 0: #and 'project' in enabledModule:
+
+    listProjectGen = gen_randow_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
+    for dateProject in listProjectGen:
+        generate_projects(dateProject)
+
+    # Génération des tâches
+nbNewTask = 4
+
+if nbNewTask > 0: #and 'project' in enabledModule:
+
+    for _ in range(nbNewTask):
+        generate_tasks()
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Durée Alimentation Projet et tâches : ", duration)
+
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 
 # on affiche la durée
 duration = start_stop - start_time
 print("Durée de l'alimentation : ", duration)
+
