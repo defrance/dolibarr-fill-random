@@ -27,15 +27,15 @@ def generate_projects(dateCreate):
         dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
     data = {
         "ref": str(ref),
-        "title" : fake.sentence(nb_words=4),
-        "date_start": dateStart,
-        "date_creation": dateCreation, # fonctionne pas 
-        "date_end": dateEnd,
-        "status": status,
-        "date_close": dateClose if status == 2 else None
         #"fk_project": ,
         #"description": ,
-        
+        "title" : fake.sentence(nb_words=4),
+        "date_start": dateStart,
+        "date_end": dateEnd,
+        "date_close": dateClose if status == 2 else None,
+        "date_c": dateCreation, # fonctionne pas 
+        "status": status,
+        "fk_soc": 13 # en cours
     }
 
     
