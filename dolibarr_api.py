@@ -49,6 +49,7 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 
 # infos lies au projet
 nbNewProject=config['project']['new_project']
+nbNewOpportunity=config['project']['new_opportunity']
 nbNewTask=config['project']['new_task']
 nbNewTaskTime=config['project']['new_task_time']
 
