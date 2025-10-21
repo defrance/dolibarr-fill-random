@@ -998,18 +998,25 @@ def generate_projects(dateCreate):
     elif diffYears < 1:
         status = random.choice([0,1,2])  # opened ou closed
     
-
     # Référence produit alphanumérique
-    ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
-    if dateStart - datetime.now().timestamp() > 0:
-        status
-
-    
-    status = random.choice([0, 1, 2])  # 0=draft, 1=opened, 2=closed
+    ref = 'PJ' + dateCreate.strftime('%m%y') + '-' + str(random.randint(1, 9999)).zfill(4)
 
     if status == 2:
-        dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
+        # Choisir aléatoirement avant, pendant, ou après dateEnd
+        choice = random.choice(["before", "equal", "after"])
+        
+        if choice == "before":
+            # Entre 1 et 5 jours avant
+            dateClose = dateEnd - timedelta(days=random.randint(1, 5))
+        elif choice == "after":
+            # Entre 1 et 5 jours après
+            dateClose = dateEnd + timedelta(days=random.randint(1, 5))
+        else:
+            # Exactement égale
+            dateClose = dateEnd
+    else:
+        dateClose = None  # Pas encore clôturée si statut < 2
+    
     data = {
     #"fk_project": null,
     #"fk_soc": "5",
@@ -1031,8 +1038,8 @@ def generate_projects(dateCreate):
     #"fk_opp_status_end": null,
     "date_close":dateClose if status == 2 else None,
     #"fk_user_close": null,
-    #"note_private": null,
-    #"note_public": null,
+    "note_private": fake.text(max_nb_chars=200),
+    "note_public": fake.text(max_nb_chars=200),
     #"email_msgid": null,
     #"email_date": null,
     #"opp_amount": "0.00000000",
@@ -1058,9 +1065,6 @@ def generate_projects(dateCreate):
      # users assigned to the project (en attente API)   
     }
 
-        
-        
-    
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print("Erreur lors de la création du projet", r.status_code)
@@ -1085,8 +1089,8 @@ def generate_tasks(projectID):
         # "dateo":"2025-10-17 00:00:00",
         # "datee":"2025-10-31 00:00:00",
         # "datev":null,
-        "label": fake.catch_phrase() #,
-        # "description":"",
+        "label": fake.catch_phrase(),
+        "description":fake.text(max_nb_chars=200),
         # "duration_effective":"10980",
         # "planned_workload":"36000",
         # "progress":"30",
@@ -1096,8 +1100,8 @@ def generate_tasks(projectID):
         # "fk_user_modif":null,
         # "fk_user_valid":null,
         # "fk_statut":"2",
-        # "note_private":"",
-        # "note_public":"",
+        "note_private": fake.text(max_nb_chars=200),
+        "note_public": fake.text(max_nb_chars=200),
         # "rang":"0",
         # "model_pdf":null,
         # "import_key":null,
@@ -1118,9 +1122,9 @@ def generate_tasks_times(taskID):
 
     data = {
         "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
-        "duration": fake.random_int(min=60*5, max=3600) #  (integer): Duration in seconds (3600 = 1h) ,
+        "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
          # "user_id" :, # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
-         #note : , note (string, optional)
+         "note" : fake.sentence(max_nb_words=10) # (string, optional): Note
         }
         
     r = requests.post(url, headers=headers, json=data)
