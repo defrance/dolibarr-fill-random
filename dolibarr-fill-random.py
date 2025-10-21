@@ -984,7 +984,7 @@ def generate_projects(dateCreate):
     #randomDays = random.randrang(deltaDate.days + 1)
     #dateEvent = dateStart + timedelta(days=randomDays)
     now = datetime.now()
-    diffYears =(now - dateStart).days /365.25
+    diffYears =(now - dateCreate).days /365.25
 
 
 # Si la date de début du projet est plus ancienne que 2 ans, le projet est fermé
@@ -1007,10 +1007,10 @@ def generate_projects(dateCreate):
         
         if choice == "before":
             # Entre 1 et 5 jours avant
-            dateClose = dateEnd - timedelta(days=random.randint(1, 5))
+            dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
         elif choice == "after":
             # Entre 1 et 5 jours après
-            dateClose = dateEnd + timedelta(days=random.randint(1, 5))
+            dateClose = dateEnd + random.randint(1*24*3600, 5*24*3600)
         else:
             # Exactement égale
             dateClose = dateEnd
@@ -1124,7 +1124,7 @@ def generate_tasks_times(taskID):
         "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
         "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
          # "user_id" :, # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
-         "note" : fake.sentence(max_nb_words=10) # (string, optional): Note
+         "note" : fake.sentence(nb_words=10) # (string, optional): Note
         }
         
     r = requests.post(url, headers=headers, json=data)
