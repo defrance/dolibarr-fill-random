@@ -975,10 +975,13 @@ def generate_categories(type):
     return 1
 
 def generate_projects(dateCreate):
-
-    dateStart = dateCreate.timestamp()
     dateCreation = dateCreate.strftime('%Y-%m-%d') # fonctionne pas
+    dateStart = dateCreate.timestamp()
     dateEnd = dateStart + random.randint(5*24*3600, 30*24*3600)
+    #deltaDate = dateEnd - dateStart
+    #randomDays = random.randrang(deltaDate.days + 1)
+    #dateEvent = dateStart + timedelta(days=randomDays)
+
     url = urlBase + "projects"
 
     # Référence produit alphanumérique
@@ -989,18 +992,55 @@ def generate_projects(dateCreate):
     if status == 2:
         dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
     data = {
-        "ref": str(ref),
-        #"fk_project": ,
-        #"description": ,
-        "title" : fake.sentence(nb_words=4),
-        "date_start": dateStart,
-        "date_end": dateEnd,
-        "date_close": dateClose if status == 2 else None,
-        #"datec": dateCreation, # fonctionne pas 
-        "status": status,
-        # users assigned to the project (en attente API)
-        
+    #"fk_project": null,
+    #"fk_soc": "5",
+    #"date_c": "2025-10-17 14:02:38", dateCreation, # fonctionne pas 
+    #"tms": "2025-10-17 14:03:53",
+    "date_start": dateStart,
+    "date_end": dateEnd,
+    "ref": str(ref), # format à faire ressembler aux autres références "PJ2510-0001",
+    #"ref_ext": null,
+    #"entity": "1",
+    "title": fake.catch_phrase(),
+    #"description": "",
+    #"fk_user_creat": "1",
+    #"fk_user_modif": null,
+    #"public": "0",
+    #"fk_statut": "1",
+    #"fk_opp_status": null,
+    #"opp_percent": null,
+    #"fk_opp_status_end": null,
+    "date_close":dateClose if status == 2 else None,
+    #"fk_user_close": null,
+    #"note_private": null,
+    #"note_public": null,
+    #"email_msgid": null,
+    #"email_date": null,
+    #"opp_amount": "0.00000000",
+    #"budget_amount": "0.00000000",
+    #"usage_opportunity": "0",
+    #"usage_task": "1",
+    #"usage_bill_time": "0",
+    #"usage_organize_event": "0",
+    #"date_start_event": null,
+    #"date_end_event": null,
+    #"location": null,
+    #"accept_conference_suggestions": "0",
+    #"accept_booth_suggestions": "0",
+    #"max_attendees": null,
+    "status": status,
+    #"price_registration": null,
+    #"price_booth": null,
+    #"model_pdf": null,
+    #"ip": null,
+    #"last_main_doc": null,
+    #"import_key": null,
+    #"extraparams": null
+     # users assigned to the project (en attente API)   
     }
+
+        
+        
     
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
@@ -1018,9 +1058,32 @@ def generate_tasks():
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     data = {
         "ref":str(ref),
-        "label": fake.sentence(nb_words=4),
-        "fk_project": 24 # A modifier pour randomiser a partir des projets existants créer get_random_project
-    }
+        #"entity":"1",
+        "fk_project": 24, # A modifier pour randomiser a partir des projets existants créer get_random_project
+        #"fk_task_parent":"0",
+        # "datec":"2025-10-17 14:04:51",
+        # "tms":"2025-10-17 14:08:39",
+        # "dateo":"2025-10-17 00:00:00",
+        # "datee":"2025-10-31 00:00:00",
+        # "datev":null,
+        "label": fake.catch_phrase() #,
+        # "description":"",
+        # "duration_effective":"10980",
+        # "planned_workload":"36000",
+        # "progress":"30",
+        # "priority":"0",
+        # "budget_amount":"0.00000000",
+        # "fk_user_creat":"1",
+        # "fk_user_modif":null,
+        # "fk_user_valid":null,
+        # "fk_statut":"2",
+        # "note_private":"",
+        # "note_public":"",
+        # "rang":"0",
+        # "model_pdf":null,
+        # "import_key":null,
+        # "billable":"0"}
+}
 
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
@@ -1029,9 +1092,40 @@ def generate_tasks():
         return None
     else:
         print("Création de la tâche : ", data)
-        print (r.text)
-
     return 1
+
+def generate_tasks_times(taskID):
+    url = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
+
+    data = {
+        "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
+        "duration": fake.random_int(min=60*5, max=3600) #  (integer): Duration in seconds (3600 = 1h) ,
+         # "user_id" :, # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
+         #note : , note (string, optional)
+        }
+        
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de la période", r.status_code)
+        print (r.text)
+        return None
+    else:
+        print("Création de la période: ", data)
+    return 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # on mémorise l'heure de début de l'alimentation
 start_time = datetime.now()
@@ -1181,21 +1275,27 @@ print("Alimentation Tickets et articles : ", duration)
 # Alimentation des projets et tâches
 start_prev = datetime.now()
     # Génération des projets
-nbNewProject = 2
+# nbNewProject = 2
 
-if nbNewProject > 0: #and 'project' in enabledModule:
+if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_randow_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
         generate_projects(dateProject)
 
     # Génération des tâches
-nbNewTask = 4
+# nbNewTask = 4
 
-if nbNewTask > 0: #and 'project' in enabledModule:
+if nbNewTask > 0 and 'projet' in enabledModule:
 
     for _ in range(nbNewTask):
         generate_tasks()
+
+
+if nbNewTaskTime > 0 and 'projet' in enabledModule:
+
+    for _ in range (nbNewTaskTime):
+        generate_tasks_times(17)  # A modifier pour randomiser a partir des tâches existantes et affectées au projet.
 
 start_stop = datetime.now()
 duration = start_stop - start_prev
