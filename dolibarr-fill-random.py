@@ -1053,13 +1053,13 @@ def generate_projects(dateCreate):
 
     return 1
 
-def generate_tasks():
+def generate_tasks(projectID):
     url = urlBase + "tasks"
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     data = {
         "ref":str(ref),
         #"entity":"1",
-        "fk_project": 24, # A modifier pour randomiser a partir des projets existants créer get_random_project
+        "fk_project": projectID, 
         #"fk_task_parent":"0",
         # "datec":"2025-10-17 14:04:51",
         # "tms":"2025-10-17 14:08:39",
@@ -1275,21 +1275,22 @@ print("Alimentation Tickets et articles : ", duration)
 # Alimentation des projets et tâches
 start_prev = datetime.now()
     # Génération des projets
-# nbNewProject = 2
 
 if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_randow_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
         generate_projects(dateProject)
+        #retDataProjects = fill_projects()
+
 
     # Génération des tâches
-# nbNewTask = 4
 
 if nbNewTask > 0 and 'projet' in enabledModule:
 
     for _ in range(nbNewTask):
-        generate_tasks()
+        generate_tasks(24) # A modifier pour randomiser a partir des projets existants.
+        #retDataTasks = fill_tasks()
 
 
 if nbNewTaskTime > 0 and 'projet' in enabledModule:
