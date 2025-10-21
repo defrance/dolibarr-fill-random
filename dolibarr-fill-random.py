@@ -975,17 +975,36 @@ def generate_categories(type):
     return 1
 
 def generate_projects(dateCreate):
+    url = urlBase + "projects"
+
     dateCreation = dateCreate.strftime('%Y-%m-%d') # fonctionne pas
     dateStart = dateCreate.timestamp()
     dateEnd = dateStart + random.randint(5*24*3600, 30*24*3600)
     #deltaDate = dateEnd - dateStart
     #randomDays = random.randrang(deltaDate.days + 1)
     #dateEvent = dateStart + timedelta(days=randomDays)
+    now = datetime.now()
+    diffYears =(now - dateStart).days /365.25
 
-    url = urlBase + "projects"
+
+# Si la date de début du projet est plus ancienne que 2 ans, le projet est fermé
+    if diffYears >= 2:
+        status = 2  # closed
+    
+# Si la date de début du projet est entre 1 et 2 ans, le projet est ouvert ou fermé
+    elif diffYears >= 1 and diffYears < 2:
+        status = random.choice([1, 2])
+# Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
+    elif diffYears < 1:
+        status = random.choice([0,1,2])  # opened ou closed
+    
 
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+    if dateStart - datetime.now().timestamp() > 0:
+        status
+
     
     status = random.choice([0, 1, 2])  # 0=draft, 1=opened, 2=closed
 
