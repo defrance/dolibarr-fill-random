@@ -1475,3 +1475,27 @@ print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 duration = start_stop - start_time
 print("Durée de l'alimentation : ", duration)
 
+"""
+- Projets
+    - ameliorer random date
+    - affectation utilisateurs
+    - notes => probablement par update
+    - date création => probablement par update
+
+- Taches
+    -date début
+    -date fin
+    - temps effectif => par update probablement
+    - statut
+    - temps estimé
+    - % avancement
+    - affectation utilisateur
+
+- time spent
+    - date
+    - affectation utilisateur
+
+- Opportunités
+    - update projet pour transformer certains en opportunité
+
+"""
