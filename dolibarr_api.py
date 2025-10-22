@@ -50,8 +50,8 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 # infos lies au projet
 nbNewProject=config['project']['new_project']
 nbNewOpportunity=config['project']['new_opportunity']
-nbNewTask=config['project']['new_task']
-nbNewTaskTime=config['project']['new_task_time']
+nbNewMaxTask=config['project']['new_max_task']
+nbNewMaxTaskTime=config['project']['new_max_task_time']
 
 # autres infos 
 yearToFill=config['others']['year_to_fill']
