@@ -10,7 +10,7 @@ from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
-# récupération de l'année enccours
+# récupération de l'année en cours
 yearNow = datetime.now().year
 
 def get_random_address():
@@ -975,54 +975,68 @@ def generate_categories(type):
     return 1
 
 def generate_projects(dateCreate, nbTasks, nbtasksTime):
+    # url de création de projet
     urlProjects = urlBase + "projects"
     urlTasks = urlBase + "tasks"
+
+    # Générer dateCreate comme datetime avec heure aléatoire
+    dateCreateWithTime = dateCreate + timedelta(hours=random.randint(6, 19), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
+    dateCreateTs = dateCreateWithTime.timestamp()
+
+    # Générer dateStart comme datetime
+    dateStart = fake.date_time_between(start_date=dateCreate, end_date=dateCreate + timedelta(days=30))
+    dateStartTs  = dateStart.timestamp()
+
+    # Générer dateEnd comme datetime, entre dateStart et 180 jours après
+    dateEnd = fake.date_time_between(start_date=dateStart, end_date=dateStart + timedelta(days=180))
+    dateEndTs = dateEnd.timestamp()
     
+    # Calculer la différence en années
+    dateNow = datetime.now()
+    diffDaysEndNow = (dateEnd - dateNow).days
+    diffDaysStartNow = (dateStart - dateNow).days
 
-    dateCreation = dateCreate.strftime('%Y-%m-%d') # fonctionne pas
-    dateStart = dateCreate.timestamp()
-    dateEnd = dateStart + random.randint(5*24*3600, 30*24*3600)
-    #deltaDate = dateEnd - dateStart
-    #randomDays = random.randrang(deltaDate.days + 1)
-    #dateEvent = dateStart + timedelta(days=randomDays)
-    now = datetime.now()
-    diffYears =(now - dateCreate).days /365.25
-
-
-# Si la date de début du projet est plus ancienne que 2 ans, le projet est fermé
-    if diffYears >= 2:
-        status = 2  # closed
-    
-# Si la date de début du projet est entre 1 et 2 ans, le projet est ouvert ou fermé
-    elif diffYears >= 1 and diffYears < 2:
+# Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
+    if diffDaysEndNow > 365:
+        status = 2  # closed 
+# Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est passée le projet est ouvert ou fermé
+    elif diffDaysEndNow >= 183 and diffDaysEndNow <= 365:
         status = random.choice([1, 2])
 # Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
-    elif diffYears < 1:
-        status = random.choice([0,1,2])  # opened ou closed
+    elif diffDaysEndNow < 183 and diffDaysStartNow <= 0:
+        status = random.choice([0,1,2])  # Draft, Open, Closed
+    elif diffDaysStartNow > 0:
+        status = random.choice([0,1])  # Draft, Open
+    else:
+        status = 0  # Open
     
     if status == 2:
         # Choisir aléatoirement avant, pendant, ou après dateEnd
         choice = random.choice(["before", "equal", "after"])
         
         if choice == "before":
-            # Entre 1 et 5 jours avant
-            dateClose = dateEnd - random.randint(1*24*3600, 5*24*3600)
+            # Entre 1 et 5 jours avant la date prévue de fin
+            dateClose = dateEnd - timedelta(days=random.randint(1, 5))
         elif choice == "after":
-            # Entre 1 et 5 jours après
-            dateClose = dateEnd + random.randint(1*24*3600, 5*24*3600)
+            # Entre 1 et 5 jours après la date prévue de fin
+            max_days = (dateNow - dateEnd).days
+            if max_days < 1:
+                max_days = 1  # au moins 1 jour pour éviter erreur
+            days_after = random.randint(1, min(5, max_days))
+            dateClose = dateEnd + timedelta(days=days_after)
         else:
             # Exactement égale
             dateClose = dateEnd
     else:
         dateClose = None  # Pas encore clôturée si statut < 2
     
+    dateCloseTs  =dateClose.timestamp() if dateClose else None
+
     data = {
     #"fk_project": null,
     #"fk_soc": "5",
-    #"date_c": "2025-10-17 14:02:38", dateCreation, # fonctionne pas 
-    #"tms": "2025-10-17 14:03:53",
-    "date_start": dateStart,
-    "date_end": dateEnd,
+    "date_start": dateStartTs,
+    "date_end": dateEndTs,
     "ref": "auto",
     #"ref_ext": null,
     #"entity": "1",
@@ -1035,7 +1049,7 @@ def generate_projects(dateCreate, nbTasks, nbtasksTime):
     #"fk_opp_status": null,
     #"opp_percent": null,
     #"fk_opp_status_end": null,
-    "date_close":dateClose if status == 2 else None,
+    "date_close":dateCloseTs if status == 2 else None,
     #"fk_user_close": null,
     "note_private": fake.text(max_nb_chars=200),
     "note_public": fake.text(max_nb_chars=200),
@@ -1070,18 +1084,45 @@ def generate_projects(dateCreate, nbTasks, nbtasksTime):
         print (r.text)
         return None
     else:
-        print("Réponse brute projet :", r.text)
+            
+            # on récupère l'ID du projet créé
+        try:
+            resp = r.json()
+            projectID = resp["id"] if isinstance(resp, dict) else resp
+        except Exception:
+            projectID = int(r.text.strip())
+            print("ID du projet créé:", projectID)    
 
-        # Création des tâches associées au projet si le projet n'est pas fermé et le nombre de tâches est correct
-        if status != 2 and nbTasks >= 0:
-        # on récupère l'ID du projet créé
-            try:
-                resp = r.json()
-                projectID = resp["id"] if isinstance(resp, dict) else resp
-            except Exception:
-                projectID = int(r.text.strip())
 
-            print("ID du projet créé:", projectID)
+        #Update pour ajouter les data pas prises en compte à la création
+        print("Update des données complémentaires du projet...")
+        try:
+            dataUpdate = {
+                "date_c": dateCreateTs,
+                "description": "si vous voyez ce texte, c'est que la mise à jour a fonctionné correctement."
+            }
+            rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
+            if rU.status_code != 200:
+                print("Erreur lors de la mise à jour du projet", rU.status_code)
+                print (rU.text)
+                return None 
+            else:
+                print("Mise à jour du projet terminée.")
+        except Exception as e:
+            print("Erreur lors de la mise à jour du projet:", str(e))
+            return None
+        
+
+        # Association user au projet
+
+
+
+
+
+
+        # Création des tâches associées au projet si le nombre de tâches est correct
+        if nbTasks >= 0:
+
             print("Création du projet terminée, création des tâches associées...")
 
         # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
