@@ -975,7 +975,8 @@ def generate_categories(type):
     return 1
 
 def generate_projects(dateCreate):
-    url = urlBase + "projects"
+    urlProjects = urlBase + "projects"
+    urlTasks = urlBase + "tasks"
 
     dateCreation = dateCreate.strftime('%Y-%m-%d') # fonctionne pas
     dateStart = dateCreate.timestamp()
@@ -998,9 +999,6 @@ def generate_projects(dateCreate):
     elif diffYears < 1:
         status = random.choice([0,1,2])  # opened ou closed
     
-    # Référence produit alphanumérique
-    ref = 'PJ' + dateCreate.strftime('%m%y') + '-' + str(random.randint(1, 9999)).zfill(4)
-
     if status == 2:
         # Choisir aléatoirement avant, pendant, ou après dateEnd
         choice = random.choice(["before", "equal", "after"])
@@ -1024,7 +1022,7 @@ def generate_projects(dateCreate):
     #"tms": "2025-10-17 14:03:53",
     "date_start": dateStart,
     "date_end": dateEnd,
-    "ref": str(ref),
+    "ref": "auto",
     #"ref_ext": null,
     #"entity": "1",
     "title": fake.catch_phrase(),
@@ -1065,15 +1063,57 @@ def generate_projects(dateCreate):
      # users assigned to the project (en attente API)   
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(urlProjects, headers=headers, json=data)
     if r.status_code != 200:
         print("Erreur lors de la création du projet", r.status_code)
         print (r.text)
         return None
     else:
-        print("Création du projet : ", data)
-        print (r.text)
+        print("Création du projet terminée, création des tâches associées...")
 
+        # on récupère l'ID du projet créé
+        projectID = r.text
+        # on crée des tâches associées au projet
+        data = {
+            "ref":"auto",
+            #"entity":"1",
+            "fk_project": projectID, 
+            #"fk_task_parent":"0",
+            # "datec":"2025-10-17 14:04:51",
+            # "tms":"2025-10-17 14:08:39",
+            # "dateo":"2025-10-17 00:00:00",
+            # "datee":"2025-10-31 00:00:00",
+            # "datev":null,
+            "label": fake.catch_phrase(),
+            "description":fake.text(max_nb_chars=200),
+            # "duration_effective":"10980",
+            # "planned_workload":"36000",
+            # "progress":"30",
+            # "priority":"0",
+            # "budget_amount":"0.00000000",
+            # "fk_user_creat":"1",
+            # "fk_user_modif":null,
+            # "fk_user_valid":null,
+            # "fk_statut":"2",
+            "note_private": fake.text(max_nb_chars=200),
+            "note_public": fake.text(max_nb_chars=200),
+            # "rang":"0",
+            # "model_pdf":null,
+            # "import_key":null,
+            # "billable":"0"}
+            }
+
+        r = requests.post(urlTasks, headers=headers, json=data)
+        if r.status_code != 200:
+            print("Erreur lors de la création de la tâche", r.status_code)
+            print (r.text)
+            return None
+        else:
+            print("Création de la tâche terminée. Création des temps passés associés...")
+            # on récupère l'ID de la tâche créée
+            taskID = r.text
+            # on crée des temps passés associés à la tâche
+        return 1
     return 1
 
 def generate_opportunities(dateCreate):
@@ -1126,7 +1166,7 @@ def generate_opportunities(dateCreate):
     #"tms": "2025-10-17 14:03:53",
     "date_start": dateStart,
     "date_end": dateEnd,
-    "ref": str(ref), 
+    "ref": "auto", 
     #"ref_ext": null,
     #"entity": "1",
     "title": fake.catch_phrase(),
@@ -1176,47 +1216,6 @@ def generate_opportunities(dateCreate):
         print("Création de l'opportunité : ", data)
         print (r.text)
 
-    return 1
-
-def generate_tasks(projectID):
-    url = urlBase + "tasks"
-    ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-    data = {
-        "ref":str(ref),
-        #"entity":"1",
-        "fk_project": projectID, 
-        #"fk_task_parent":"0",
-        # "datec":"2025-10-17 14:04:51",
-        # "tms":"2025-10-17 14:08:39",
-        # "dateo":"2025-10-17 00:00:00",
-        # "datee":"2025-10-31 00:00:00",
-        # "datev":null,
-        "label": fake.catch_phrase(),
-        "description":fake.text(max_nb_chars=200),
-        # "duration_effective":"10980",
-        # "planned_workload":"36000",
-        # "progress":"30",
-        # "priority":"0",
-        # "budget_amount":"0.00000000",
-        # "fk_user_creat":"1",
-        # "fk_user_modif":null,
-        # "fk_user_valid":null,
-        # "fk_statut":"2",
-        "note_private": fake.text(max_nb_chars=200),
-        "note_public": fake.text(max_nb_chars=200),
-        # "rang":"0",
-        # "model_pdf":null,
-        # "import_key":null,
-        # "billable":"0"}
-}
-
-    r = requests.post(url, headers=headers, json=data)
-    if r.status_code != 200:
-        print("Erreur lors de la création de la tâche", r.status_code)
-        print (r.text)
-        return None
-    else:
-        print("Création de la tâche : ", data)
     return 1
 
 def generate_tasks_times(taskID):
