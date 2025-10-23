@@ -4,10 +4,11 @@ import string
 import requests
 import base64
 import datetime
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-
-fake = Faker('fr_FR')
+from generators.generate_utils import *
 
 def generate_bank(dateCreate):
     # on boucle sur les lignes
@@ -22,13 +23,17 @@ def generate_bank(dateCreate):
         "date_solde" : dateCreate.strftime('%Y-%m-%d'),
         "currency_code" : "EUR",
         'iban_prefix' : fake.iban(),
-        "address": fake.address(),
-        
+        "address": fake.address(), 
     }
+
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:
         print("Erreur lors de la création de la bank", r.status_code)
         print (r.text)
         return None
-
+    
     return 1
+
+# Test unitaire
+if __name__ == "__main__":
+    print(generate_bank(dateCreate = fake.date_this_year()))

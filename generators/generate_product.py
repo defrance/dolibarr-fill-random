@@ -4,14 +4,15 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 fake = Faker('fr_FR')
 
-def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule):
+def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, test=0):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
@@ -43,7 +44,10 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         "price_min_ttc" : 13,
     }
 
-    r = requests.post(urlProduct, headers=headers, json=data)
+    if test:
+        print(urlProduct,headers,data)
+    else:
+        r = requests.post(urlProduct, headers=headers, json=data)
 
     # on récupère l'id du produit crée
     productId = 0
@@ -134,4 +138,13 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
             data = { }
             r = requests.post(url, headers=headers, json=data)
 
+# ajout alimentation des prix d'achats et des prix de ventes
+    # /!\ les prix d'achats sont toujours associés à un fournisseur et une référence fournisseur
+    # /!\ les prix peuvent varier en fonction de la quantité
+
     return 1
+
+
+#if __name__ == "__main__":
+    #dateCreate, retDataWarehouse, retDataCategProduct, enabledModule,
+    #generate_product(dateCreate=,....test=1)

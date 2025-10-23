@@ -241,7 +241,7 @@ def fill_thirdparties(Type='all'):
 def get_random_client(retDataThirdParties):
 	return retDataThirdParties[random.randint(1, len(retDataThirdParties)-1)]['id']
 
-def gen_randow_following_date(annee, nombre, max_interval=3):
+def gen_random_following_date(annee, nombre, max_interval=3):
     # Date de départ fixée au 1er janvier de l'année en cours
     # annee_en_cours = datetime.today().year
     date_debut = datetime(annee, 1, 1)

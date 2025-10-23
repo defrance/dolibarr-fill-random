@@ -4,13 +4,14 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 
-def generate_customer(dateCreate,enabledModule):
+def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
@@ -52,7 +53,8 @@ def generate_customer(dateCreate,enabledModule):
         userRandom = get_random_user(retDataUser)
         data = { }
         r = requests.post(url + userRandom['id'], headers=headers, json=data)
-
+        if r.status_code != 200:
+            print("erreur sur l'ajout d'un utilisateur référent. ")
     
     # ajout de contact
     url = urlBase + "contacts/"
@@ -73,7 +75,10 @@ def generate_customer(dateCreate,enabledModule):
             "country_id": 1,
         }
         r = requests.post(url, headers=headers, json=data)
+        if r.status_code != 200:
+            print("erreur sur l'ajout de contact externe. ")
         idContact = r.text 
+
         # gestion des catégories de contact
         if newCategorySocpeople > 0 and 'categorie' in enabledModule:
             for i in range(random.randint(0, newCategorySocpeople)):
@@ -81,6 +86,8 @@ def generate_customer(dateCreate,enabledModule):
                 url = urlBase + "categories/" + str(random.choice(retDataCategContact)['id']) + "/objects/contact/" + str(idContact)
                 data = { }
                 r = requests.post(url, headers=headers, json=data)
+                if r.status_code != 200:
+                    print("erreur ajout catégorie aléatoire Socpeople ")
 
     # gestion des catégories de tiers
     if newCategoryCustomer > 0 and 'categorie' in enabledModule:
@@ -90,5 +97,23 @@ def generate_customer(dateCreate,enabledModule):
             url = urlBase + "categories/" + str(random.choice(retDataCategCustomer)['id']) + "/objects/customer/" + str(idSoc)
             data = { }
             r = requests.post(url, headers=headers, json=data)
-
+            if r.status_code != 200:
+                print("erreur ajout catégorie aléatoire customer ")
     return 1
+
+
+# Test unitaire
+if __name__ == "__main__":
+    print(generate_customer(
+        dateCreate= fake.date_this_year(),
+        retDataUser =[{
+            "id":1
+        }],
+        retDataCategContact=[{
+            "id": 1
+        }],
+        retDataCategCustomer=[{
+            "id": 1
+        }],
+        enabledModule = get_enabled_modules()
+        ))

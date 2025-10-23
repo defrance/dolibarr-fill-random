@@ -3,10 +3,11 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 def generate_category(type):
     # on boucle sur les lignes
@@ -22,6 +23,9 @@ def generate_category(type):
         print('Erreur lors de la création de la catégorie', r.status_code)
         print (r.text)
         return None
-
+    
     return 1
 
+# Test unitaire
+if __name__ == "__main__":
+    print(generate_category("Type Test"))

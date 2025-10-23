@@ -92,6 +92,9 @@ il faut donc réaliser les commandes suivantes:
 pip install faker
 pip install pyyaml
 
+
+# Tests unitaires
+
 # PR réalisées sur le core de dolibarr pour activer certaines fonctions :
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 22, il sera nécessaire de réaliser les correctifs suivants :
  

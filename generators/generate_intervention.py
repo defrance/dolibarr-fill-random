@@ -4,13 +4,14 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 
-def generate_intervention(dateintervention):
+def generate_intervention(dateintervention, enabledModule):
     url = urlBase + "interventions"
 
 	# on récupère les contrats associés au client si il y en a

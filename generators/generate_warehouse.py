@@ -7,7 +7,7 @@ import datetime
 
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 def generate_warehouse(dateCreate):
     # on boucle sur les lignes

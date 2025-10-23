@@ -3,29 +3,32 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 
-def generate_contract(datecontract):
+def generate_contract(dateContract):
     url = urlBase + "contracts"
 
     data = {
         "socid": get_random_client(retDataThirdParties),
-        "date_contrat": datecontract.strftime('%Y-%m-%d'),
+        "date_contrat": dateContract.strftime('%Y-%m-%d'),
         "commercial_signature_id": get_random_user(retDataUser)['id'],
         "commercial_suivi_id": get_random_user(retDataUser)['id'],
     }
+
     r = requests.post(url, headers=headers, json=data)
     contractID = r.text
     status = "Draft"
+    
     url = urlBase + "contracts/" + str(contractID) + "/validate"
     data = {
         "notrigger": 1,
     }
-    if datecontract.year < yearNow :
+    if dateContract.year < yearNow :
         r = requests.post(url, headers=headers, json=data)
         # pour les dates antiérieurs à l'année en cours, on valide la commande
         status = "Closed"
@@ -33,7 +36,7 @@ def generate_contract(datecontract):
         #pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
             r = requests.post(url, headers=headers, json=data)  
-            # if datecontract.year < yearNow :
+            # if dateContract.year < yearNow :
             #     status = "Closed"
             # else:
             status = "Open"
@@ -59,8 +62,8 @@ def generate_contract(datecontract):
             "remise_percent":0,
             "localtax1_tx": 0,
             "localtax2_tx": 0,
-            "date_start": datecontract.strftime('%Y-%m-%d'),
-            "date_end": datecontract.strftime('%Y-%m-%d'),
+            "date_start": dateContract.strftime('%Y-%m-%d'),
+            "date_end": dateContract.strftime('%Y-%m-%d'),
             "info_bits": 0,
             "fk_fournprice": 0,
             "pa_ht": 0,
@@ -72,11 +75,11 @@ def generate_contract(datecontract):
         r = requests.post(urlLine, headers=headers, json=data)
         lineID = r.text
 
-        datestart = datecontract + timedelta(days=random.randint(1, 30)) 
+        datestart = dateContract + timedelta(days=random.randint(1, 30)) 
         datestartTs  =datestart.timestamp()
         dateend = datestart + timedelta(days=random.randint(1, 365)) 
         dateendTs  =dateend.timestamp()
-        dateclose = datecontract + timedelta(days=random.randint(1, 365)) 
+        dateclose = dateContract + timedelta(days=random.randint(1, 365)) 
         datecloseTs  =dateclose.timestamp()
         if status == "Open":
             if random.choice([0, 1]) == 1:
@@ -100,7 +103,7 @@ def generate_contract(datecontract):
 
             # on ferme le contrat
             url = urlBase + "contracts/" + str(contractID) + "/lines/" + str(lineID) + "/unactivate"
-            dateclose = datecontract + timedelta(days=random.randint(1, 365)) 
+            dateclose = dateContract + timedelta(days=random.randint(1, 365)) 
             data = {
                 "notrigger": 1,
                 "datestart": datecloseTs,
@@ -108,3 +111,8 @@ def generate_contract(datecontract):
             r = requests.put(url, headers=headers, json=data)
 
     return 1
+
+# Test unitaire
+if __name__ == "__main__":
+    print(generate_contract(
+        dateContract = fake.date_this_year()))

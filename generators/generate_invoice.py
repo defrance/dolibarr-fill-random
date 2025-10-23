@@ -4,10 +4,11 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from dolibarr_generators.generate_utils import *
+from generators.generate_utils import *
 
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties):
     url = urlBase + "invoices"
