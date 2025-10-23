@@ -5,7 +5,7 @@ import random
 import yaml
 from datetime import datetime, timedelta
 #pip install pyyaml
-
+from faker import Faker
 
 import pathlib											# utilisation de la bibliothèque pathlib
 myFolderpath= pathlib.Path(__file__).parent.resolve()	# on récupère le chemin du programme
@@ -18,7 +18,7 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-
+fake = Faker('fr_FR')
 
 # on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']

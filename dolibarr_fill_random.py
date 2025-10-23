@@ -1,0 +1,192 @@
+from faker import Faker
+import random
+import string
+import requests
+import base64
+import datetime
+
+
+from dolibarr_api import *
+from dolibarr_generators.generate_project import generate_project
+from dolibarr_generators.generate_user import generate_user
+from dolibarr_generators.generate_bank import generate_bank
+from dolibarr_generators.generate_customer import generate_customer
+from dolibarr_generators.generate_werehouse import generate_warehouse
+from dolibarr_generators.generate_product import generate_product
+from dolibarr_generators.generate_invoice import generate_invoice
+from dolibarr_generators.generate_order import generate_order
+from dolibarr_generators.generate_proposal import generate_proposal
+from dolibarr_generators.generate_intervention import generate_intervention
+from dolibarr_generators.generate_ticket import generate_ticket
+from dolibarr_generators.generate_knowledge import generate_knowledge
+from dolibarr_generators.generate_contract import generate_contract
+from dolibarr_generators.generate_category import generate_category
+from dolibarr_generators.generate_opportunity import generate_opportunity
+
+
+# on mémorise l'heure de début de l'alimentation
+start_time = datetime.now()
+print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
+
+# récupération des modules actifs coté Dolibarr
+enabledModule = get_enabled_modules()
+print ("Liste des modules activés dans Dolibarr")
+print (enabledModule)
+
+# creation des catégories
+if newCategory > 0 and 'categorie' in enabledModule:
+    for i in range(random.randint(1, newCategory)):
+        generate_categories("product")
+    for i in range(random.randint(1, newCategory)):
+        generate_categories("customer")
+    for i in range(random.randint(1, newCategory)):
+        generate_categories("contact")
+    for i in range(random.randint(1, newCategory)):
+        generate_categories("ticket")
+
+retDataCategProduct = fill_categories("product")
+retDataCategCustomer = fill_categories("customer")
+retDataCategContact = fill_categories("contact")
+
+if 'ticket' in enabledModule:
+    retDataCategTicket = fill_categories("ticket")
+
+if nbNewWarehouse > 0 and 'stock' in enabledModule:
+    listWareHouseGen = gen_randow_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
+    for dateCreate in listWareHouseGen:
+        warehouse = generate_warehouse(dateCreate)
+
+    # on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
+retDataWarehouse = fill_warehouses()
+
+if nbNewUser > 0:
+    listUserGen = gen_randow_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
+    for dateCreate in listUserGen:
+        product = generate_user(dateCreate)
+
+retDataUser = fill_users()
+
+if nbNewBank > 0 and 'banque' in enabledModule:
+    listBankGen = gen_randow_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
+    for dateCreate in listBankGen:
+        bank = generate_bank(dateCreate)
+
+if 'banque' in enabledModule:
+    retDataBank = fill_banks()
+    retDataPayment = fill_payement_types()
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_time
+print("Alimentation Initiale : ", duration)
+start_prev = datetime.now()
+
+# on cree les clients avant les produits pour associer les prix fournisseurs si besoin
+if nbNewClient > 0:
+    listClientGen = gen_randow_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
+    for dateCreate in listClientGen:
+        client = generate_customer(dateCreate, enabledModule)
+
+if nbNewProduct > 0:
+    listProductGen = gen_randow_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
+    for dateCreate in listProductGen:
+        product = generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule)
+
+
+retDataProduct = fill_products()
+retDataThirdParties = fill_thirdparties("customer")
+if createSupplier == 1  and 'fournisseur' in enabledModule:
+    retDataFournisseur = fill_thirdparties("supplier")
+
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Durée Alimentation Tiers et produits : ", duration)
+start_prev = datetime.now()
+
+if nbNewBill > 0 and 'facture' in enabledModule:
+    listFactureGen = gen_randow_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
+    for dateFact in listFactureGen:
+        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties)
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Durée Alimentation Factures et Règlement: ", duration)
+start_prev = datetime.now()
+
+if nbNewOrder > 0 and 'commande' in enabledModule:
+    listOrderGen = gen_randow_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
+    for dateOrder in listOrderGen:
+        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse)
+
+
+start_stop = datetime.now()
+
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Commande et Expédition : ", duration)
+start_prev = datetime.now()
+
+if nbNewProposal > 0 and 'propal' in enabledModule:
+    listProposalGen = gen_randow_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+    for dateProposal in listProposalGen:
+        propal = generate_proposal(dateProposal)
+
+start_stop = datetime.now()
+
+# on affiche la durée
+duration = start_stop - start_prev
+print("Alimentation Devis : ", duration)
+start_prev = datetime.now()
+
+if nbNewContract > 0 and 'contrat' in enabledModule:
+    listContractGen = gen_randow_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
+    for dateContract in listContractGen:
+        contract = generate_contract(dateContract)
+
+if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
+    listInterventionGen = gen_randow_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
+    for dateInter in listInterventionGen:
+        fichinter = generate_intervention(dateInter)
+
+start_stop = datetime.now()
+# on affiche la durée
+duration = start_stop - start_prev
+print("Durée Alimentation Contrat et intervention : ", duration)
+start_prev = datetime.now()
+
+if nbNewTicket > 0  and 'ticket' in enabledModule:
+    listTicketGen = gen_randow_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
+    for dateTicket in listTicketGen:
+        ticket = generate_ticket(dateTicket)
+
+if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
+    listArticleGen = gen_randow_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
+    for dateknowledge in listArticleGen:
+        ticket = generate_knowledge(dateknowledge)
+
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Alimentation Tickets et articles : ", duration)
+
+# Alimentation des projets 
+start_prev = datetime.now()
+
+if nbNewProject > 0 and 'projet' in enabledModule:
+
+    listProjectGen = gen_randow_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
+    for dateProject in listProjectGen:
+        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime)
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Durée Alimentation Projet et tâches : ", duration)
+
+print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
+
+# on affiche la durée
+duration = start_stop - start_time
+print("Durée de l'alimentation : ", duration)

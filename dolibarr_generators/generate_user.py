@@ -1,0 +1,48 @@
+from faker import Faker
+import random
+import string
+import requests
+import base64
+import datetime
+
+
+from dolibarr_api import *
+from dolibarr_generators.generate_utils import *
+
+fake = Faker('fr_FR')
+
+
+def generate_user(dateCreate):
+    # on boucle sur les lignes
+    url = urlBase + "users"
+    gender = random.choice(['man', 'woman', 'other'])
+    lastname = fake.last_name()
+    if gender == 'man':
+        firstname = fake.first_name_male()
+    elif gender == 'woman':
+        firstname = fake.first_name_female()
+    else:
+        firstname = fake.first_name()
+    login = firstname[0:1]+ '.'+ lastname
+
+    address, zip, town = get_random_address()
+    data = {
+        "login": login,
+        "lastname" : lastname,
+        "firstname" : firstname,
+        'gender' : gender,
+        "address": address,
+        "zip": zip,
+        "town": town,
+        "phone": fake.phone_number(),
+    }
+
+    r = requests.post(url, headers=headers, json=data)
+    if r.status_code != 200:
+        print("Erreur lors de la création de l'utilisateur", r.status_code)
+        print (r.text)
+        return None
+    else:
+        idSoc= r.text
+
+    return 1

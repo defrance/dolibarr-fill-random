@@ -1,0 +1,90 @@
+from faker import Faker
+import random
+import string
+import requests
+import base64
+import datetime
+
+
+from dolibarr_api import *
+from dolibarr_generators.generate_utils import *
+
+
+def generate_intervention(dateintervention):
+    url = urlBase + "interventions"
+
+	# on récupère les contrats associés au client si il y en a
+    socid = get_random_client(retDataThirdParties)
+    fk_contract = 0
+    if 'contrat' in enabledModule:
+        retDataContract = fill_contracts(socid)
+        fk_contract = get_random_contract(retDataContract)
+
+    data = {
+        "socid": socid,
+        "fk_project": 0,
+        "fk_contrat": fk_contract,
+        "description": fake.catch_phrase(),
+        #"date": dateintervention.strftime('%Y-%m-%d'),
+    }
+    r = requests.post(url, headers=headers, json=data)
+    orderID = r.text
+
+    # on ajoute les lignes
+    urlLine = urlBase + "interventions/" + str(orderID) + "/lines"
+    jours_a_ajouter = 0
+    for i in range(random.randint(1, 5)):
+        jours_a_ajouter += random.randint(0, 1)
+        nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
+        nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
+        # ajoute la ligne d'intrvention
+        data = {
+            "description": fake.catch_phrase(),
+            "date": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "duree": random.randint(1, 4) * 3600, # en secondes
+        }
+        r = requests.post(urlLine, headers=headers, json=data)
+
+    # si la date est inférieur à l'année en cours
+    if nouvelle_date.year < yearNow:
+        url = urlBase + "interventions/" + str(orderID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)  
+
+        url = urlBase + "interventions/" + str(orderID) + "/close"
+        r = requests.post(url, headers=headers, json={})
+
+        # On met à jour les dates pour les stats
+        url = urlBase + "interventions/" + str(orderID)
+        date_close = nouvelle_date + timedelta(days=jours_a_ajouter)
+        data = {
+            "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            "datet": date_close.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        r = requests.put(url, headers=headers, json=data)
+    else:
+        if random.choice([0, 1]) == 1:
+            url = urlBase + "interventions/" + str(orderID) + "/validate"
+            data = {
+                "notrigger": 1,
+            }
+            r = requests.post(url, headers=headers, json=data)  
+
+            # On met à jour les dates pour les stats
+            url = urlBase + "interventions/" + str(orderID)
+            data = {
+                "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            r = requests.put(url, headers=headers, json=data)
+
+    # On met à jour les dates pour les stats
+    url = urlBase + "interventions/" + str(orderID)
+    data = {
+        "datec": dateintervention.strftime('%Y-%m-%d'),
+    }
+    r = requests.put(url, headers=headers, json=data)
+
+
+    return 1
