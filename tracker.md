@@ -21,20 +21,32 @@
 |generate_bank| test unitaire|
 |changelog.md|création|
 
-|Vendredi||24|
-|---|---|---|
-||||
+|Vendredi|24|
+|---|---|
+|generate_project|randomisation des contacts interne attribués aux tâches, randomisation type de contact, mise en place test|
+|generate_bank| ajout du params testing=False, et print si testing=True|
+|generate_category|ajout du params testing=False, random_words pour le type en test et print si testing=True|
+|generate_contract|ajout de params|
+|generate_customer|ajout de params et de tests|
+|generate_knowledge|ajout du testing=False et print si testing=True|
+|dolibarr_fill_random| ajout des params pour les generates modifiés.|
+|param.yml|ajout "new_max_contact:", |
 
 ## Todo
  - test unitaire
-    - generate_bank
-    - generate_category
-    - generate_contract
-    - generate_customer
-    - generate_intervention
-    - generate_invoice
-    - generate_knowledge
-    - generate_opportunity
+    - ~~generate_bank~~
+    - ~~generate_category~~
+    - generate_contract => probleme Tiers sur les tests
+        - testing=True à mettre en place
+    - ~~generate_customer => voir les fakeRetData
+        - ligne 54 : pourquoi data est vide pour l'utilisateur référent ?
+        - testing=True à mettre en place
+    - generate_intervention => probleme Tiers sur les tests
+        - testing=True à mettre en place
+    - generate_invoice => retData tests
+        - testing=True à mettre en place
+    - ~~generate_knowledge~~
+    - generate_opportunity => pas implémenté
     - generate_order
     - generate_product
     - generate_project
@@ -42,19 +54,36 @@
     - generate_ticket
     - generate_user
     - generate_utils
+    - ~~generate_warehouse~~
 
 - interface
 
 - generate_project
-    - date tache
-    - date pointage tache
-    - association contact projet
-    - association contact tache
-    - association contact pointage
+    - taches
+        - date tache
+            -possibilité que la tâche dépasse la date de fin du projet prévue si le projet est prévue comme dépassant le délai
+        - Pourcentage avancée tache
+        - Budget tache
+    - pointages
+        - date pointage tache
+        - ~~association contact pointage~~
+    - contact
+        - association contact projet
+            - type de contact
+                - get_random_contact_type : brute => API
+                    => probleme sur les sources externes ("socid" plutot de fk_people ?)
+        - association contact tache
+        
+        - ~~tableau stock les contacts associés au projet **projectContacts**~~
+        
+    - update du temps réelle de la tache avec les temps des pointages
 
 - generate_opportunity
 
 - generate_product
     - prix d'achat fournisseur
+    - get_random_tva
+
+- maj le param-sample.yml
 
 ## Notes

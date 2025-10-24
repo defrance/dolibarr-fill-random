@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 
-def generate_category(type):
+def generate_category(type, testing =False):
     # on boucle sur les lignes
     url = urlBase + "categories"
     data = {
@@ -24,8 +24,14 @@ def generate_category(type):
         print (r.text)
         return None
     
+    if testing:
+        print("Catégorie créée : ", data)
+
     return 1
 
 # Test unitaire
 if __name__ == "__main__":
-    print(generate_category("Type Test"))
+    print(generate_category(
+        type= fake.word(),
+        testing= True
+    ))

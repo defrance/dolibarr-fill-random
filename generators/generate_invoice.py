@@ -103,3 +103,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
             r = requests.post(url, headers=headers, json=data)
 
     return 1
+
+# Test unitaire
+
+#if __name__ == "__main__":

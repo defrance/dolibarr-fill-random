@@ -33,6 +33,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     data = {
         "ref": str(ref),
         "label" :name,
+        #faire un get_random_tva a partir de l'api
         "tva_tx" : random.choice([5, 10, 20]), # taux de TVA aléatoire entre 5 et 20%
         "type" : typeProduct,
         "price" : price,

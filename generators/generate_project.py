@@ -11,14 +11,14 @@ from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
-def generate_project(dateCreate, nbTasks, nbtasksTime):
+def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDataUser, retDataThirdParties):
     # url de création de projet
     urlProjects = urlBase + "projects"
     urlTasks = urlBase + "tasks"
 
     # Générer dateCreate comme datetime avec heure aléatoire
     dateCreateWithTime = dateCreate + timedelta(hours=random.randint(6, 19), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
-    dateCreateTs = dateCreateWithTime.timestamp()
+    
 
     # Générer dateStart comme datetime
     dateStart = fake.date_time_between(start_date=dateCreate, end_date=dateCreate + timedelta(days=30))
@@ -133,7 +133,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime):
         print("Update des données complémentaires du projet...")
         try:
             dataUpdate = {
-                "date_c": dateCreateTs,
+                "date_c": dateCreateWithTime.strftime("%Y-%m-%d %H:%M:%S"),
                 "note_private": fake.text(max_nb_chars=200),
                 "note_public": fake.text(max_nb_chars=200),
             }
@@ -150,42 +150,67 @@ def generate_project(dateCreate, nbTasks, nbtasksTime):
             return None
         
 
-        # Association user au projet
+# Association user au projet
         print("Ajout des users au projet ....")
 
-        nbUsersByProject = 1
-        urlUserProject = urlBase + "dolismartprojectsapi/" + str(179) + "/contacts"
-        print(urlUserProject)
+        urlContactProject = urlBase + "dolismartprojectsapi/" + str(projectID) + "/contacts"
+        projectContacts = []
 
-        if nbUsersByProject > 0:
+        if nbContactByProject > 0:
+# défini un nombre d'user pour le projet
+            nt = random.randint(0,nbContactByProject)
+            
+# défini si le contact est un user ou un tiers
+            source = 'internal'# random.choice(['internal','external']) probleme sur les sources externes
 
-            try:
-                dataContact = {
-                    "fk_socpeople": 96, #Required -  (integer): Id of thirdparty contact (if source = 'external') or id of user (if source = 'internal') to link ,
-                    "type_contact": "PROJECTCONTRIBUTOR", #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
-                    "source": "internal", #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
-                    #"notrigger": 0  #Optional
-                }
+            typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
 
-                rC = requests.post(urlUserProject, headers=headers,json=dataContact)
-                if rC.status_code != 200:
-                    print("Erreur lors de l'ajout du contact'", rC.status_code)
-                    print (rC.text)
-                    return None 
+            for i in range (nt):
+
+                # Si contact est interne
+                if source == 'internal':
+                     randomId =  get_random_user(retDataUser)['id']
+                elif source =="external":
+                    randomId = get_random_client(retDataThirdParties)['id'] 
                 else:
-                    print("Mise à jour du contact terminée.")
+                    print("source du contact invalide.")
+                    return None
+                
+                try:
+                    dataContact = {
+                        "fk_socpeople":randomId, #Required -  (integer): Id of thirdparty contact (if source = 'external') or id of user (if source = 'internal') to link ,
+                        # faire random get_random_type_contact
+                        "type_contact": typeContact, #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
+                        "source": source, #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
+                        #"notrigger": 0  #Optional
+                        }
 
-            except Exception as e:
-                print("Erreur lors de l'ajout de contacts au projet :", str(e))
-                return None    
+                    rC = requests.post(urlContactProject, headers=headers,json=dataContact)
+                    if rC.status_code != 200:
+                        print("Erreur lors de l'ajout du contact {source}", rC.status_code)
+                        print (rC.text)
+                        return None 
+                    else:
+                        print("Ajout du contact {source} terminée.")
+                        #  Stock les contacts associés
+                        print(dataContact)
+                        projectContacts.append(dataContact)
+
+                except Exception as e:
+                    print("Erreur lors de l'ajout du contact {source} au projet :", str(e))
+                    return None   
+
+    
+            print("contacts du projet :")
+            print(projectContacts)
 
 
-        # Création des tâches associées au projet si le nombre de tâches est correct
+# Création des tâches associées au projet si le nombre de tâches est correct
         if nbTasks >= 0:
 
             print("Création du projet terminée, création des tâches associées...")
 
-        # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
+# On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
             nt = random.randint(0, nbTasks)
             if nt == 0:
                 print("Aucune tâche créée pour ce projet.")
@@ -193,16 +218,23 @@ def generate_project(dateCreate, nbTasks, nbtasksTime):
             
             for i in range (nt):
                 print("Création de la tâche n°", i+1,"sur", nt)
+
+                #dateC = fake.date_between_dates(dateCreate,dateEnd)
+                #dateO = fake.date_between_dates(dateC,dateEnd)
+                #dateE = fake.date_between_dates(dateO,dateEnd)
+                #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
+                #dateV = fake.date_between_dates(dateE,dateEnd)
+
                 data = {
                 "ref": fake.unique.bothify(text=f"TASK-{projectID}-#####"),
                 #"entity":"1",
                 "fk_project": projectID, 
                 #"fk_task_parent":"0",
-                # "datec":"2025-10-17 14:04:51",
+                #"datec":dateC.strftime("%Y-%m-%d %H:%M:%S"),
                 # "tms":"2025-10-17 14:08:39",
-                # "dateo":"2025-10-17 00:00:00",
-                # "datee":"2025-10-31 00:00:00",
-                # "datev":null,
+                #"dateo": dateO.strftime("%Y-%m-%d %H:%M:%S"),
+                #"datee": dateE.strftime("%Y-%m-%d %H:%M:%S"),
+                # "datev":dateV,
                 "label": fake.catch_phrase(),
                 "description":fake.text(max_nb_chars=200),
                 # "duration_effective":"10980",
@@ -256,7 +288,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime):
                             data = {
                                 "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
                                 "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
-                                # "user_id" :, # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
+                                "user_id" : get_random_user(projectContacts)['fk_socpeople'], # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
                                 "note" : fake.sentence(nb_words=10) # (string, optional): Note
                             }
                             r = requests.post(urlTasksTime, headers=headers, json=data)
@@ -271,3 +303,20 @@ def generate_project(dateCreate, nbTasks, nbtasksTime):
                         continue
         if nbTasks < 0:
            print("Nombre de tâches incorrect. Aucune tâche créée.")
+
+# Test unitaire
+if __name__ == "__main__":
+    nbNewMaxContact = 10
+    nbNewMaxTask = 10
+    nbNewMaxTaskTime = 10
+    fakeDateCreate = fake.date_this_year()
+    FakeDataUser = [
+        {"id": i, "name": fake.name(), "email": fake.email(), "date_create": fake.date_this_year()}
+        for i in range(5)
+        ]
+    FakeDataThirdParties = [
+        {"id": i, "name": fake.company()}
+        for i in range(1, 11)
+    ]
+
+    print(generate_project(dateCreate = fakeDateCreate, nbTasks=10, nbtasksTime=10, nbContactByProject=10, retDataUser= FakeDataUser, retDataThirdParties=fakeDateCreate))

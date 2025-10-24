@@ -11,7 +11,7 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule):
+def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testing=False):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
@@ -55,6 +55,9 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
         r = requests.post(url + userRandom['id'], headers=headers, json=data)
         if r.status_code != 200:
             print("erreur sur l'ajout d'un utilisateur référent. ")
+        
+        if testing :
+            print("utilisateur référent : ", data)
     
     # ajout de contact
     url = urlBase + "contacts/"
@@ -77,7 +80,8 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
         r = requests.post(url, headers=headers, json=data)
         if r.status_code != 200:
             print("erreur sur l'ajout de contact externe. ")
-        idContact = r.text 
+        idContact = r.text
+         
 
         # gestion des catégories de contact
         if newCategorySocpeople > 0 and 'categorie' in enabledModule:

@@ -10,7 +10,7 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_contract(dateContract):
+def generate_contract(dateContract, retDataThirdParties, testing=False):
     url = urlBase + "contracts"
 
     data = {
@@ -113,6 +113,9 @@ def generate_contract(dateContract):
     return 1
 
 # Test unitaire
+"""
 if __name__ == "__main__":
     print(generate_contract(
-        dateContract = fake.date_this_year()))
+        dateContract = fake.date_this_year(),
+        retDataThirdParties=))
+"""

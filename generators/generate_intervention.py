@@ -11,9 +11,9 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_intervention(dateintervention, enabledModule):
+def generate_intervention(dateIntervention, retDataThirdParties, enabledModule):
     url = urlBase + "interventions"
-
+    print(retDataThirdParties)
 	# on récupère les contrats associés au client si il y en a
     socid = get_random_client(retDataThirdParties)
     fk_contract = 0
@@ -36,7 +36,7 @@ def generate_intervention(dateintervention, enabledModule):
     jours_a_ajouter = 0
     for i in range(random.randint(1, 5)):
         jours_a_ajouter += random.randint(0, 1)
-        nouvelle_date = dateintervention + timedelta(days=jours_a_ajouter)
+        nouvelle_date = dateIntervention + timedelta(days=jours_a_ajouter)
         nouvelle_date += timedelta(hours = random.choice([7, 9, 10, 11,  14, 15, 16]))
         # ajoute la ligne d'intrvention
         data = {
@@ -83,9 +83,20 @@ def generate_intervention(dateintervention, enabledModule):
     # On met à jour les dates pour les stats
     url = urlBase + "interventions/" + str(orderID)
     data = {
-        "datec": dateintervention.strftime('%Y-%m-%d'),
+        "datec": dateIntervention.strftime('%Y-%m-%d'),
     }
     r = requests.put(url, headers=headers, json=data)
 
 
     return 1
+
+# Test unitaire
+"""
+if __name__ == "__main__":
+    print(generate_intervention(
+        dateIntervention=fake.date_this_year(),
+        retDataThirdParties=,
+        enabledModule=get_enabled_modules()
+        )
+        )
+"""

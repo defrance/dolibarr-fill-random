@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 
-def generate_bank(dateCreate):
+def generate_bank(dateCreate, testing=False):
     # on boucle sur les lignes
     url = urlBase + "bankaccounts"
     lastname = fake.last_name()
@@ -32,8 +32,13 @@ def generate_bank(dateCreate):
         print (r.text)
         return None
     
+    if testing:
+        print("banque créé : ", data)
     return 1
 
 # Test unitaire
 if __name__ == "__main__":
-    print(generate_bank(dateCreate = fake.date_this_year()))
+    print(generate_bank(
+        dateCreate = fake.date_this_year(),
+        testing=True
+        ))

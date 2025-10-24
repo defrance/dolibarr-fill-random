@@ -4,7 +4,8 @@ import string
 import requests
 import base64
 import datetime
-
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
@@ -32,3 +33,7 @@ def generate_warehouse(dateCreate):
         return None
 
     return 1
+
+# Test unitaire
+if __name__ == "__main__":
+    print(generate_warehouse(dateCreate = fake.date_this_year()))

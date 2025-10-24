@@ -158,12 +158,12 @@ start_prev = datetime.now()
 if nbNewContract > 0 and 'contrat' in enabledModule:
     listContractGen = gen_random_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
-        contract = generate_contract(dateContract)
+        contract = generate_contract(dateContract, retDataThirdParties)
 
 if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
     listInterventionGen = gen_random_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
-        fichinter = generate_intervention(dateInter, enabledModule)
+        fichinter = generate_intervention(dateInter, retDataThirdParties, enabledModule)
 
 start_stop = datetime.now()
 # on affiche la durée
@@ -193,7 +193,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime)
+        generate_project(dateProject.timestamp,nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties)
 
 start_stop = datetime.now()
 duration = start_stop - start_prev
