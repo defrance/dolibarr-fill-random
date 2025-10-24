@@ -30,21 +30,24 @@
 |generate_customer|ajout de params et de tests|
 |generate_knowledge|ajout du testing=False et print si testing=True|
 |dolibarr_fill_random| ajout des params pour les generates modifiés.|
-|param.yml|ajout "new_max_contact:", |
+|generate_warehouse| ajout du params testing=False, et print si testing=True|
+|param.yml|ajout "new_max_contact:"|
+|interface.py|création et test "hello world"|
+|global|uniformisation de la nomenclature en cours|
 
 ## Todo
  - test unitaire
     - ~~generate_bank~~
     - ~~generate_category~~
-    - generate_contract => probleme Tiers sur les tests
+    - generate_contract => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
         - testing=True à mettre en place
     - ~~generate_customer => voir les fakeRetData
         - ligne 54 : pourquoi data est vide pour l'utilisateur référent ?
-        - testing=True à mettre en place
-    - generate_intervention => probleme Tiers sur les tests
-        - testing=True à mettre en place
+        - testing=True print à mettre en place
+    - generate_intervention => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
+        - testing=True print à mettre en place
     - generate_invoice => retData tests
-        - testing=True à mettre en place
+        - testing=True print à mettre en place
     - ~~generate_knowledge~~
     - generate_opportunity => pas implémenté
     - generate_order
@@ -53,7 +56,7 @@
     - generate_proposal
     - generate_ticket
     - generate_user
-    - generate_utils
+    - ~~generate_utils~~
     - ~~generate_warehouse~~
 
 - interface
@@ -85,5 +88,7 @@
     - get_random_tva
 
 - maj le param-sample.yml
+
+- maj le readme
 
 ## Notes

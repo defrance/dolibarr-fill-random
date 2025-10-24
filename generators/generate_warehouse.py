@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 
-def generate_warehouse(dateCreate):
+def generate_warehouse(dateCreate, testing=False):
     # on boucle sur les lignes
     url = urlBase + "warehouses"
     address, zip, town = get_random_address()
@@ -31,9 +31,12 @@ def generate_warehouse(dateCreate):
         print("Erreur lors de la création de l'entrepot", r.status_code)
         print (r.text)
         return None
-
+    if testing:
+        print("entrepôt créé : ", data)
     return 1
 
 # Test unitaire
 if __name__ == "__main__":
-    print(generate_warehouse(dateCreate = fake.date_this_year()))
+    print(generate_warehouse(
+        dateCreate = fake.date_this_year(),
+        testing=True))
