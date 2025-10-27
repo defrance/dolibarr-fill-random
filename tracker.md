@@ -105,3 +105,7 @@
 - maj le readme
 
 ## Notes
+ - pour 28/10
+    - voir les dates des tâches
+    - l'avancement des taches dans les pointages
+    - statut des tâches
