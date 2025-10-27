@@ -91,6 +91,8 @@
     - suivis des taches
     - facture le temps pasé
     - ticket
+    - random create_user
+    - random update_user
 
 - generate_opportunity
 

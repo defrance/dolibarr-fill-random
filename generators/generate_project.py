@@ -66,20 +66,26 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         # Entre 1 et 5 jours après la date prévue de fin
         elif choice == "after":
             max_days = (dateNow - dateEnd).days
-            
+
             # au moins 1 jour pour éviter erreur
             if max_days < 1:
                 max_days = 1  
                 
             days_after = random.randint(1, min(5, max_days))
             dateClose = dateEnd + timedelta(days=days_after)
+        # Exactement égale
         else:
-# Exactement égale
             dateClose = dateEnd
+
     else:
-        dateClose = None  # Pas encore clôturée si statut < 2
+        # Pas de date de clôturesi le statut est < 2
+        dateClose = None
     
-    dateCloseTs  =dateClose.timestamp() if dateClose else None
+    # Date de fermeture en timestamp
+    dateCloseTs = dateClose.timestamp() if dateClose else None
+
+## Retirer les key opportunités
+## Retirer les key seulement updatable
 
     data = {
     #"fk_project": null,
@@ -95,18 +101,26 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     #"fk_user_modif": null,
     #"public": "0",
     #"fk_statut": "1",
-    #"fk_opp_status": null,
-    #"opp_percent": null,
-    #"fk_opp_status_end": null,
+
     "date_close":dateCloseTs if status == 2 else None,
     #"fk_user_close": null,
     #"email_msgid": null,
     #"email_date": null,
+
+## Opportunités data
     #"opp_amount": "0.00000000",
     #"budget_amount": "0.00000000",
     #"usage_opportunity": "0",
+    #"fk_opp_status": null,
+    #"opp_percent": null,
+    #"fk_opp_status_end": null,
+
+## suivis de tache (par défaut activé)
     #"usage_task": "1",
+
+## Facturation du temps (par défaut désactivé)
     #"usage_bill_time": "0",
+
     #"usage_organize_event": "0",
     #"date_start_event": null,
     #"date_end_event": null,
@@ -125,26 +139,32 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     }
 
     r = requests.post(urlProjects, headers=headers, json=data)
+    
+    
     if r.status_code != 200:
         print("Erreur lors de la création du projet", r.status_code)
         print (r.text)
         return None
+    
     else:
-            
-# on récupère l'ID du projet créé
+        # Gestion du format de l'ID dans la réponse      
         try:
             resp = r.json()
             projectID = resp["id"] if isinstance(resp, dict) else resp
         except Exception:
             projectID = int(r.text.strip())
+
+        if testing:
             print("ID du projet créé:", projectID)    
 
 
-#Update pour ajouter les data pas prises en compte à la création
+        #Update pour ajouter les data non prises en compte à la création
         print("Update des données complémentaires du projet...")
         try:
             dataUpdate = {
+                # Modification de la date de la création du projet pour qu'elle ne soit pas la date du jours mais la date de création transmisse
                 "date_c": dateCreateWithTime.strftime("%Y-%m-%d %H:%M:%S"),
+                # Ajout de fausses notes
                 "note_private": fake.text(max_nb_chars=200),
                 "note_public": fake.text(max_nb_chars=200),
             }

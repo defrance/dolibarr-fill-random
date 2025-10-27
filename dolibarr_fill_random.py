@@ -192,6 +192,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
+        print("création du projet n°",,"sur ")
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
 
 start_stop = datetime.now()
