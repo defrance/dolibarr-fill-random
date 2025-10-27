@@ -67,29 +67,28 @@
     - taches
         - date tache (s'affiche pas dans dolibarr, probablement devoir passer par un update)
             -possibilité que la tâche dépasse la date de fin du projet prévue si le projet est prévue comme dépassant le délai
-        - Pourcentage avancée tache
         - Budget tache
         - statut
         - date de cloture
         - tag/catégories
     - pointages
-        - date pointage tache
+        - ~~date pointage tache~~
         - ~~association contact pointage~~
-        - Tiers type
-        - email
+        - ~~Tiers type~~
+        - ~~email~~
         - % avancement réel
     - contact
         - association contact projet
             - type de contact
-                - get_random_contact_type : brute => API
+                - get_random_contact_type : brute => API dico des contacts
                     ~~=> probleme sur les sources externes ("socid" plutot de fk_people ?)~~ (c'etait bien la syntax)
-        - association contact tache
+        - ~~association contact tache~~
         
         - ~~tableau stock les contacts associés au projet **projectContacts**~~
         
     - update du temps réelle de la tache avec les temps des pointages
     - suivis des taches
-    - facture le temps pasé
+    - facture le temps passé
     - ticket
     - random create_user
     - random update_user
