@@ -103,8 +103,7 @@ retDataProduct = fill_products()
 print("Total produits : ", len(retDataProduct))
 
 retDataThirdParties = fill_thirdparties("customer")
-customers = [c for c in retDataThirdParties if c["type"] == "customer"]
-print("Total clients :", len(customers))
+print("Total clients :", len(retDataCategCustomer))
 
 if createSupplier == 1  and 'fournisseur' in enabledModule:
     retDataFournisseur = fill_thirdparties("supplier")
@@ -193,7 +192,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject.timestamp,nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties)
+        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
 
 start_stop = datetime.now()
 duration = start_stop - start_prev

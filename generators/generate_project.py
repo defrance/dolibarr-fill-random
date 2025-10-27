@@ -191,11 +191,14 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         print (rC.text)
                         return None 
                     else:
+                        
                         print("Ajout du contact {source} terminée.")
                         #  Stock les contacts associés
-                        print(dataContact)
+                        
                         projectContacts.append(dataContact)
-
+                        if testing:    
+                            print(dataContact)
+                            
                 except Exception as e:
                     print("Erreur lors de l'ajout du contact {source} au projet :", str(e))
                     return None   
@@ -220,7 +223,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 print("Création de la tâche n°", i+1,"sur", nt)
 
                 dateC = fake.date_between_dates(dateCreate,dateEnd)
-                dateO = fake.date_between_dates(dateC,dateNow)
+                dateO = fake.date_between_dates(dateC,dateEnd)
                 dateE = fake.date_between_dates(dateO,dateEnd)
                 #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
                 #dateV = fake.date_between_dates(dateE,dateEnd)
@@ -257,11 +260,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 # print("Création de la tâche: ", data)
                 r = requests.post(urlTasks, headers=headers, json=data)
                 if r.status_code != 200:
-                    print("Erreur lors de la création de la tâche", r.status_code)
+                    print("Erreur lors de la création de la tâche  n°", i+1,".", r.status_code)
                     print (r.text)
                     return None
                 else:
-                    print("Création de la tâche terminée. Création des temps passés associés...")
+                    print("Création de la tâche n°", i+1," terminée. Création des temps passés associés...")
                     if testing:
                         print('tache créée :')
                         print(data)
@@ -306,12 +309,12 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             r = requests.post(urlTasksTime, headers=headers, json=data)
         
                             if r.status_code != 200:
-                                print("Erreur lors de la création de la période", r.status_code)
+                                print("Erreur lors de la création du pointage", r.status_code)
                                 print (r.json())
                                 return None
                             else:
                                 if testing:
-                                    print("Création de la période: ", data)
+                                    print("Création du pointage :  ", data)
                                 continue
                         continue
         if nbTasks < 0:
