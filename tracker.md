@@ -44,7 +44,7 @@
         - testing=True à mettre en place
     - ~~generate_customer => voir les fakeRetData
         - ligne 54 : pourquoi data est vide pour l'utilisateur référent ?
-        - testing=True print à mettre en place
+        - ~~testing=True print à mettre en place~~
         - erreur random 1 fois sur 3 
     - generate_intervention => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
         - testing=True print à mettre en place
@@ -54,7 +54,7 @@
     - generate_opportunity => pas implémenté
     - generate_order
     - generate_product
-    - generate_project
+    - ~~generate_project~~
     - generate_proposal
     - generate_ticket
     - generate_user
@@ -65,23 +65,32 @@
 
 - generate_project
     - taches
-        - date tache
+        - date tache (s'affiche pas dans dolibarr, probablement devoir passer par un update)
             -possibilité que la tâche dépasse la date de fin du projet prévue si le projet est prévue comme dépassant le délai
         - Pourcentage avancée tache
         - Budget tache
+        - statut
+        - date de cloture
+        - tag/catégories
     - pointages
         - date pointage tache
         - ~~association contact pointage~~
+        - Tiers type
+        - email
+        - % avancement réel
     - contact
         - association contact projet
             - type de contact
                 - get_random_contact_type : brute => API
-                    => probleme sur les sources externes ("socid" plutot de fk_people ?)
+                    ~~=> probleme sur les sources externes ("socid" plutot de fk_people ?)~~ (c'etait bien la syntax)
         - association contact tache
         
         - ~~tableau stock les contacts associés au projet **projectContacts**~~
         
     - update du temps réelle de la tache avec les temps des pointages
+    - suivis des taches
+    - facture le temps pasé
+    - ticket
 
 - generate_opportunity
 

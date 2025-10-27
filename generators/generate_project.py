@@ -12,53 +12,65 @@ from dolibarr_api import *
 fake = Faker('fr_FR')
 
 def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDataUser, retDataThirdParties, testing=False):
-# url de création de projet
+    # url de création de projet
     urlProjects = urlBase + "projects"
+    # url de création de tâche
     urlTasks = urlBase + "tasks"
 
-# Générer dateCreate comme datetime avec heure aléatoire
+    # Génére la date de création du projet comme datetime avec heure aléatoire
     dateCreateWithTime = dateCreate + timedelta(hours=random.randint(6, 19), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
-    
 
-# Générer dateStart comme datetime
+    # Générer la date de début du projet comme datetime
     dateStart = fake.date_time_between(start_date=dateCreate, end_date=dateCreate + timedelta(days=30))
     dateStartTs  = dateStart.timestamp()
 
-# Générer dateEnd comme datetime, entre dateStart et 180 jours après
+    # Générer la date de fin prévue comme datetime, entre dateStart et 180 jours après
     dateEnd = fake.date_time_between(start_date=dateStart, end_date=dateStart + timedelta(days=180))
     dateEndTs = dateEnd.timestamp()
     
-# Calculer la différence en années
+    # Calculer la différence en jours par rapport à aujourd'hui
     dateNow = datetime.now()
     diffDaysEndNow = (dateEnd - dateNow).days
     diffDaysStartNow = (dateStart - dateNow).days
 
-# Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
+    # Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
     if diffDaysEndNow > 365:
         status = 2  # closed 
-# Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est passée le projet est ouvert ou fermé
+
+    # Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est antérieure à la date du jour,
+    # le projet est ouvert ou fermé de façon aléatoire
     elif diffDaysEndNow >= 183 and diffDaysEndNow <= 365:
         status = random.choice([1, 2])
-# Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
+
+    # Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
     elif diffDaysEndNow < 183 and diffDaysStartNow <= 0:
         status = random.choice([0,1,2])  # Draft, Open, Closed
+    
     elif diffDaysStartNow > 0:
         status = random.choice([0,1])  # Draft, Open
+    
     else:
         status = 0  # Open
     
+    # Si le statut du projet est "fermé"
     if status == 2:
-# Choisir aléatoirement avant, pendant, ou après dateEnd
+    
+    #Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
+    
         choice = random.choice(["before", "equal", "after"])
         
+        # Entre 1 et 5 jours avant la date prévue de fin
         if choice == "before":
-# Entre 1 et 5 jours avant la date prévue de fin
             dateClose = dateEnd - timedelta(days=random.randint(1, 5))
+        
+        # Entre 1 et 5 jours après la date prévue de fin
         elif choice == "after":
-# Entre 1 et 5 jours après la date prévue de fin
             max_days = (dateNow - dateEnd).days
+            
+            # au moins 1 jour pour éviter erreur
             if max_days < 1:
-                max_days = 1  # au moins 1 jour pour éviter erreur
+                max_days = 1  
+                
             days_after = random.randint(1, min(5, max_days))
             dateClose = dateEnd + timedelta(days=days_after)
         else:
@@ -110,7 +122,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     #"last_main_doc": null,
     #"import_key": null,
     #"extraparams": null
-     # users assigned to the project (en attente API)   
     }
 
     r = requests.post(urlProjects, headers=headers, json=data)
@@ -157,31 +168,34 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         projectContacts = []
 
         if nbContactByProject > 0:
-# défini un nombre d'user pour le projet
+        # défini un nombre d'user pour le projet
             nt = random.randint(0,nbContactByProject)
-            
-# défini si le contact est un user ou un tiers
-
-
             for i in range (nt):
+
                 source = random.choice(['internal','external'])
                 typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
+
                 # Si contact est interne
                 if source == 'internal':
                      randomId =  get_random_user(retDataUser)['id']
+                # Si le contact est externe
                 elif source =="external":
                     randomId = get_random_client(retDataThirdParties)
-
+                # Si erreur sur la source
                 else:
                     print("source du contact invalide.")
                     return None
                 
+                # association du contact avec son ID
+
+## Ici pour le mail et le Tiers ?
                 try:
                     dataContact = {
                         "fk_socpeople":randomId, #Required -  (integer): Id of thirdparty contact (if source = 'external') or id of user (if source = 'internal') to link ,
                         # faire random get_random_type_contact
                         "type_contact": typeContact, #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
                         "source": source, #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
+## what is that ?
                         #"notrigger": 0  #Optional
                         }
 
