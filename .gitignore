@@ -1,6 +1,5 @@
 # on n'envoie pas le fichier param.yml
 param.yml
-__pycache__/*.pyc
+__pycache__
 .DS_Store
 .venv
-bacasable.py

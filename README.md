@@ -91,6 +91,7 @@ Il utilise aussi yaml pour le fichier de paramétrage
 il faut donc réaliser les commandes suivantes: 
 pip install faker
 pip install pyyaml
+pip install requests
 
 
 # Tests unitaires
