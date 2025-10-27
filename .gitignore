@@ -1,6 +1,6 @@
 # on n'envoie pas le fichier param.yml
 param.yml
-__pycache__/*.pyc
+# Ignore tout les dossiers pycache du prjet
+__pycache__/
 .DS_Store
 .venv
-bacasable.py

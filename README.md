@@ -1,4 +1,4 @@
-# dolibarr-fill-random
+pip# dolibarr-fill-random
 Programme python créant de la data dans dolibarr via les api natives, le but étant d'avoir un jeu d'essai consistant pour réaliser des tests
 
 En terme de performance, le programme met environ 1 heure sur un macbook air M1 (et la moitié sur un M4 ^^) pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
@@ -91,7 +91,7 @@ Il utilise aussi yaml pour le fichier de paramétrage
 il faut donc réaliser les commandes suivantes: 
 pip install faker
 pip install pyyaml
-
+pip install request
 
 # Tests unitaires
 
