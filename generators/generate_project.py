@@ -306,17 +306,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
 # Test unitaire
 if __name__ == "__main__":
-    nbNewMaxContact = 10
-    nbNewMaxTask = 10
-    nbNewMaxTaskTime = 10
-    fakeDateCreate = fake.date_this_year()
-    FakeDataUser = [
-        {"id": i, "name": fake.name(), "email": fake.email(), "date_create": fake.date_this_year()}
-        for i in range(5)
-        ]
-    FakeDataThirdParties = [
-        {"id": i, "name": fake.company()}
-        for i in range(1, 11)
-    ]
 
-    print(generate_project(dateCreate = fakeDateCreate, nbTasks=10, nbtasksTime=10, nbContactByProject=10, retDataUser= FakeDataUser, retDataThirdParties=fakeDateCreate))
+    print(generate_project(
+        dateCreate = fake.date_this_year(),
+        nbTasks=10,
+        nbtasksTime=10,
+        nbContactByProject=10,
+        retDataUser= fill_users(),
+        retDataThirdParties= fill_thirdparties()))

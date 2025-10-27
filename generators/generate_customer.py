@@ -110,14 +110,10 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
 if __name__ == "__main__":
     print(generate_customer(
         dateCreate= fake.date_this_year(),
-        retDataUser =[{
-            "id":1
-        }],
-        retDataCategContact=[{
-            "id": 1
-        }],
-        retDataCategCustomer=[{
-            "id": 1
-        }],
+        retDataUser =fill_users(),
+        retDataCategContact=fill_categories("contact"),
+        retDataCategCustomer=fill_categories("customer"),
         enabledModule = get_enabled_modules()
         ))
+
+# Erreur 1 fois sur 3
