@@ -220,7 +220,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 print("Création de la tâche n°", i+1,"sur", nt)
 
                 dateC = fake.date_between_dates(dateCreate,dateEnd)
-                dateO = fake.date_between_dates(dateC,dateEnd)
+                dateO = fake.date_between_dates(dateC,dateNow)
                 dateE = fake.date_between_dates(dateO,dateEnd)
                 #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
                 #dateV = fake.date_between_dates(dateE,dateEnd)
@@ -310,7 +310,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                 print (r.json())
                                 return None
                             else:
-                                print("Création de la période: ", data)
+                                if testing:
+                                    print("Création de la période: ", data)
                                 continue
                         continue
         if nbTasks < 0:
