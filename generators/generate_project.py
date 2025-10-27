@@ -200,9 +200,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     print("Erreur lors de l'ajout du contact {source} au projet :", str(e))
                     return None   
 
-    
-            print("contacts du projet :")
-            print(projectContacts)
+            if testing:
+                print("contacts du projet :")
+                print(projectContacts)
 
 
 # Création des tâches associées au projet si le nombre de tâches est correct
@@ -288,7 +288,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             data = {
                                 "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
                                 "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
-                                "user_id" : get_random_user(projectContacts), # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
+                                "user_id" : random.choice(projectContacts)['fk_socpeople'], # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
                                 "note" : fake.sentence(nb_words=10) # (string, optional): Note
                             }
                             r = requests.post(urlTasksTime, headers=headers, json=data)
