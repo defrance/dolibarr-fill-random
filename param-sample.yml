@@ -52,9 +52,11 @@ supplier:
   new_order : 420
 
 project:
-  new_project : 0
-  new_task : 0
-  new_task_time : 0
+  # new_opportunity: 0
+  new_project: 10
+  new_max_task: 10 #max by project
+  new_max_task_time: 10 #max by task
+  new_max_contact: 2 #max by task
 
 others:
   year_to_fill : 2023
