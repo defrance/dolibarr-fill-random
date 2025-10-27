@@ -38,6 +38,7 @@ def generate_user(dateCreate):
         "zip": zip,
         "town": town,
         "phone": fake.phone_number(),
+        "email": firstname.lower() + lastname.lower() + "@" +fake.free_email_domain()
     }
 
     r = requests.post(url, headers=headers, json=data)
@@ -48,8 +49,11 @@ def generate_user(dateCreate):
         return None
     else:
         idSoc= r.text
+        print(data)
 
     return 1
 
 if __name__ == "__main__":
-    print(generate_user())
+    print(generate_user(
+        dateCreate=fake.date_this_year()
+    ))
