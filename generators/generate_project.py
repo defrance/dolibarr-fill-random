@@ -11,24 +11,24 @@ from dolibarr_api import *
 
 fake = Faker('fr_FR')
 
-def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDataUser, retDataThirdParties):
-    # url de création de projet
+def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDataUser, retDataThirdParties, testing=False):
+# url de création de projet
     urlProjects = urlBase + "projects"
     urlTasks = urlBase + "tasks"
 
-    # Générer dateCreate comme datetime avec heure aléatoire
+# Générer dateCreate comme datetime avec heure aléatoire
     dateCreateWithTime = dateCreate + timedelta(hours=random.randint(6, 19), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
     
 
-    # Générer dateStart comme datetime
+# Générer dateStart comme datetime
     dateStart = fake.date_time_between(start_date=dateCreate, end_date=dateCreate + timedelta(days=30))
     dateStartTs  = dateStart.timestamp()
 
-    # Générer dateEnd comme datetime, entre dateStart et 180 jours après
+# Générer dateEnd comme datetime, entre dateStart et 180 jours après
     dateEnd = fake.date_time_between(start_date=dateStart, end_date=dateStart + timedelta(days=180))
     dateEndTs = dateEnd.timestamp()
     
-    # Calculer la différence en années
+# Calculer la différence en années
     dateNow = datetime.now()
     diffDaysEndNow = (dateEnd - dateNow).days
     diffDaysStartNow = (dateStart - dateNow).days
@@ -48,21 +48,21 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         status = 0  # Open
     
     if status == 2:
-        # Choisir aléatoirement avant, pendant, ou après dateEnd
+# Choisir aléatoirement avant, pendant, ou après dateEnd
         choice = random.choice(["before", "equal", "after"])
         
         if choice == "before":
-            # Entre 1 et 5 jours avant la date prévue de fin
+# Entre 1 et 5 jours avant la date prévue de fin
             dateClose = dateEnd - timedelta(days=random.randint(1, 5))
         elif choice == "after":
-            # Entre 1 et 5 jours après la date prévue de fin
+# Entre 1 et 5 jours après la date prévue de fin
             max_days = (dateNow - dateEnd).days
             if max_days < 1:
                 max_days = 1  # au moins 1 jour pour éviter erreur
             days_after = random.randint(1, min(5, max_days))
             dateClose = dateEnd + timedelta(days=days_after)
         else:
-            # Exactement égale
+# Exactement égale
             dateClose = dateEnd
     else:
         dateClose = None  # Pas encore clôturée si statut < 2
@@ -120,7 +120,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         return None
     else:
             
-        # on récupère l'ID du projet créé
+# on récupère l'ID du projet créé
         try:
             resp = r.json()
             projectID = resp["id"] if isinstance(resp, dict) else resp
@@ -129,7 +129,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             print("ID du projet créé:", projectID)    
 
 
-        #Update pour ajouter les data pas prises en compte à la création
+#Update pour ajouter les data pas prises en compte à la création
         print("Update des données complémentaires du projet...")
         try:
             dataUpdate = {
@@ -161,17 +161,17 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             nt = random.randint(0,nbContactByProject)
             
 # défini si le contact est un user ou un tiers
-            source = 'internal'# random.choice(['internal','external']) probleme sur les sources externes
 
-            typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
 
             for i in range (nt):
-
+                source = random.choice(['internal','external'])
+                typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
                 # Si contact est interne
                 if source == 'internal':
                      randomId =  get_random_user(retDataUser)['id']
                 elif source =="external":
-                    randomId = get_random_client(retDataThirdParties)['id'] 
+                    randomId = get_random_client(retDataThirdParties)
+
                 else:
                     print("source du contact invalide.")
                     return None
@@ -254,7 +254,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 # "billable":"0"}
                 }
 
-                print("Création de la tâche: ", data)
+                # print("Création de la tâche: ", data)
                 r = requests.post(urlTasks, headers=headers, json=data)
                 if r.status_code != 200:
                     print("Erreur lors de la création de la tâche", r.status_code)
@@ -288,7 +288,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             data = {
                                 "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
                                 "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
-                                "user_id" : get_random_user(projectContacts)['fk_socpeople'], # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
+                                "user_id" : get_random_user(projectContacts), # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
                                 "note" : fake.sentence(nb_words=10) # (string, optional): Note
                             }
                             r = requests.post(urlTasksTime, headers=headers, json=data)
@@ -305,12 +305,13 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
            print("Nombre de tâches incorrect. Aucune tâche créée.")
 
 # Test unitaire
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     print(generate_project(
         dateCreate = fake.date_this_year(),
         nbTasks=10,
         nbtasksTime=10,
         nbContactByProject=10,
         retDataUser= fill_users(),
-        retDataThirdParties= fill_thirdparties()))
+        retDataThirdParties= fill_thirdparties(),
+        testing=True))

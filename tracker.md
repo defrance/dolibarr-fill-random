@@ -45,6 +45,7 @@
     - ~~generate_customer => voir les fakeRetData
         - ligne 54 : pourquoi data est vide pour l'utilisateur référent ?
         - testing=True print à mettre en place
+        - erreur random 1 fois sur 3 
     - generate_intervention => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
         - testing=True print à mettre en place
     - generate_invoice => retData tests
