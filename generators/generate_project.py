@@ -219,9 +219,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             for i in range (nt):
                 print("Création de la tâche n°", i+1,"sur", nt)
 
-                #dateC = fake.date_between_dates(dateCreate,dateEnd)
-                #dateO = fake.date_between_dates(dateC,dateEnd)
-                #dateE = fake.date_between_dates(dateO,dateEnd)
+                dateC = fake.date_between_dates(dateCreate,dateEnd)
+                dateO = fake.date_between_dates(dateC,dateEnd)
+                dateE = fake.date_between_dates(dateO,dateEnd)
                 #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
                 #dateV = fake.date_between_dates(dateE,dateEnd)
 
@@ -230,10 +230,10 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 #"entity":"1",
                 "fk_project": projectID, 
                 #"fk_task_parent":"0",
-                #"datec":dateC.strftime("%Y-%m-%d %H:%M:%S"),
+                "datec":dateC.strftime("%Y-%m-%d"),
                 # "tms":"2025-10-17 14:08:39",
-                #"dateo": dateO.strftime("%Y-%m-%d %H:%M:%S"),
-                #"datee": dateE.strftime("%Y-%m-%d %H:%M:%S"),
+                "dateo": dateO.strftime("%Y-%m-%d"),
+                "datee": dateE.strftime("%Y-%m-%d"),
                 # "datev":dateV,
                 "label": fake.catch_phrase(),
                 "description":fake.text(max_nb_chars=200),
@@ -262,6 +262,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     return None
                 else:
                     print("Création de la tâche terminée. Création des temps passés associés...")
+                    if testing:
+                        print('tache créée :')
+                        print(data)
             # on récupère l'ID de la tâche créée
                     try:
                         resp = r.json()
@@ -285,8 +288,17 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
                         for j in range (ntt):
                             print("Création du temps passé n°", j+1,"sur", ntt)
+
+                            randomDate = fake.date_between_dates(dateO, dateE)
+                            randomTime = timedelta(
+                                                    hours=random.randint(7, 19),
+                                                    minutes=random.randint(0, 59),
+                                                    seconds=random.randint(0, 59)
+                                                    )
+                            finalDatetime = datetime.combine(randomDate, datetime.min.time()) + randomTime
+
                             data = {
-                                "date" : fake.date_time().strftime("%Y-%m-%d %H:%M:%S"), #  (string): Date (YYYY-MM-DD HH:MI:SS in GMT) ,
+                                "date" : finalDatetime.strftime("%Y-%m-%d %H:%M:%S"), #  ajouter une heure random
                                 "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
                                 "user_id" : random.choice(projectContacts)['fk_socpeople'], # (integer, optional): User (Use 0 for connected user). A modifier pour randomiser a partir des utilisateurs existants et affectés au projet.
                                 "note" : fake.sentence(nb_words=10) # (string, optional): Note
