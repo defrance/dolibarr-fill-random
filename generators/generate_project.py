@@ -83,7 +83,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             dateClose = dateEnd
 
     else:
-        # Pas de date de clôturesi le statut est < 2
+        # Pas de date de clôture si le statut est < 2
         dateClose = None
     
     # Date de fermeture en timestamp
@@ -271,7 +271,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         taskStatus = random.choice([0,1,2,3])
 
                     if projectStatus == 0:
-                        taskStatus = random.choice([0,2])
+                        taskStatus = random.choice([0,1])
                     
                     dateTaskC = fake.date_time_between_dates(dateCreate,dateEnd)
                     dateTaskCTS = dateTaskC.timestamp()
@@ -349,17 +349,18 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                 print(taskContacts)
                         
                         print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
-                
 
+                        # Si la tâche est en cours ou clôturé :
+                        if taskStatus == 2 or 3:
 
-                        urlTasksTime = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
+                            urlTasksTime = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
                 
-                        # on crée des pointages associés à la tâche 
-                        if nbtasksTime < 0:
-                            print("Nombre de pointage incorrect. Aucun pointage créé.")
-                            return None     
-                        else:
-                            ntt = random.randint(0, nbtasksTime)
+                            # on crée des pointages associés à la tâche 
+                            if nbtasksTime < 0:
+                                print("Nombre de pointage incorrect. Aucun pointage créé.")
+                                return None     
+                            else:
+                                ntt = random.randint(0, nbtasksTime)
 
                             if ntt == 0:
                                 print("Aucun pointage créé pour cette tâche.")
@@ -381,7 +382,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                         "date" : randomDate.strftime("%Y-%m-%d %H:%M:%S"),
                                         "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
                                         "user_id" : userId, # (integer, optional): User (Use 0 for connected user).
-                                        "note" : fake.sentence(nb_words=10) # (string, optional): Note
+                                        "note" : fake.sentence(nb_words=10), # (string, optional): Note
+                                        "progress":15
                                     }
 
                                     r = requests.post(urlTasksTime, headers=headers, json=data)
@@ -405,8 +407,8 @@ if __name__ == "__main__":
     print(generate_project(
         dateCreate = fake.date_this_year(),
         nbTasks=10,
-        nbtasksTime=0,
-        nbContactByProject=0,
+        nbtasksTime=10,
+        nbContactByProject=10,
         retDataUser= fill_users(),
         retDataThirdParties= fill_thirdparties(),
         testing=True))
