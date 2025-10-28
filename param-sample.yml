@@ -57,6 +57,7 @@ project:
   new_max_task: 10 #max by project
   new_max_task_time: 10 #max by task
   new_max_contact: 2 #max by task
+  new_opportunity: 10
 
 others:
   year_to_fill : 2023
