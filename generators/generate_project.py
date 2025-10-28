@@ -321,9 +321,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
                         # Ajout de contact à la tâche parmi les contact du projet
 
+                        taskContacts = []
                         if len(projectContacts) > 0:
-                            taskContacts = []
-                        #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
+                            #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
                             nc =random.randint(1,nbContactByProject)
 
                             for i in range(nc):
