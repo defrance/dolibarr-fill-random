@@ -40,25 +40,25 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
     # Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
     if diffDaysEndNow > 365:
-        status = 2  # closed 
+        projectStatus = 2  # closed 
 
     # Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est antérieure à la date du jour,
     # le projet est ouvert ou fermé de façon aléatoire
     elif diffDaysEndNow >= 183 and diffDaysEndNow <= 365:
-        status = random.choice([1, 2])
+        projectStatus = random.choice([1, 2])
 
     # Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
     elif diffDaysEndNow < 183 and diffDaysStartNow <= 0:
-        status = random.choice([0,1,2])  # Draft, Open, Closed
+        projectStatus = random.choice([0,1,2])  # Draft, Open, Closed
     
     elif diffDaysStartNow > 0:
-        status = random.choice([0,1])  # Draft, Open
+        projectStatus = random.choice([0,1])  # Draft, Open
     
     else:
-        status = 0  # Open
+        projectStatus = 0  # Open
     
     # Si le statut du projet est "fermé"
-    if status == 2:
+    if projectStatus == 2:
     
     #Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
     
@@ -107,7 +107,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     #"public": "0",
     #"fk_statut": "1",
 
-    "date_close":dateCloseTs if status == 2 else None,
+    "date_close":dateCloseTs if projectStatus == 2 else None,
     #"fk_user_close": null,
     #"email_msgid": null,
     #"email_date": null,
@@ -133,7 +133,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     #"accept_conference_suggestions": "0",
     #"accept_booth_suggestions": "0",
     #"max_attendees": null,
-    "status": status,
+    "status": projectStatus,
     #"price_registration": null,
     #"price_booth": null,
     #"model_pdf": null,
@@ -191,6 +191,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
         urlContactProject = urlBase + "dolismartprojectsapi/" + str(projectID) + "/contacts"
         projectContacts = []
+        taskContacts = []
 
         if nbContactByProject > 0:
         # défini un nombre d'user pour le projet
@@ -213,16 +214,12 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         return None
                 
                 # association du contact avec son ID
-
-## Ici pour le mail et le Tiers ?
                     try:
                         dataContact = {
                             "fk_socpeople":randomId, #Required -  (integer): Id of thirdparty contact (if source = 'external') or id of user (if source = 'internal') to link ,
                             # faire random get_random_type_contact
                             "type_contact": typeContact, #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
                             "source": source, #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
-## what is that ?
-                            #"notrigger": 0  #Optional
                             }
 
                         rC = requests.post(urlContactProject, headers=headers,json=dataContact)
@@ -263,37 +260,40 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             else:
             
                 for i in range (nt):
-                    print("Création de la tâche n°", i+1,"sur", nt)
+                    if testing:
+                        print("Création de la tâche n°", i+1,"sur", nt)
+                
 
-                    dateC = fake.date_between_dates(dateCreate,dateEnd)
-                    dateO = fake.date_between_dates(dateC,dateEnd)
-                    dateE = fake.date_between_dates(dateO,dateEnd)
+                    if projectStatus == 2:
+                        taskStatus = taskStatus = random.choice([0,3])
+                    
+                    if projectStatus == 1:
+                        taskStatus = random.choice([0,1,2,3])
+
+                    if projectStatus == 0:
+                        taskStatus = random.choice([0,2])
+                    
+                    dateTaskC = fake.date_time_between_dates(dateCreate,dateEnd)
+                    dateTaskCTS = dateTaskC.timestamp()
+                    dateTaskO = fake.date_time_between_dates(dateTaskC, dateEnd)
+                    dateTaskOTS = dateTaskO.timestamp()
+                    dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
+                    dateTaskETS= dateTaskE.timestamp()
                     #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
                     #dateV = fake.date_between_dates(dateE,dateEnd)
 
                     data = {
-                    "ref": fake.unique.bothify(text=f"TASK-{projectID}-#####"),
-                    #"entity":"1",
-                    "fk_project": projectID, 
-                    #"fk_task_parent":"0",
-                    # "datev":dateV,
+                    "ref": "auto",
+                    "fk_project": projectID,
+                    "date_c":dateTaskCTS, 
+                    "date_start": dateTaskOTS,
+                    "date_end": dateTaskETS,
                     "label": fake.catch_phrase(),
                     "description":fake.text(max_nb_chars=200),
-                    # "duration_effective":"10980",
                     "planned_workload":"36000",
-                    # "progress":"30",
-                    # "priority":"0",
-                    # "budget_amount":"0.00000000",
-                    # "fk_user_creat":"1",
-                    # "fk_user_modif":null,
-                    # "fk_user_valid":null,
-                    # "fk_statut":"2",
                     "note_private": fake.text(max_nb_chars=200),
                     "note_public": fake.text(max_nb_chars=200),
-                    # "rang":"0",
-                    # "model_pdf":null,
-                    # "import_key":null,
-                    # "billable":"0"}
+                    "status": 2
                     }
 
                     r = requests.post(urlTasks, headers=headers, json=data)
@@ -302,7 +302,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         print (r.text)
                         return None
                     else:
-
+                    
                         # on récupère l'ID de la tâche créée
                         try:
                             resp = r.json()
@@ -311,14 +311,20 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             taskID = int(r.text.strip())
 
                         print("ID de la tâche créée:", taskID)
-                        
+
+                        r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
+                        if r.status_code != 200:
+                            print("Erreur lors de l'ajout des dates de la tâche n°", i+1,".", r.status_code)
+                            print (r.text)
+                            return None
+
+
                         # Ajout de contact à la tâche parmi les contact du projet
 
                         if len(projectContacts) > 0:
                             taskContacts = []
                         #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
                             nc =random.randint(1,nbContactByProject)
-                        
 
                             for i in range(nc):
                                 taskContact = random.choice(projectContacts)
@@ -338,27 +344,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                     print("contact ajouté à la tâche.")
                                     #  Stock les contacts associés à la tâche
                                     taskContacts.append(dataContact)
-                        if testing:
-                            print("contacts associés à la tâche :")
-                            print(taskContacts)
-
-
-                        # Ajout des dates ## FONCTIONNE PAS
-                        dataUpdate = {
-                            "datec":dateC.strftime("%Y-%m-%d %H:%M:%S"),
-                            # "tms":"2025-10-17 14:08:39",
-                            "dateo": dateO.strftime("%Y-%m-%d %H:%M:%S"),
-                            "datee": dateE.strftime("%Y-%m-%d %H:%M:%S"),
-                        }
-
-                        r = requests.put(urlTasks + str(taskID),headers=headers, json=dataUpdate)
-                        if r.status_code !=200:
-                            print("Erreur lors de l'ajout des dates de la n°", i+1,".", r.status_code)
-                            print (r.text)
-                            return None
-                        else:
-                            
-                            print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
+                            if testing:
+                                print("contacts associés à la tâche :")
+                                print(taskContacts)
+                        
+                        print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
                 
 
 
@@ -378,13 +368,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                 for j in range (ntt):
                                     print("Création du pointage n°", j+1,"sur", ntt)
 
-                                    randomDate = fake.date_between_dates(dateO, dateE)
-                                    randomTime = timedelta(
-                                                    hours=random.randint(7, 19),
-                                                    minutes=random.randint(0, 59),
-                                                    seconds=random.randint(0, 59)
-                                                    )
-                                    finalDatetime = datetime.combine(randomDate, datetime.min.time()) + randomTime
+                                    randomDate = fake.date_time_between_dates(dateTaskO, dateTaskE)
                             
                                 # Gestion de l'user associé au pointage
                                     if len(taskContacts) > 0:
@@ -394,7 +378,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                         userId = 0
 
                                     data = {
-                                        "date" : finalDatetime.strftime("%Y-%m-%d %H:%M:%S"),
+                                        "date" : randomDate.strftime("%Y-%m-%d %H:%M:%S"),
                                         "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
                                         "user_id" : userId, # (integer, optional): User (Use 0 for connected user).
                                         "note" : fake.sentence(nb_words=10) # (string, optional): Note
@@ -420,9 +404,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 if __name__ == "__main__":
     print(generate_project(
         dateCreate = fake.date_this_year(),
-        nbTasks=5,
-        nbtasksTime=5,
-        nbContactByProject=5,
+        nbTasks=10,
+        nbtasksTime=0,
+        nbContactByProject=0,
         retDataUser= fill_users(),
         retDataThirdParties= fill_thirdparties(),
         testing=True))
