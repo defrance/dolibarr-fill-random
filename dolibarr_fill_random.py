@@ -143,7 +143,7 @@ start_prev = datetime.now()
 if nbNewProposal > 0 and 'propal' in enabledModule:
     listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
-        propal = generate_proposal(dateProposal)
+        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct)
 
 start_stop = datetime.now()
 

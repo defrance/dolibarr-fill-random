@@ -12,16 +12,16 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_proposal(dateproposal):
+def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, testing=False):
     url = urlBase + "proposals"
 
     # on rajoute 5 jours à la date de la proposition
-    date_finvalidite = dateproposal + timedelta(days=5)  
-    dateproposalTs  = dateproposal.timestamp()
+    date_finValidite = dateProposal + timedelta(days=5)  
+    dateProposalTs  = dateProposal.timestamp()
     socID = get_random_client(retDataThirdParties)
     data = {
         "socid": socID,
-        "date": dateproposalTs,
+        "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
     }
     r = requests.post(url, headers=headers, json=data)
@@ -67,7 +67,7 @@ def generate_proposal(dateproposal):
 
 
     # si la date est inférieur à l'année en cours
-    if date_finvalidite.year < yearNow:
+    if date_finValidite.year < yearNow:
         signed = random.choice([2, 3])
         url = urlBase + "proposals/" + str(proposalID) + "/close"
         data = {
@@ -76,7 +76,7 @@ def generate_proposal(dateproposal):
 
         r = requests.post(url, headers=headers, json=data)
 
-        if signed == 2 and date_finvalidite.year == yearNow - 2:
+        if signed == 2 and date_finValidite.year == yearNow - 2:
             url = urlBase + "proposals/" + str(proposalID) + "/setinvoiced"
             data = {
             }
@@ -116,6 +116,18 @@ def generate_proposal(dateproposal):
             data = {}
             r = requests.post(url, headers=headers, json=data)
 
-
-
     return 1
+
+# Testing
+if __name__ == "__main__":
+    retDataThirdParties = fill_thirdparties("customer")
+    retDataThirdParties = fill_thirdparties("supplier")
+
+    print(
+        generate_proposal(
+            dateProposal = fake.date_time_this_year(),
+            retDataThirdParties = retDataThirdParties,
+            retDataProduct = fill_products(),
+            testing = True
+        )
+    )
