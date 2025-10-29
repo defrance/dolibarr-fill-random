@@ -18,7 +18,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     urlTasks = urlBase + "tasks"
 
 
-    # Génére la date de création du projet comme datetime avec heure aléatoire
+    # Générer la date de création du projet comme datetime avec heure aléatoire
     dateCreateWithTime = dateCreate + timedelta(hours=random.randint(6, 19), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
 
     # Générer la date de début du projet comme datetime
@@ -60,7 +60,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     # Si le statut du projet est "fermé"
     if projectStatus == 2:
     
-    #Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
+    # Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
     
         choice = random.choice(["before", "equal", "after"])
         
@@ -89,62 +89,21 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     # Date de fermeture en timestamp
     dateCloseTs = dateClose.timestamp() if dateClose else None
 
-## Retirer les key opportunités
-## Retirer les key seulement updatable
-
     data = {
-    #"fk_project": null,
-    #"fk_soc": "5",
     "date_start": dateStartTs,
     "date_end": dateEndTs,
     "ref": "auto",
-    #"ref_ext": null,
-    #"entity": "1",
     "title": fake.catch_phrase(),
     "description": fake.text(max_nb_chars=200),
-    #"fk_user_creat": "1",
-    #"fk_user_modif": null,
-    #"public": "0",
-    #"fk_statut": "1",
-
     "date_close":dateCloseTs if projectStatus == 2 else None,
-    #"fk_user_close": null,
-    #"email_msgid": null,
-    #"email_date": null,
-
-## Opportunités data
-    #"opp_amount": "0.00000000",
-    #"budget_amount": "0.00000000",
-    #"usage_opportunity": "0",
-    #"fk_opp_status": null,
-    #"opp_percent": null,
-    #"fk_opp_status_end": null,
-
-## suivis de tache (par défaut activé)
+    # suivis de tache (par défaut activé)
     "usage_task": "1",
-
-## Facturation du temps (par défaut désactivé)
-    #"usage_bill_time": "0",
-
-    #"usage_organize_event": "0",
-    #"date_start_event": null,
-    #"date_end_event": null,
-    #"location": null,
-    #"accept_conference_suggestions": "0",
-    #"accept_booth_suggestions": "0",
-    #"max_attendees": null,
-    "status": projectStatus,
-    #"price_registration": null,
-    #"price_booth": null,
-    #"model_pdf": null,
-    #"ip": null,
-    #"last_main_doc": null,
-    #"import_key": null,
-    #"extraparams": null
+    # Facturation du temps (par défaut désactivé)
+    "usage_bill_time": "0",
+    "status": projectStatus
     }
 
     r = requests.post(urlProjects, headers=headers, json=data)
-    
     
     if r.status_code != 200:
         print("Erreur lors de la création du projet", r.status_code)
@@ -161,7 +120,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
         if testing:
             print("ID du projet créé:", projectID)    
-
 
         #Update pour ajouter les data non prises en compte à la création
         print("Update des données complémentaires du projet...")
@@ -185,8 +143,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             print("Erreur lors de la mise à jour du projet:", str(e))
             return None
         
-
-# Association user au projet
+        # Association user au projet
         print("Ajout des contacts du projet ....")
 
         urlContactProject = urlBase + "dolismartprojectsapi/" + str(projectID) + "/contacts"
@@ -194,7 +151,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         taskContacts = []
 
         if nbContactByProject > 0:
-        # défini un nombre d'user pour le projet
+        # Défini un nombre d'user pour le projet
             nt = random.randint(0,nbContactByProject)
             if nt > 0:
                 for i in range (nt):
@@ -213,7 +170,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         print("source du contact invalide.")
                         return None
                 
-                # association du contact avec son ID
+                    # Association du contact avec son ID
                     try:
                         dataContact = {
                             "fk_socpeople":randomId, #Required -  (integer): Id of thirdparty contact (if source = 'external') or id of user (if source = 'internal') to link ,
@@ -247,7 +204,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             else:
                 print("pas de contact associé au projet.")
 
-# Création des tâches associées au projet si le nombre de tâches est correct
+        # Création des tâches associées au projet si le nombre de tâches est correct
         if nbTasks >= 0:
 
             print("Création du projet terminée, création des tâches associées...")
@@ -263,7 +220,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     if testing:
                         print("Création de la tâche n°", i+1,"sur", nt)
                 
-
                     if projectStatus == 2:
                         taskStatus = taskStatus = random.choice([0,3])
                     
@@ -279,8 +235,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     dateTaskOTS = dateTaskO.timestamp()
                     dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
                     dateTaskETS= dateTaskE.timestamp()
-                    #voir pour ajouter possibilité que la tache depasse si le projet depasse la date limite.
-                    #dateV = fake.date_between_dates(dateE,dateEnd)
 
                     data = {
                     "ref": "auto",
@@ -318,9 +272,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             print (r.text)
                             return None
 
-
                         # Ajout de contact à la tâche parmi les contact du projet
-
                         taskContacts = []
                         if len(projectContacts) > 0:
                             #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
@@ -333,8 +285,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                     "fk_socpeople": taskContact["fk_socpeople"],
                                     "type_contact": random.choice(["TASKCONTRIBUTOR","TASKEXECUTIVE"]),
                                     "source":taskContact["source"]
-
                                 }
+
                                 r = requests.post(urlBase + "dolismarttasksapi/" + str(taskID)+"/contacts", headers=headers, json=dataContact)
                             
                                 if r.status_code !=200:
@@ -344,6 +296,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                     print("contact ajouté à la tâche.")
                                     #  Stock les contacts associés à la tâche
                                     taskContacts.append(dataContact)
+
                             if testing:
                                 print("contacts associés à la tâche :")
                                 print(taskContacts)

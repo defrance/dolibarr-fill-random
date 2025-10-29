@@ -25,16 +25,16 @@ from generators.generate_category import generate_category
 from generators.generate_opportunity import generate_opportunity
 
 
-# on mémorise l'heure de début de l'alimentation
+# On mémorise l'heure de début de l'alimentation totale
 start_time = datetime.now()
 print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
 
-# récupération des modules actifs coté Dolibarr
+# Récupération des modules actifs coté Dolibarr
 enabledModule = get_enabled_modules()
 print ("Liste des modules activés dans Dolibarr")
 print (enabledModule)
 
-# creation des catégories
+# Création des catégories
 if newCategory > 0 and 'categorie' in enabledModule:
     for i in range(random.randint(1, newCategory)):
         generate_category("product")
@@ -57,9 +57,8 @@ if nbNewWarehouse > 0 and 'stock' in enabledModule:
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
 
-# on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
+# On remplit les entrepots et les utilisateurs pour les alimentations aléatoires
 retDataWarehouse = fill_warehouses()
-
 
 if nbNewUser > 0:
     listUserGen = gen_random_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
@@ -68,7 +67,6 @@ if nbNewUser > 0:
 
 retDataUser = fill_users()
 
-
 if nbNewBank > 0 and 'banque' in enabledModule:
     listBankGen = gen_random_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
     for dateCreate in listBankGen:
@@ -76,19 +74,15 @@ if nbNewBank > 0 and 'banque' in enabledModule:
 
 if 'banque' in enabledModule:
     retDataBank = fill_banks()
-    print("Total banques : ", len(retDataBank))
-
     retDataPayment = fill_payement_types()
-    print("Total paiements : ", len(retDataPayment))
 
+# On affiche la durée de l'alimentation
 start_stop = datetime.now()
-
-# on affiche la durée
 duration = start_stop - start_time
 print("Alimentation Initiale : ", duration)
 start_prev = datetime.now()
 
-# on cree les clients avant les produits pour associer les prix fournisseurs si besoin
+# On crée les clients avant les produits pour associer les prix fournisseurs si besoin
 if nbNewClient > 0:
     listClientGen = gen_random_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
@@ -108,8 +102,10 @@ if createSupplier == 1  and 'fournisseur' in enabledModule:
     retDataFournisseur = fill_thirdparties("supplier")
 
 
+
+# on affiche la durée de l'alimentation
 start_stop = datetime.now()
-# on affiche la durée
+
 duration = start_stop - start_prev
 print("Durée Alimentation Tiers et produits : ", duration)
 
@@ -163,9 +159,10 @@ if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
         fichinter = generate_intervention(dateInter, retDataThirdParties, enabledModule)
 
 start_stop = datetime.now()
-# on affiche la durée
+# on affiche la durée de l'alimentation
 duration = start_stop - start_prev
 print("Durée Alimentation Contrat et intervention : ", duration)
+
 start_prev = datetime.now()
 
 if nbNewTicket > 0  and 'ticket' in enabledModule:
@@ -177,7 +174,6 @@ if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
     listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
     for dateknowledge in listArticleGen:
         ticket = generate_knowledge(dateknowledge)
-
 
 start_stop = datetime.now()
 duration = start_stop - start_prev
@@ -193,11 +189,12 @@ if nbNewProject > 0 and 'projet' in enabledModule:
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
 
 start_stop = datetime.now()
+
 duration = start_stop - start_prev
 print("Durée Alimentation Projet et tâches : ", duration)
 
+# On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
-
 # on affiche la durée
 duration = start_stop - start_time
 print("Durée de l'alimentation : ", duration)
