@@ -40,12 +40,12 @@
  - test unitaire
     - ~~generate_bank~~
     - ~~generate_category~~
-    - generate_contract => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
-        - testing=True à mettre en place
-    - ~~generate_customer => voir les fakeRetData
+~    - ~~generate_contract~~
+        - ~~testing=True à mettre en place~~
+    - ~~generate_customer~~ => 
         - ligne 54 : pourquoi data est vide pour l'utilisateur référent ?
         - ~~testing=True print à mettre en place~~
-        - erreur random 1 fois sur 3 
+        - erreur random 1 fois sur 3 voir en vidant la bdd
     - generate_intervention => probleme Tiers sur les tests (mauvaise fonction ou mauvaise nom de key probablement)
         - testing=True print à mettre en place
     - generate_invoice => retData tests

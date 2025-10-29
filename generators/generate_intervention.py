@@ -11,9 +11,10 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_intervention(dateIntervention, retDataThirdParties, enabledModule):
+def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing=False):
     url = urlBase + "interventions"
-    print(retDataThirdParties)
+    if testing:
+        print(retDataThirdParties)
 	# on récupère les contrats associés au client si il y en a
     socid = get_random_client(retDataThirdParties)
     fk_contract = 0
@@ -91,12 +92,15 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule):
     return 1
 
 # Test unitaire
-"""
+
 if __name__ == "__main__":
+    retDataThirdParties = fill_thirdparties("customer")
+    retDataThirdParties = fill_thirdparties("supplier")
+
     print(generate_intervention(
         dateIntervention=fake.date_this_year(),
-        retDataThirdParties=,
-        enabledModule=get_enabled_modules()
+        retDataThirdParties= retDataThirdParties,
+        enabledModule=get_enabled_modules(),
+        testing=True
         )
         )
-"""

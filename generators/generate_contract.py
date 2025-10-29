@@ -110,6 +110,8 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
             }
             r = requests.put(url, headers=headers, json=data)
 
+    if testing:
+        print(data)
     return 1
 
 # Test unitaire
@@ -123,6 +125,7 @@ if __name__ == "__main__":
         dateContract = fake.date_time_this_year(),
         retDataThirdParties = retDataThirdParties,
         retDataProduct = fill_products(),
-        retDataUser = fill_users()
+        retDataUser = fill_users(),
+        testing=True
             )
         )
