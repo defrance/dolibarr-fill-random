@@ -50,7 +50,7 @@
     - ~~generate_invoice~~
     - ~~generate_knowledge~~
     - generate_opportunity => pas implémenté
-    - generate_order
+    - ~~generate_order~~
     - generate_product
     - ~~generate_project~~
     - generate_proposal

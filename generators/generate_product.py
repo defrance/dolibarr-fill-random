@@ -12,7 +12,7 @@ from generators.generate_utils import *
 
 fake = Faker('fr_FR')
 
-def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, test=0):
+def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testing=False):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
@@ -45,10 +45,10 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         "price_min_ttc" : 13,
     }
 
-    if test:
+    if testing:
         print(urlProduct,headers,data)
-    else:
-        r = requests.post(urlProduct, headers=headers, json=data)
+    
+    r = requests.post(urlProduct, headers=headers, json=data)
 
     # on récupère l'id du produit crée
     productId = 0
@@ -145,7 +145,16 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
     return 1
 
+# Testing
 
-#if __name__ == "__main__":
-    #dateCreate, retDataWarehouse, retDataCategProduct, enabledModule,
-    #generate_product(dateCreate=,....test=1)
+if __name__ == "__main__":
+
+    print(generate_product(
+        dateCreate= fake.date_time_this_year(),
+        retDataWarehouse = fill_warehouses(),
+        retDataCategProduct = fill_categories("product"),
+        enabledModule= get_enabled_modules(),
+        testing=True
+        
+
+    ))
