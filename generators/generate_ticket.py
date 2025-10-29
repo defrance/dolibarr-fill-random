@@ -10,9 +10,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 
-def generate_ticket(dateticket):
+def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = False):
     # la date doit etre un timestamp
-    dateticketTs  =dateticket.timestamp()
+    dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
     # on récupère les contrats associés au client si il y en a
     socid= get_random_client(retDataThirdParties)
@@ -26,7 +26,7 @@ def generate_ticket(dateticket):
         "message": fake.catch_phrase(),
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
-        "datec": dateticketTs,
+        "datec": dateTicketTs,
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
@@ -34,9 +34,9 @@ def generate_ticket(dateticket):
 
     userAssign = get_random_user(retDataUser)
     # si la date est inférieur à l'année en cours on valide le ticket
-    if dateticket.year < yearNow:
+    if dateTicket.year < yearNow:
         url = urlBase + "tickets/" + str(ticketID)
-        date_close = dateticket + timedelta(days=random.randint(1, 5))
+        date_close = dateTicket + timedelta(days=random.randint(1, 5))
         # on affecte un utilisateur au ticket
         status = random.choice([8, 9])
         # on met status et fk_statut pour gérer la retrocompatibilité
@@ -53,7 +53,7 @@ def generate_ticket(dateticket):
         status = random.choice([0, 1, 2, 3, 5, 7])
         if status != 0:
             url = urlBase + "tickets/" + str(ticketID)
-            date_close = dateticket + timedelta(days=random.randint(1, 5))
+            date_close = dateTicket + timedelta(days=random.randint(1, 5))
             data = {
                 "status" : status,
                 "fk_statut" : status,
@@ -73,3 +73,17 @@ def generate_ticket(dateticket):
     #         r = requests.post(url, headers=headers, json=data)
 
     return 1
+
+# Testing
+if __name__ == "__main__":
+    retDataThirdParties = fill_thirdparties("customer")
+    retDataThirdParties = fill_thirdparties("supplier")
+
+    print(
+        generate_ticket(
+            dateTicket = fake.date_time_this_year(),
+            retDataThirdParties = retDataThirdParties,
+            retDataUser = fill_users(),
+            testing = True   
+        )
+    )

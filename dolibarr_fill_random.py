@@ -171,7 +171,7 @@ start_prev = datetime.now()
 if nbNewTicket > 0  and 'ticket' in enabledModule:
     listTicketGen = gen_random_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
-        ticket = generate_ticket(dateTicket)
+        ticket = generate_ticket(dateTicket, retDataThirdParties, retDataUser)
 
 if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
     listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)

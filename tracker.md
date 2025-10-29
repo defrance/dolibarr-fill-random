@@ -53,7 +53,7 @@
     - ~~generate_order~~
     - ~~generate_product~~
     - ~~generate_project~~
-    - generate_proposal
+    - ~~generate_proposal~~
     - generate_ticket
     - ~~generate_user~~
     - ~~generate_utils~~
