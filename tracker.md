@@ -105,6 +105,6 @@
 
 ## Notes
  - pour 28/10
-    - voir les dates des tâches
+    - ~~voir les dates des tâches~~
     - l'avancement des taches dans les pointages
-    - statut des tâches
+    - ~~statut des tâches~~

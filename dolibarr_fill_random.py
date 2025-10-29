@@ -57,9 +57,9 @@ if nbNewWarehouse > 0 and 'stock' in enabledModule:
     for dateCreate in listWareHouseGen:
         warehouse = generate_warehouse(dateCreate)
 
-    # on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
+# on remplit les entrepots et les utilisateurs pour les alimentations aléatoires
 retDataWarehouse = fill_warehouses()
-print("Total entrepôts : ", len(retDataWarehouse))
+
 
 if nbNewUser > 0:
     listUserGen = gen_random_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
@@ -67,7 +67,7 @@ if nbNewUser > 0:
         product = generate_user(dateCreate)
 
 retDataUser = fill_users()
-print("Total utilisateurs : ", len(retDataUser))
+
 
 if nbNewBank > 0 and 'banque' in enabledModule:
     listBankGen = gen_random_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
@@ -82,6 +82,7 @@ if 'banque' in enabledModule:
     print("Total paiements : ", len(retDataPayment))
 
 start_stop = datetime.now()
+
 # on affiche la durée
 duration = start_stop - start_time
 print("Alimentation Initiale : ", duration)
@@ -100,14 +101,11 @@ if nbNewProduct > 0:
 
 
 retDataProduct = fill_products()
-print("Total produits : ", len(retDataProduct))
 
 retDataThirdParties = fill_thirdparties("customer")
-print("Total clients :", len(retDataCategCustomer))
 
 if createSupplier == 1  and 'fournisseur' in enabledModule:
     retDataFournisseur = fill_thirdparties("supplier")
-    print("Total fournisseurs : ", len(retDataFournisseur))
 
 
 start_stop = datetime.now()
@@ -157,7 +155,7 @@ start_prev = datetime.now()
 if nbNewContract > 0 and 'contrat' in enabledModule:
     listContractGen = gen_random_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
-        contract = generate_contract(dateContract, retDataThirdParties)
+        contract = generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser)
 
 if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
     listInterventionGen = gen_random_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
