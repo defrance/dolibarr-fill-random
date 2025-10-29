@@ -170,3 +170,16 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
 
     return 1
 
+if __name__ == "__main__":
+    retDataThirdParties = fill_thirdparties("customer")
+    retDataThirdParties = fill_thirdparties("supplier")
+
+    print(
+        generate_order(
+            dateOrder = fake.date_this_year(),
+            retDataProduct = fill_products(),
+            retDataThirdParties = retDataThirdParties,
+            retDataWarehouse= fill_warehouses(),
+            testing = True
+        )
+    )

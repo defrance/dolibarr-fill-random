@@ -47,8 +47,7 @@
         - ~~testing=True print à mettre en place~~
         - erreur random 1 fois sur 3 (voir en vidant la bdd)
     - ~~generate_intervention~~ 
-    - generate_invoice => retData tests
-        - testing=True print à mettre en place
+    - ~~generate_invoice~~
     - ~~generate_knowledge~~
     - generate_opportunity => pas implémenté
     - generate_order
