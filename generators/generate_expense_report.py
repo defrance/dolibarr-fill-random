@@ -11,12 +11,14 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_expense_report( retDataUser, testing = False):
+def generate_expense_report( dateStart, retDataUser, testing = False):
     url = urlBase + "expensereports"
 
     print (url)
     data = {
         "fk_user_author": get_random_user(retDataUser)['id'],
+        "date_debut": dateStart.strftime('%Y-%m-%d'),
+        "date_fin": fake.date_between_dates(dateStart, datetime.now()).strftime('%Y-%m-%d'),
     }
 
     try:
@@ -46,5 +48,7 @@ def generate_expense_report( retDataUser, testing = False):
 
 if __name__ == "__main__":
     print(
-        generate_expense_report( retDataUser =fill_users(), testing = True)
+        generate_expense_report( 
+            dateStart= fake.date_this_month(before_today=True),
+            retDataUser =fill_users(), testing = True)
     )
