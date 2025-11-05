@@ -8,6 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+hexColor= fake.hex_color()
+colorWithoutHash= hexColor.lstrip('#')
 
 def generate_category(type, testing =False):
     # on boucle sur les lignes
@@ -17,6 +19,7 @@ def generate_category(type, testing =False):
         "description": fake.catch_phrase(),
         "type": type,
         "status": 1, # actif
+        "color": colorWithoutHash,
     }
     r = requests.post(url, headers=headers, json=data)
     if r.status_code != 200:

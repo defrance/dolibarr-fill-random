@@ -5,15 +5,27 @@ import requests
 import base64
 import datetime
 import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import os, sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from utils.get_random.get_random_project import get_random_projectID
 
-def generate_expense_report( dateStart, retDataUser, testing = False):
+def generate_expense_report( dateStart, retDataUser, retDataProjects, testing = False):
     url = urlBase + "expensereports"
     
+    #Choisi un projet aléatoire dont dépends la note de frais
+    try:
+        projectID = get_random_projectID(retDataProjects)
+    
+    except Exception as e:
+        print("Erreur lors de la récupération d'un projet aléatoire :", e)
+        projectID = 0
 
+    # Choisi un utilisateur aléatoire du projet comme auteur de la note de frais
+         
     # Création de la note de frais par défaut en brouillon
     data = {
         "fk_user_author": get_random_user(retDataUser)['id'], # par défaut on met l'admin
