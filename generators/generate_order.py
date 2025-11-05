@@ -180,6 +180,6 @@ if __name__ == "__main__":
             retDataProduct = fill_products(),
             retDataThirdParties = retDataThirdParties,
             retDataWarehouse= fill_warehouses(),
-            testing = True
+            testing = False
         )
     )

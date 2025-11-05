@@ -84,6 +84,6 @@ if __name__ == "__main__":
             dateTicket = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
             retDataUser = fill_users(),
-            testing = True   
+            testing = False   
         )
     )

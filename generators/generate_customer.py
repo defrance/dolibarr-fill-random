@@ -113,7 +113,8 @@ if __name__ == "__main__":
         retDataUser =fill_users(),
         retDataCategContact=fill_categories("contact"),
         retDataCategCustomer=fill_categories("customer"),
-        enabledModule = get_enabled_modules()
+        enabledModule = get_enabled_modules(),
+        testing=False
         ))
 
 # Erreur 1 fois sur 3

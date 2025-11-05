@@ -126,6 +126,6 @@ if __name__ == "__main__":
         retDataThirdParties = retDataThirdParties,
         retDataProduct = fill_products(),
         retDataUser = fill_users(),
-        testing=True
+        testing=False
             )
         )

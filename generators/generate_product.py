@@ -154,7 +154,7 @@ if __name__ == "__main__":
         retDataWarehouse = fill_warehouses(),
         retDataCategProduct = fill_categories("product"),
         enabledModule= get_enabled_modules(),
-        testing=True
+        testing=False
         
 
     ))

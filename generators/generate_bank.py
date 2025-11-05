@@ -40,5 +40,5 @@ def generate_bank(dateCreate, testing=False):
 if __name__ == "__main__":
     print(generate_bank(
         dateCreate = fake.date_this_year(),
-        testing=True
+        testing=False
         ))

@@ -128,6 +128,6 @@ if __name__ == "__main__":
             dateProposal = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
-            testing = True
+            testing = False
         )
     )

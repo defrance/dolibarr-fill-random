@@ -115,5 +115,5 @@ if __name__ == "__main__":
         retDataBank= fill_banks(),
         retDataProduct= fill_products(),
         retDataThirdParties= retDataThirdParties,
-        testing=True
+        testing=False
     ))

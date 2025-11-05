@@ -61,4 +61,4 @@ def generate_knowledge(dateKnowledge, testing=False):
 if __name__ == "__main__":
     print(generate_knowledge(
         dateKnowledge=fake.date_time_this_year(),
-        testing=True))
+        testing=False))

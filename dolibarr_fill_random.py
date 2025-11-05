@@ -4,6 +4,9 @@ import string
 import requests
 import base64
 import datetime
+import os, sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 fake = Faker('fr_FR')
 
@@ -23,7 +26,9 @@ from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
 from generators.generate_opportunity import generate_opportunity
+from generators.generate_expense_report import generate_expense_report
 
+from utils.fill_ret_data.fill_projects import fill_projects
 
 # On mémorise l'heure de début de l'alimentation totale
 start_time = datetime.now()
@@ -100,8 +105,6 @@ retDataThirdParties = fill_thirdparties("customer")
 
 if createSupplier == 1  and 'fournisseur' in enabledModule:
     retDataFournisseur = fill_thirdparties("supplier")
-
-
 
 # on affiche la durée de l'alimentation
 start_stop = datetime.now()
@@ -188,6 +191,8 @@ if nbNewProject > 0 and 'projet' in enabledModule:
     for dateProject in listProjectGen:
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
 
+retDataProjects = fill_projects()
+
 start_stop = datetime.now()
 
 duration = start_stop - start_prev
@@ -197,4 +202,4 @@ print("Durée Alimentation Projet et tâches : ", duration)
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 # on affiche la durée
 duration = start_stop - start_time
-print("Durée de l'alimentation : ", duration)
+print("Durée totale de l'alimentation : ", duration)

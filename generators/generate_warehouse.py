@@ -39,4 +39,4 @@ def generate_warehouse(dateCreate, testing=False):
 if __name__ == "__main__":
     print(generate_warehouse(
         dateCreate = fake.date_this_year(),
-        testing=True))
+        testing=False))

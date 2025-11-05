@@ -33,10 +33,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     dateNow = datetime.now()
     diffDaysEndNow = (dateNow - dateEnd).days
     diffDaysStartNow = (dateNow - dateStart).days
-    print("date start : ", dateStart)
-    print("différence : ", diffDaysStartNow)
-    print("date de fin : ", dateEnd)
-    print("différence : ", diffDaysEndNow)
 
     # Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
     if diffDaysEndNow > 365:
@@ -122,7 +118,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             print("ID du projet créé:", projectID)    
 
         #Update pour ajouter les data non prises en compte à la création
-        print("Update des données complémentaires du projet...")
+        if testing:
+            print("Update des données complémentaires du projet...")
         try:
             dataUpdate = {
                 # Modification de la date de la création du projet pour qu'elle ne soit pas la date du jours mais la date de création transmisse
@@ -138,13 +135,15 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 print (rU.text)
                 return None 
             else:
-                print("Mise à jour du projet terminée.")
+                if testing:
+                    print("Mise à jour du projet terminée.")
         except Exception as e:
             print("Erreur lors de la mise à jour du projet:", str(e))
             return None
         
         # Association user au projet
-        print("Ajout des contacts du projet ....")
+        if testing:
+            print("Ajout des contacts du projet ....")
 
         urlContactProject = urlBase + "dolismartprojectsapi/" + str(projectID) + "/contacts"
         projectContacts = []
@@ -186,7 +185,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             return None 
                         
                         else:
-                            print("Ajout du contact ", source, " terminée.")
+                            if testing:
+                                print("Ajout du contact ", source, " terminée.")
                         
                             #  Stock les contacts associés au projet
                             projectContacts.append(dataContact)
@@ -207,7 +207,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         # Création des tâches associées au projet si le nombre de tâches est correct
         if nbTasks >= 0:
 
-            print("Création du projet terminée, création des tâches associées...")
+            if testing:
+                print("Création du projet terminée, création des tâches associées...")
 
             # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
             nt = random.randint(0, nbTasks)
@@ -263,8 +264,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             taskID = resp["id"] if isinstance(resp, dict) else resp
                         except Exception:
                             taskID = int(r.text.strip())
-
-                        print("ID de la tâche créée:", taskID)
+                        
+                        if testing:
+                            print("ID de la tâche créée:", taskID)
 
                         r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
                         if r.status_code != 200:
@@ -280,7 +282,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
                             for i in range(nc):
                                 taskContact = random.choice(projectContacts)
-                                print(dataContact)
+                                if testing:
+                                    print(dataContact)
                                 dataContact = {
                                     "fk_socpeople": taskContact["fk_socpeople"],
                                     "type_contact": random.choice(["TASKCONTRIBUTOR","TASKEXECUTIVE"]),
@@ -293,7 +296,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                     print("erreur lors de l'ajout du contact à la tâche")
                             
                                 else:
-                                    print("contact ajouté à la tâche.")
+                                    if testing:
+                                        print("contact ajouté à la tâche.")
                                     #  Stock les contacts associés à la tâche
                                     taskContacts.append(dataContact)
 
@@ -301,7 +305,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                 print("contacts associés à la tâche :")
                                 print(taskContacts)
                         
-                        print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
+                        if testing:
+                            print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
 
                         # Si la tâche est en cours ou clôturé :
                         if taskStatus == 2 or 3:
@@ -316,11 +321,13 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                 ntt = random.randint(0, nbtasksTime)
 
                             if ntt == 0:
-                                print("Aucun pointage créé pour cette tâche.")
+                                if testing:
+                                    print("Aucun pointage créé pour cette tâche.")
                             
                             else:
                                 for j in range (ntt):
-                                    print("Création du pointage n°", j+1,"sur", ntt)
+                                    if testing:
+                                        print("Création du pointage n°", j+1,"sur", ntt)
 
                                     randomDate = fake.date_time_between_dates(dateTaskO, dateTaskE)
                             
@@ -364,4 +371,4 @@ if __name__ == "__main__":
         nbContactByProject=10,
         retDataUser= fill_users(),
         retDataThirdParties= fill_thirdparties(),
-        testing=True))
+        testing=False))

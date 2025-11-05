@@ -36,5 +36,5 @@ def generate_category(type, testing =False):
 if __name__ == "__main__":
     print(generate_category(
         type= fake.word(),
-        testing= True
+        testing= False
     ))

@@ -101,6 +101,6 @@ if __name__ == "__main__":
         dateIntervention=fake.date_this_year(),
         retDataThirdParties= retDataThirdParties,
         enabledModule=get_enabled_modules(),
-        testing=True
+        testing=False
         )
         )

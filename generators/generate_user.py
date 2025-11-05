@@ -13,7 +13,7 @@ from generators.generate_utils import *
 fake = Faker('fr_FR')
 
 
-def generate_user(dateCreate):
+def generate_user(dateCreate, testing=False):
     url = urlBase + "users"
 
     gender = random.choice(['man', 'woman', 'other'])
@@ -50,11 +50,13 @@ def generate_user(dateCreate):
         return None
     else:
         idSoc= r.text
-        print(data)
+        if testing:
+            print(data)
 
     return 1
 
 if __name__ == "__main__":
     print(generate_user(
-        dateCreate=fake.date_this_year()
+        dateCreate=fake.date_this_year(),
+        testing=False
     ))

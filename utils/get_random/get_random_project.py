@@ -2,7 +2,7 @@ import random
 
 import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from utils.fill_data.fill_projects import fill_projects
+from utils.fill_ret_data.fill_projects import fill_projects
 
 def get_random_projectID(retDataProjects):
 	if (len(retDataProjects) > 1):
