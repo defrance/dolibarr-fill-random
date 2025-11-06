@@ -2,6 +2,8 @@ connection:
   urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
   apitoken: 570e9KHTzbTi2M1WgI49fMSYniBuup24
   dol_version: 22
+  lang: fr_FR
+  tests : false
 
 connection-test2:
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
