@@ -25,7 +25,7 @@ from generators.generate_ticket import generate_ticket
 from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
-from generators.generate_opportunity import generate_opportunity
+
 
 
 
