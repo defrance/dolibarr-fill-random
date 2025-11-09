@@ -116,7 +116,7 @@ start_prev = datetime.now()
 if nbNewBill > 0 and 'facture' in enabledModule:
     listFactureGen = gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
-        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties)
+        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser)
 
 start_stop = datetime.now()
 # on affiche la durée
@@ -128,7 +128,7 @@ start_prev = datetime.now()
 if nbNewOrder > 0 and 'commande' in enabledModule:
     listOrderGen = gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
     for dateOrder in listOrderGen:
-        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse)
+        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser)
 
 
 start_stop = datetime.now()
@@ -141,7 +141,7 @@ start_prev = datetime.now()
 if nbNewProposal > 0 and 'propal' in enabledModule:
     listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
-        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct)
+        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser)
 
 start_stop = datetime.now()
 

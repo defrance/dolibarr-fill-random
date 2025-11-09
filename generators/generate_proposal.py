@@ -12,7 +12,7 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, testing=False):
+def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing=False):
     url = urlBase + "proposals"
 
     # on rajoute 5 jours à la date de la proposition
@@ -128,6 +128,7 @@ if __name__ == "__main__":
             dateProposal = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
+            retDataUser= fill_users(),
             testing = False
         )
     )

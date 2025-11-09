@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 
-def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, testing=False):
+def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing=False):
     url = urlBase + "invoices"
 
     paye = random.choice([0, 1])
@@ -115,5 +115,6 @@ if __name__ == "__main__":
         retDataBank= fill_banks(),
         retDataProduct= fill_products(),
         retDataThirdParties= retDataThirdParties,
+        retDataUser= fill_users(),
         testing=False
     ))

@@ -19,7 +19,7 @@ elements:
   new_product : 200
   new_warehouse : 3
   new_stock_movement : 3
-  new_bank : 2
+  new_bank : 4
   new_bill :  460
   new_order : 460
   new_proposal : 460

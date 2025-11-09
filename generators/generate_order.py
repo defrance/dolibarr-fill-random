@@ -11,7 +11,7 @@ from dolibarr_api import *
 from generators.generate_utils import *
 
 
-def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, testing = False):
+def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing = False):
     url = urlBase + "orders"
     socId = get_random_client(retDataThirdParties)
     data = {
@@ -180,6 +180,7 @@ if __name__ == "__main__":
             retDataProduct = fill_products(),
             retDataThirdParties = retDataThirdParties,
             retDataWarehouse= fill_warehouses(),
+            retDataUser= fill_users(),
             testing = False
         )
     )
