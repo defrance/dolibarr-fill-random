@@ -60,8 +60,8 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
             print("utilisateur référent : ", data)
     
     # ajout de contact
-    url = urlBase + "contacts/"
     for i in range(random.randint(0, 3)):
+        url = urlBase + "contacts/"
         # on rajoute des contacts externes
         address, zip, town = get_random_address()
 
@@ -80,11 +80,14 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
         r = requests.post(url, headers=headers, json=data)
         if r.status_code != 200:
             print("erreur sur l'ajout de contact externe. ")
-        idContact = r.text
+            print (r.text)
+            idContact = -1
+        else:
+            idContact = r.text
          
 
         # gestion des catégories de contact
-        if newCategorySocpeople > 0 and 'categorie' in enabledModule:
+        if newCategorySocpeople > 0 and 'categorie' in enabledModule and idContact != -1:
             for i in range(random.randint(0, newCategorySocpeople)):
                 # on rajoute une catégorie aléatoire
                 url = urlBase + "categories/" + str(random.choice(retDataCategContact)['id']) + "/objects/contact/" + str(idContact)
@@ -92,6 +95,8 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
                 r = requests.post(url, headers=headers, json=data)
                 if r.status_code != 200:
                     print("erreur ajout catégorie aléatoire Socpeople ")
+                    print (r.text)
+
 
     # gestion des catégories de tiers
     if newCategoryCustomer > 0 and 'categorie' in enabledModule:
