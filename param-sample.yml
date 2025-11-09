@@ -2,6 +2,8 @@ connection:
   urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
   apitoken: 570e9KHTzbTi2M1WgI49fMSYniBuup24
   dol_version: 22
+  lang: fr_FR
+  tests : false
 
 connection-test2:
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
@@ -52,9 +54,12 @@ supplier:
   new_order : 420
 
 project:
-  new_project : 0
-  new_task : 0
-  new_task_time : 0
+  # new_opportunity: 0
+  new_project: 10
+  new_max_task: 10 #max by project
+  new_max_task_time: 10 #max by task
+  new_max_contact: 2 #max by task
+  new_opportunity: 10
 
 others:
   year_to_fill : 2023

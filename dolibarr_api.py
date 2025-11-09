@@ -5,7 +5,7 @@ import random
 import yaml
 from datetime import datetime, timedelta
 #pip install pyyaml
-
+from faker import Faker
 
 import pathlib											# utilisation de la bibliothèque pathlib
 myFolderpath= pathlib.Path(__file__).parent.resolve()	# on récupère le chemin du programme
@@ -18,7 +18,7 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-
+fake = Faker('fr_FR')
 
 # on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']
@@ -49,8 +49,10 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 
 # infos lies au projet
 nbNewProject=config['project']['new_project']
-nbNewTask=config['project']['new_task']
-nbNewTaskTime=config['project']['new_task_time']
+nbNewOpportunity=config['project']['new_opportunity']
+nbNewMaxTask=config['project']['new_max_task']
+nbNewMaxTaskTime=config['project']['new_max_task_time']
+nbNewMaxContact = config['project']['new_max_contact']
 
 # autres infos 
 yearToFill=config['others']['year_to_fill']
@@ -240,7 +242,7 @@ def fill_thirdparties(Type='all'):
 def get_random_client(retDataThirdParties):
 	return retDataThirdParties[random.randint(1, len(retDataThirdParties)-1)]['id']
 
-def gen_randow_following_date(annee, nombre, max_interval=3):
+def gen_random_following_date(annee, nombre, max_interval=3):
     # Date de départ fixée au 1er janvier de l'année en cours
     # annee_en_cours = datetime.today().year
     date_debut = datetime(annee, 1, 1)
