@@ -83,6 +83,7 @@ Attention, l'utilisateur doit etre admin
 - Ajout de contact Externe/interne
     - présent que sur devis, commande et facture
 
+- Projets / taches et temps saisies 
 
 # Installation préalable
 Le programme utilise faker pour générer des données aléatoire
