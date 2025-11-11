@@ -83,7 +83,8 @@ Attention, l'utilisateur doit etre admin
 - Ajout de contact Externe/interne
     - présent que sur devis, commande et facture
 
-- Projets / taches et temps saisies 
+- Projets / taches et temps saisies
+   - la ventilation des taches sur les mois nécessite la Version 23 de dolibarr
 
 # Installation préalable
 Le programme utilise faker pour générer des données aléatoire
@@ -95,10 +96,11 @@ pip install pyyaml
 pip install requests
 
 # Tests unitaires
+il n'y a pas à proprement parlé de tests unitaire mais chaque import à son propre lancement autonome
 
 # PR réalisées sur le core de dolibarr pour activer certaines fonctions :
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 22, il sera nécessaire de réaliser les correctifs suivants :
- 
+
     - creation des lignes de contrats
     https://github.com/Dolibarr/dolibarr/pull/33938
 
@@ -126,3 +128,7 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     
     - Ajout de la création des groupe d'utilisateurs
     https://github.com/Dolibarr/dolibarr/pull/34398
+
+Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 23, il sera nécessaire de réaliser les correctifs suivants :
+   - Ajout de la date de création des taches dans la mises à jour
+   https://github.com/Dolibarr/dolibarr/pull/36217
