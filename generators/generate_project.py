@@ -46,18 +46,14 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
     # Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
     elif diffDaysEndNow < 183 and diffDaysStartNow <= 0:
         projectStatus = random.choice([0,1,2])  # Draft, Open, Closed
-    
     elif diffDaysStartNow > 0:
         projectStatus = random.choice([0,1])  # Draft, Open
-    
     else:
         projectStatus = 0  # Open
     
     # Si le statut du projet est "fermé"
     if projectStatus == 2:
-    
-    # Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
-    
+        # Choisi aléatoirement si la date de cloture du projet est avant, égale, ou après la prévue de fin
         choice = random.choice(["before", "equal", "after"])
         
         # Entre 1 et 5 jours avant la date prévue de fin
@@ -77,7 +73,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         # Exactement égale
         else:
             dateClose = dateEnd
-
     else:
         # Pas de date de clôture si le statut est < 2
         dateClose = None
@@ -206,7 +201,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
 
         # Création des tâches associées au projet si le nombre de tâches est correct
         if nbTasks >= 0:
-
             if testing:
                 print("Création du projet terminée, création des tâches associées...")
 
@@ -221,34 +215,31 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     if testing:
                         print("Création de la tâche n°", i+1,"sur", nt)
                 
-                    if projectStatus == 2:
-                        taskStatus = taskStatus = random.choice([0,3])
+                    if projectStatus == 2: # project closed
+                        taskStatus = 3 # task closed
                     
-                    if projectStatus == 1:
+                    if projectStatus == 1: # project open
                         taskStatus = random.choice([0,1,2,3])
 
-                    if projectStatus == 0:
-                        taskStatus = random.choice([0,1])
+                    if projectStatus == 0: # project draft
+                        taskStatus = 0 # task draft
                     
                     dateTaskC = fake.date_time_between_dates(dateCreate,dateEnd)
-                    dateTaskCTS = dateTaskC.timestamp()
                     dateTaskO = fake.date_time_between_dates(dateTaskC, dateEnd)
-                    dateTaskOTS = dateTaskO.timestamp()
                     dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
-                    dateTaskETS= dateTaskE.timestamp()
 
                     data = {
                     "ref": "auto",
                     "fk_project": projectID,
-                    "date_c":dateTaskCTS, 
-                    "date_start": dateTaskOTS,
-                    "date_end": dateTaskETS,
+
+                    "date_start": dateTaskO.timestamp(),
+                    "date_end":  dateTaskE.timestamp(),
                     "label": fake.catch_phrase(),
                     "description":fake.text(max_nb_chars=200),
-                    "planned_workload":"36000",
+                    "planned_workload":fake.random_int(min=1, max=20) * 3600, # en secondes
                     "note_private": fake.text(max_nb_chars=200),
                     "note_public": fake.text(max_nb_chars=200),
-                    "status": 2
+                    "status": taskStatus
                     }
 
                     r = requests.post(urlTasks, headers=headers, json=data)
@@ -264,7 +255,10 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             taskID = resp["id"] if isinstance(resp, dict) else resp
                         except Exception:
                             taskID = int(r.text.strip())
-                        
+
+                        dataUpdate = {
+                                "date_c": dateTaskC.timestamp(),
+                            }
                         if testing:
                             print("ID de la tâche créée:", taskID)
 
@@ -309,7 +303,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
 
                         # Si la tâche est en cours ou clôturé :
-                        if taskStatus == 2 or 3:
+                        if taskStatus > 0:
 
                             urlTasksTime = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
                 
