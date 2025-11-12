@@ -140,7 +140,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         if testing:
             print("Ajout des contacts du projet ....")
 
-        urlContactProject = urlBase + "dolismartprojectsapi/" + str(projectID) + "/contacts"
+        urlContactProject = urlBase + str(projectID) + "/contacts"
         projectContacts = []
         taskContacts = []
 
@@ -207,7 +207,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
             nt = random.randint(0, nbTasks)
             if nt == 0:
-                print("Aucune tâche créée pour ce projet.") 
+                if testing:
+                    print("Aucune tâche créée pour ce projet.") 
 
             else:
             
@@ -229,7 +230,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
 
                     data = {
-                    "ref": "auto",
+                    "ref": "auto", #auto 
                     "fk_project": projectID,
 
                     "date_start": dateTaskO.timestamp(),
@@ -284,7 +285,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                                     "source":taskContact["source"]
                                 }
 
-                                r = requests.post(urlBase + "dolismarttasksapi/" + str(taskID)+"/contacts", headers=headers, json=dataContact)
+                                r = requests.post(urlBase + str(taskID)+"/contacts", headers=headers, json=dataContact)
                             
                                 if r.status_code !=200:
                                     print("erreur lors de l'ajout du contact à la tâche")
@@ -365,4 +366,4 @@ if __name__ == "__main__":
         nbContactByProject=10,
         retDataUser= fill_users(),
         retDataThirdParties= fill_thirdparties(),
-        testing=False))
+        testing=True))
