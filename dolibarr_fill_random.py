@@ -123,7 +123,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
     for dateProject in listProjectGen:
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
 
-retDataPrjects = fill_projects()
+retDataProjects = fill_projects()
 
 start_stop = datetime.now()
 
