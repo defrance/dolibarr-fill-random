@@ -229,7 +229,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                     dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
 
                     data = {
-                    "ref": fake.bothify(text='TASK-####'),
+                    "ref": "auto", #auto 
                     "fk_project": projectID,
 
                     "date_start": dateTaskO.timestamp(),
