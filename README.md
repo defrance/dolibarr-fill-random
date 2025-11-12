@@ -130,5 +130,8 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     https://github.com/Dolibarr/dolibarr/pull/34398
 
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 23, il sera nécessaire de réaliser les correctifs suivants :
+
    - Ajout de la date de création des taches dans la mises à jour
    https://github.com/Dolibarr/dolibarr/pull/36217
+   - Ajout des de la saisie des temps et des contacts sur les taches
+    https://github.com/Dolibarr/dolibarr/pull/35897
