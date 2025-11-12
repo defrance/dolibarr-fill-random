@@ -26,6 +26,9 @@ from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
 
+from generators.utils.fill_users import fill_users
+from generators.utils.fill_projects import fill_projects
+
 
 
 
@@ -119,6 +122,8 @@ if nbNewProject > 0 and 'projet' in enabledModule:
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
+
+retDataPrjects = fill_projects()
 
 start_stop = datetime.now()
 

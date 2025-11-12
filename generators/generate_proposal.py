@@ -25,6 +25,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
         "socid": socID,
         "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
+        'fk_project': get_random_project_id(retDataProjects),
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
