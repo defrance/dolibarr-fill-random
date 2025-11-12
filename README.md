@@ -101,7 +101,7 @@ il n'y a pas à proprement parlé de tests unitaire mais chaque import à son pr
 # PR réalisées sur le core de dolibarr pour activer certaines fonctions :
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 22, il sera nécessaire de réaliser les correctifs suivants :
 
-    - creation des lignes de contrats
+    - création des lignes de contrats
     https://github.com/Dolibarr/dolibarr/pull/33938
 
     - Mise à jour des interventions (date d'opération)
@@ -130,5 +130,9 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     https://github.com/Dolibarr/dolibarr/pull/34398
 
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 23, il sera nécessaire de réaliser les correctifs suivants :
+   - Gestion de la génération automatique de la référence des taches
+   https://github.com/Dolibarr/dolibarr/pull/35981/files
    - Ajout de la date de création des taches dans la mises à jour
    https://github.com/Dolibarr/dolibarr/pull/36217
+   - Gestion de la saisie des temps et des contacts sur les taches
+   https://github.com/Dolibarr/dolibarr/pull/35897
