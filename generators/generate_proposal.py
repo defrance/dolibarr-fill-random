@@ -10,9 +10,11 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.get_random_project_id import get_random_project_id
+from generators.utils.fill_projects import fill_projects
 
 
-def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing=False):
+def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProjects, testing=False):
     url = urlBase + "proposals"
 
     # on rajoute 5 jours à la date de la proposition
@@ -116,6 +118,9 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             data = {}
             r = requests.post(url, headers=headers, json=data)
 
+    if testing:
+        r = requests.get(urlBase + "proposals/" + str(proposalID), headers=headers)
+        return r.json()
     return 1
 
 # Testing
@@ -129,6 +134,7 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
             retDataUser= fill_users(),
-            testing = False
+            retDataProjects= fill_projects(),
+            testing = True
         )
     )
