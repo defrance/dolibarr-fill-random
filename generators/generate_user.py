@@ -51,7 +51,7 @@ def generate_user(dateCreate, testing=False):
     else:
         idSoc= r.text
         if testing:
-            print(data)
+            r = requests.get(url + '/' + str(idSoc), headers=headers)
 
     return 1
 
