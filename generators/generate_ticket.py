@@ -22,6 +22,9 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
     projectsList = get_projects_of_contactID(socid)
+    
+    if len(projectsList) == 0:
+        fk_project = "null"
     fk_project = get_random_project_id(projectsList)
 
     data = {

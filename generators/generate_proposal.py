@@ -11,21 +11,28 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 from generators.utils.get_random_project_id import get_random_project_id
-from generators.utils.fill_projects import fill_projects
+from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 
 
-def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProject, testing=False):
+def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing=False):
     url = urlBase + "proposals"
 
     # on rajoute 5 jours à la date de la proposition
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
     socID = get_random_client(retDataThirdParties)
+    projectsList = get_projects_of_contactID(socID)
+
+    if len(projectsList) == 0:
+        fk_project = "null"
+    
+    fk_project = get_random_project_id(projectsList)
+
     data = {
         "socid": socID,
         "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
-        'fk_project': get_random_project_id(retDataProject),
+        'fk_project': fk_project,
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
