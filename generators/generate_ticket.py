@@ -9,8 +9,10 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.fill_projects import fill_projects
+from generators.utils.get_random_project_id import get_random_project_id
 
-def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = False):
+def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject, testing = False):
     # la date doit etre un timestamp
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
@@ -18,6 +20,7 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
     socid= get_random_client(retDataThirdParties)
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
+    fk_project = get_random_project_id(retDataProject)
 
     data = {
         "fk_soc": socid,
@@ -27,6 +30,7 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
         "datec": dateTicketTs,
+        "fk_project": fk_project,
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
@@ -71,6 +75,14 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
     #             "id": random.choice(retDataCategTicket)['id'],
     #         }
     #         r = requests.post(url, headers=headers, json=data)
+    if testing:
+        r= requests.get(urlBase + "tickets/" + str(ticketID), headers=headers)
+        if r.status_code != 200:
+            print("Erreur lors de la récupération du ticket n° " + str(ticketID))
+            print("Status code: " + str(r.status_code))
+            print("Response: " + r.text)
+        
+        return r.json()
 
     return 1
 
@@ -84,6 +96,7 @@ if __name__ == "__main__":
             dateTicket = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
             retDataUser = fill_users(),
-            testing = False   
+            retDataProject= fill_projects(),
+            testing = True   
         )
     )
