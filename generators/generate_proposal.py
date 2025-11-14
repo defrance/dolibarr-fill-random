@@ -14,7 +14,7 @@ from generators.utils.get_random_project_id import get_random_project_id
 from generators.utils.fill_projects import fill_projects
 
 
-def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProjects, testing=False):
+def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProject, testing=False):
     url = urlBase + "proposals"
 
     # on rajoute 5 jours à la date de la proposition
@@ -25,7 +25,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
         "socid": socID,
         "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
-        'fk_project': get_random_project_id(retDataProjects),
+        'fk_project': get_random_project_id(retDataProject),
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
@@ -135,7 +135,7 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
             retDataUser= fill_users(),
-            retDataProjects= fill_projects(),
+            retDataProject = allProjects,
             testing = True
         )
     )
