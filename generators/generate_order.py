@@ -9,11 +9,17 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
-
+from generators.utils.get_random_project_id import get_random_project_id
+from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 
 def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing = False):
     url = urlBase + "orders"
+    if testing:
+        socId = 574
     socId = get_random_client(retDataThirdParties)
+    retDataProject = get_projects_of_contactID(socId)
+    fk_project = get_random_project_id(retDataProject)
+
     data = {
         "socid": socId,
         "date": dateOrder.strftime('%Y-%m-%d'),
@@ -33,6 +39,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         # si c'est un produit on le rajoute à la liste pour l'expédition
         # ajoute la ligne de facture
         data = {
+            "fk_project": fk_project,
             "desc":  productRandom['description'],
             "subprice": productRandom['price'],
             "qty": qty,
@@ -167,7 +174,11 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/external"
             data = {}
             r = requests.post(url, headers=headers, json=data)
-
+    
+    if testing:
+        r = requests.get(urlBase + "orders/" + str(orderID), headers=headers)
+        print('Commande créée avec succès ID: ' + str(orderID))
+        return r.json()
     return 1
 
 if __name__ == "__main__":
@@ -181,6 +192,6 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataWarehouse= fill_warehouses(),
             retDataUser= fill_users(),
-            testing = False
+            testing = True
         )
     )
