@@ -16,7 +16,7 @@ from generators.utils.get_random_project_id import get_random_project_id
 def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing=False):
     url = urlBase + "interventions"
 	# on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) #574
     fk_contract = 0
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)
@@ -26,7 +26,6 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
 
     data = {
         "socid": socid,
-        "fk_project": 0,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
         "fk_project" :  fk_project,

@@ -18,7 +18,7 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
     # on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) #574
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
     projectsList = get_projects_of_contactID(socid)

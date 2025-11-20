@@ -20,7 +20,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     # on rajoute 5 jours à la date de la proposition
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
-    socID = get_random_client(retDataThirdParties)
+    socID =  574 # get_random_client(retDataThirdParties)
     projectsList = get_projects_of_contactID(socID)
 
     if len(projectsList) == 0:
@@ -142,7 +142,6 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
             retDataUser= fill_users(),
-            retDataProject = allProjects,
             testing = True
         )
     )
