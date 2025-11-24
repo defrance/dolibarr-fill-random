@@ -88,11 +88,14 @@ def generate_holiday(dateCreate, retDataUser, testing=False):
         url_get = urlBase + "holidays/" + idHoliday
         r_get = requests.get(url_get, headers=headers)
         print("Détails : ", r_get.text)
+
     
-    # update date création
-    url_update = urlBase + "holidays/" + idHoliday
+    # update date création (Forbidden)
+    """
+   url_update = urlBase + "holidays/" + idHoliday
     data_update = {
-        "date_create": dateCreate.strftime('%Y-%m-%d')
+        "date_create": dateCreate.strftime('%Y-%m-%d'),
+        "description": "l'update se fait"
     }
     r_update = requests.put(url_update, headers=headers, json=data_update)
     if r_update.status_code != 200:
@@ -103,8 +106,8 @@ def generate_holiday(dateCreate, retDataUser, testing=False):
         if testing:
             print("Date de création du congé/absence mise à jour avec succès.")
     
+    """
     return idHoliday
-
 
 # Tests
 if __name__ == "__main__":
