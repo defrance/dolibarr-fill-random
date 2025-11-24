@@ -15,7 +15,7 @@ from generators.utils.put_fk_project import put_fk_project
 def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing=False):
     url = urlBase + "interventions"
 	# on récupère les contrats associés au client si il y en a
-    socid = 574
+    socid = get_random_client(retDataThirdParties) # 574
     fk_contract = 0
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)

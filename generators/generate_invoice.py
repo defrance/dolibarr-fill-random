@@ -9,8 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
-from generators.utils.get_random_project_id import get_random_project_id
-from generators.utils.get_projects_of_contactID import get_projects_of_contactID
+from generators.utils.put_fk_project import put_fk_project
 
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing=False):
     url = urlBase + "invoices"
@@ -27,29 +26,10 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
     }
     r = requests.post(url, headers=headers, json=data)
     invoiceID = r.text
-
+    urlInvoice = url + "/" + str(invoiceID)
 
      # on lie un projet du client à la commande
-
-    retDataProject = get_projects_of_contactID(socId)
-    fk_project = get_random_project_id(retDataProject)
-
-    if testing:
-        print("Client ID :", socId, "Projet ID :", fk_project)
-        
-    urlProject = urlBase + "invoices/" + str(invoiceID)
-
-    dataProject = {
-            "fk_project": fk_project,
-            }
-    
-    r = requests.put(urlProject, headers=headers, json=dataProject)
-
-    if r.status_code != 200:
-        if testing:
-            print("Erreur lors de l'association du projet à la facture :", r.text)
-
-
+    put_fk_project(socId, urlInvoice)
 
     # on ajoute les lignes
     urlLine = urlBase + "invoices/" + str(invoiceID) + "/lines"

@@ -9,8 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
-from generators.utils.get_random_project_id import get_random_project_id
-from generators.utils.get_projects_of_contactID import get_projects_of_contactID
+from generators.utils.put_fk_project import put_fk_project
 
 def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing = False):
     url = urlBase + "orders"
@@ -27,28 +26,13 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
 
+    urlOrder = url + "/" + str(orderID)
     # on lie un projet du client à la commande
 
-    retDataProject = get_projects_of_contactID(socId)
-    fk_project = get_random_project_id(retDataProject)
-
-    if testing:
-        print("Client ID :", socId, "Projet ID :", fk_project)
-        
-    urlProject = urlBase + "orders/" + str(orderID)
-
-    dataProject = {
-            "fk_project": fk_project,
-            }
-    
-    r = requests.put(urlProject, headers=headers, json=dataProject)
-
-    if r.status_code != 200:
-        if testing:
-            print("Erreur lors de l'association du projet à la commande :", r.text)
+    put_fk_project(socId, urlOrder)
 
     # on ajoute les lignes
-    urlLine = urlBase + "orders/" + str(orderID) + "/lines"
+    urlLine = urlOrder + "/lines"
     productRandomList = {}
     for i in range(random.randint(1, 10)):
         # la quantité se trouve en fin de ligne entre parenthèse
@@ -122,14 +106,14 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         # pour l'année en cours, on ne valide pas toute les commandes
         orderStatut = random.choice([0, 1])
         if orderStatut == 1:
-            url = urlBase + "orders/" + str(orderID) + "/validate"
+            url = urlOrder + "/validate"
             data = {
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
             # et on ne facture pas toute les commandes
             if random.choice([0, 1]) == 1:
-                url = urlBase + "orders/" + str(orderID) + "/setinvoiced"
+                url = urlOrder + "/setinvoiced"
                 data = {
                 }
                 r = requests.post(url, headers=headers, json=data)  
