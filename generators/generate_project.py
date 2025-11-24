@@ -207,7 +207,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
             # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
             nt = random.randint(0, nbTasks)
             if nt == 0:
-                print("Aucune tâche créée pour ce projet.") 
+                if testing:
+                    print("Aucune tâche créée pour ce projet.") 
 
             else:
             

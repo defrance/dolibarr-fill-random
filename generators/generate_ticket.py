@@ -9,13 +9,15 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.fill_projects import fill_projects
+from generators.utils.put_fk_project import put_fk_project
 
-def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = False):
+def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject, testing = False):
     # la date doit etre un timestamp
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
     # on récupère les contrats associés au client si il y en a
-    socid= get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) #574
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
 
@@ -30,6 +32,9 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
+
+    # on lie un projet du client au ticket
+    put_fk_project(socid, urlBase + "tickets/" + str(ticketID))
 
 
     userAssign = get_random_user(retDataUser)
@@ -71,6 +76,14 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
     #             "id": random.choice(retDataCategTicket)['id'],
     #         }
     #         r = requests.post(url, headers=headers, json=data)
+    if testing:
+        r= requests.get(urlBase + "tickets/" + str(ticketID), headers=headers)
+        if r.status_code != 200:
+            print("Erreur lors de la récupération du ticket n° " + str(ticketID))
+            print("Status code: " + str(r.status_code))
+            print("Response: " + r.text)
+        
+        return r.json()
 
     return 1
 
@@ -84,6 +97,7 @@ if __name__ == "__main__":
             dateTicket = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
             retDataUser = fill_users(),
-            testing = False   
+            retDataProject= fill_projects(),
+            testing = True   
         )
     )
