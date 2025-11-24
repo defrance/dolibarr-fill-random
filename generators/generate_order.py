@@ -14,11 +14,11 @@ from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 
 def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing = False):
     url = urlBase + "orders"
-    if testing:
-        socId = 574
+    
     socId = get_random_client(retDataThirdParties)
-    retDataProject = get_projects_of_contactID(socId)
-    fk_project = get_random_project_id(retDataProject)
+
+    if testing:
+        socId = 574  # Client de test avec projet
 
     data = {
         "socid": socId,
@@ -26,6 +26,26 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
     }
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
+
+    # on lie un projet du client à la commande
+
+    retDataProject = get_projects_of_contactID(socId)
+    fk_project = get_random_project_id(retDataProject)
+
+    if testing:
+        print("Client ID :", socId, "Projet ID :", fk_project)
+        
+    urlProject = urlBase + "orders/" + str(orderID)
+
+    dataProject = {
+            "fk_project": fk_project,
+            }
+    
+    r = requests.put(urlProject, headers=headers, json=dataProject)
+
+    if r.status_code != 200:
+        if testing:
+            print("Erreur lors de l'association du projet à la commande :", r.text)
 
     # on ajoute les lignes
     urlLine = urlBase + "orders/" + str(orderID) + "/lines"
@@ -39,7 +59,6 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         # si c'est un produit on le rajoute à la liste pour l'expédition
         # ajoute la ligne de facture
         data = {
-            "fk_project": fk_project,
             "desc":  productRandom['description'],
             "subprice": productRandom['price'],
             "qty": qty,
@@ -69,7 +88,13 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             'array_options' : [],
         }
         r = requests.post(urlLine, headers=headers, json=data)
-        lineID = r.text
+        
+        if r.status_code != 200:
+            if testing:
+                print("Erreur lors de l'ajout de ligne à la commande :", r.text)
+        else:
+            lineID = r.text
+
 
         if productRandom['type'] == "0":
             #  on rajote de la donnée pour l'expédition

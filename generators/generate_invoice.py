@@ -9,12 +9,17 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.get_random_project_id import get_random_project_id
+from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing=False):
     url = urlBase + "invoices"
 
+
     paye = random.choice([0, 1])
     socId = get_random_client(retDataThirdParties)
+    if testing :
+        socId = 574  # Client de test avec projet
     data = {
         "type": "0",
         "date" :dateFact.strftime('%Y-%m-%d'),
@@ -22,6 +27,28 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
     }
     r = requests.post(url, headers=headers, json=data)
     invoiceID = r.text
+
+
+     # on lie un projet du client à la commande
+
+    retDataProject = get_projects_of_contactID(socId)
+    fk_project = get_random_project_id(retDataProject)
+
+    if testing:
+        print("Client ID :", socId, "Projet ID :", fk_project)
+        
+    urlProject = urlBase + "invoices/" + str(invoiceID)
+
+    dataProject = {
+            "fk_project": fk_project,
+            }
+    
+    r = requests.put(urlProject, headers=headers, json=dataProject)
+
+    if r.status_code != 200:
+        if testing:
+            print("Erreur lors de l'association du projet à la facture :", r.text)
+
 
 
     # on ajoute les lignes
@@ -116,5 +143,5 @@ if __name__ == "__main__":
         retDataProduct= fill_products(),
         retDataThirdParties= retDataThirdParties,
         retDataUser= fill_users(),
-        testing=False
+        testing=True
     ))

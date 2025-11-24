@@ -10,8 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from generators.generate_utils import *
 from generators.utils.fill_projects import fill_projects
-from generators.utils.get_projects_of_contactID import get_projects_of_contactID
-from generators.utils.get_random_project_id import get_random_project_id
+from generators.utils.put_fk_project import put_fk_project
 
 def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject, testing = False):
     # la date doit etre un timestamp
@@ -21,11 +20,6 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject
     socid = get_random_client(retDataThirdParties) #574
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
-    projectsList = get_projects_of_contactID(socid)
-    
-    if len(projectsList) == 0:
-        fk_project = "null"
-    fk_project = get_random_project_id(projectsList)
 
     data = {
         "fk_soc": socid,
@@ -35,10 +29,12 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
         "datec": dateTicketTs,
-        "fk_project": fk_project,
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
+
+    # on lie un projet du client au ticket
+    put_fk_project(socid, urlBase + "tickets/" + str(ticketID))
 
 
     userAssign = get_random_user(retDataUser)
