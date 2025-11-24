@@ -9,24 +9,26 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.get_projects_of_contactID import get_projects_of_contactID
+from generators.utils.get_random_project_id import get_random_project_id
 
 
 def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing=False):
     url = urlBase + "interventions"
-    if testing:
-        print(retDataThirdParties)
 	# on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) #574
     fk_contract = 0
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)
         fk_contract = get_random_contract(retDataContract)
+        retDataProject = get_projects_of_contactID(socid)
+        fk_project = get_random_project_id(retDataProject)
 
     data = {
         "socid": socid,
-        "fk_project": 0,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
+        "fk_project" :  fk_project,
         #"date": dateintervention.strftime('%Y-%m-%d'),
     }
     r = requests.post(url, headers=headers, json=data)
@@ -87,7 +89,12 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
         "datec": dateIntervention.strftime('%Y-%m-%d'),
     }
     r = requests.put(url, headers=headers, json=data)
-
+    
+    if testing:
+        urlGet = urlBase + "interventions/" + str(orderID)
+        r = requests.get(urlGet, headers=headers)
+        print('Intervention créée avec succès ID: ' + str(orderID))
+        return r.json()
 
     return 1
 
@@ -101,6 +108,6 @@ if __name__ == "__main__":
         dateIntervention=fake.date_this_year(),
         retDataThirdParties= retDataThirdParties,
         enabledModule=get_enabled_modules(),
-        testing=False
+        testing=True
         )
     )

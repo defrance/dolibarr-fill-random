@@ -10,6 +10,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.put_fk_project import put_fk_project
+
 
 
 def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing=False):
@@ -18,7 +20,8 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     # on rajoute 5 jours à la date de la proposition
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
-    socID = get_random_client(retDataThirdParties)
+    socID =  574 # get_random_client(retDataThirdParties)
+
     data = {
         "socid": socID,
         "date": dateProposalTs,
@@ -26,6 +29,10 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
+
+    # on lie un projet du client à la proposition
+    put_fk_project(socID, urlBase + "proposals/" + str(proposalID))
+
 
     # on ajoute les lignes attention, pour les propal, il faut utiliser line et pas lines
     urlLine = urlBase + "proposals/" + str(proposalID) + "/line"
@@ -116,6 +123,9 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             data = {}
             r = requests.post(url, headers=headers, json=data)
 
+    if testing:
+        r = requests.get(urlBase + "proposals/" + str(proposalID), headers=headers)
+        return r.json()
     return 1
 
 # Testing
@@ -129,6 +139,6 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataProduct = fill_products(),
             retDataUser= fill_users(),
-            testing = False
+            testing = True
         )
     )

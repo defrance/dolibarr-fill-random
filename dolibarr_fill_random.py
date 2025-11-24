@@ -26,6 +26,9 @@ from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
 
+from generators.utils.fill_users import fill_users
+from generators.utils.fill_projects import fill_projects
+
 
 
 
@@ -111,6 +114,23 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Durée Alimentation Tiers et produits : ", duration)
 
+# Alimentation des projets 
+start_prev = datetime.now()
+
+if nbNewProject > 0 and 'projet' in enabledModule:
+
+    listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
+    for dateProject in listProjectGen:
+        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
+
+retDataProjects = fill_projects()
+
+start_stop = datetime.now()
+
+duration = start_stop - start_prev
+print("Durée Alimentation Projet et tâches : ", duration)
+
+# ALimentation des factures
 start_prev = datetime.now()
 
 if nbNewBill > 0 and 'facture' in enabledModule:
@@ -123,6 +143,8 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Durée Alimentation Factures et Règlement: ", duration)
 
+
+# Alimentation des commandes et expéditions
 start_prev = datetime.now()
 
 if nbNewOrder > 0 and 'commande' in enabledModule:
@@ -136,18 +158,22 @@ start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
 print("Alimentation Commande et Expédition : ", duration)
+
+# Alimentation des devis
 start_prev = datetime.now()
 
 if nbNewProposal > 0 and 'propal' in enabledModule:
     listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
-        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser)
+        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProjects)
 
 start_stop = datetime.now()
 
 # on affiche la durée
 duration = start_stop - start_prev
 print("Alimentation Devis : ", duration)
+
+# Alimentation des contrats et interventions
 start_prev = datetime.now()
 
 if nbNewContract > 0 and 'contrat' in enabledModule:
@@ -165,6 +191,7 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Durée Alimentation Contrat et intervention : ", duration)
 
+# Alimentation des tickets et articles
 start_prev = datetime.now()
 
 if nbNewTicket > 0  and 'ticket' in enabledModule:
@@ -180,20 +207,6 @@ if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
 start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Alimentation Tickets et articles : ", duration)
-
-# Alimentation des projets 
-start_prev = datetime.now()
-
-if nbNewProject > 0 and 'projet' in enabledModule:
-
-    listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
-    for dateProject in listProjectGen:
-        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
-
-start_stop = datetime.now()
-
-duration = start_stop - start_prev
-print("Durée Alimentation Projet et tâches : ", duration)
 
 # On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
