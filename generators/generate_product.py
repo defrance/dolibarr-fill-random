@@ -19,7 +19,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     # Nom de produit : combinaison de mot technologique ou marketing
     name = fake.catch_phrase()  # genre "solution intégrée proactive"
     
-    price = random.randint(5, 20)  # prix aléatoire entre 5 et 20€
+    price = random.randint(5, 100)  # prix aléatoire entre 5 et 100€
     price_min = price - random.randint(1, 5)  # prix minimum aléatoire entre 1 et 5€ de moins que le prix normal
     status_buy = random.choice([0, 1])  # à l'achat ou non
 
@@ -31,7 +31,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     url = urlBase + "products"
     typeProduct = random.choice([0, 1]) # produit ou service
     
-    # on cree le produit
+    # on crée le produit
     data = {
         "ref": str(ref),
         "label" :name,
@@ -143,51 +143,65 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 # ajout alimentation des prix d'achats et des prix de ventes
     # /!\ les prix d'achats sont toujours associés à un fournisseur et une référence fournisseur
     # /!\ les prix peuvent varier en fonction de la quantité
-    retDataFournisseur = fill_thirdparties("supplier")
-    supplierID = get_random_user(retDataFournisseur)['id']
+
+    if status_buy == 1 :
+        supplierList = fill_thirdparties("supplier")
+        maxBuyPrice = price / 5
+        minBuyPrice = price / 10
+
+        supplierQty = random.randint(1,10)
     
-    if testing : 
-        print(" fournisseur id : ", supplierID)
+        for i in range (supplierQty) :
+            supplierID = get_random_user(supplierList)['id']
+        
+            if testing : 
+                print(" fournisseur id : ", supplierID)
 
-    dataPurchasePrice = {
-  "qty": 1,
-  "buyprice": 170,
-  "price_base_type": "TTC",
-  "fourn_id": supplierID,
-  "availability": 1,
-  "ref_fourn": "string",
-  "tva_tx": 20,
-  #"charges": 0,
-  #"remise_percent": 0,
-  #"remise": 0,
-  #"newnpr": 0,
-  #"delivery_time_days": 0,
-  #"supplier_reputation": "string",
-  #"localtaxes_array": [
-    #"string"
-  #],
-  #"newdefaultvatcode": "string",
-  #"multicurrency_buyprice": 0,
-  #"multicurrency_price_base_type": "string",
-  #"multicurrency_tx": 0,
-  #"multicurrency_code": "string",
-  #"desc_fourn": "string",
-  #"barcode": "string",
-  #"fk_barcode_type": 0
-    }
+            buyPriceU = random.randint(round(minBuyPrice),round(maxBuyPrice))
 
-    urlPurchasePrice = urlProduct + '/purchase_prices'
-    print(urlPurchasePrice)
-    r = requests.post(urlPurchasePrice, headers=headers, json = dataPurchasePrice)
+            qty = random.choice([1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,99,100])
 
-    if r.status_code != 200 : 
-        if testing : 
-            print ('erreur ajout de prix fournisseur')
-            print(r.status_code)
-            print(r.text)
-    else:
-        if testing:
-            print('prix fournisseur ajouté.')
+            buyPriceQ = buyPriceU * qty
+
+            dataPurchasePrice = {
+            "qty": qty,
+            "buyprice": buyPriceQ,
+            "price_base_type": "HT",
+            "fourn_id": supplierID,
+            "availability": 1,
+            "ref_fourn": ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)),
+            "tva_tx": 20,
+            #"charges": 0,
+            #"remise_percent": 0,
+            #"remise": 0,
+            #"newnpr": 0,
+            #"delivery_time_days": 0,
+            #"supplier_reputation": "string",
+            #"localtaxes_array": [
+            #"string"
+            #],
+            #"newdefaultvatcode": "string",
+            #"multicurrency_buyprice": 0,
+            #"multicurrency_price_base_type": "string",
+            #"multicurrency_tx": 0,
+            #"multicurrency_code": "string",
+            #"desc_fourn": "string",
+            #"barcode": "string",
+            #"fk_barcode_type": 0
+            }
+
+            urlPurchasePrice = urlProduct + '/purchase_prices'
+
+            r = requests.post(urlPurchasePrice, headers=headers, json = dataPurchasePrice)
+
+            if r.status_code != 200 : 
+                if testing : 
+                    print ('erreur ajout de prix fournisseur')
+                    print(r.status_code)
+                    print(r.text)
+            else:
+                if testing:
+                    print('prix fournisseur ajouté.')
 
     return 1
 
