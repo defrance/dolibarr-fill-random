@@ -9,6 +9,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from generators.generate_utils import *
+from generators.utils.fill_data import *
+
 from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 from generators.utils.get_random_project_id import get_random_project_id
 # from generators.utils.put_fk_project import put_fk_project
