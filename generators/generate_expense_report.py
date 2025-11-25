@@ -13,9 +13,13 @@ from generators.utils.get_projects_of_contactID import get_projects_of_contactID
 from generators.utils.get_random_project_id import get_random_project_id
 # from generators.utils.put_fk_project import put_fk_project
 
-def generate_expense_report( dateStart, retDataUser, testing = False):
+def generate_expense_report( dateStart, testing = False):
     url = urlBase + "expensereports"
-    userID = get_random_user(retDataUser)['id']
+    userID = get_random_user(fill_users())['id']
+    if testing : 
+        print("userID : " , userID)
+    validatorID = get_random_user(fill_users())['id']
+
 
     # Création de la note de frais par défaut en brouillon
     data = {
@@ -24,7 +28,7 @@ def generate_expense_report( dateStart, retDataUser, testing = False):
         "date_fin": fake.date_between_dates(dateStart, datetime.now()).strftime('%Y-%m-%d'),
         "note_public": fake.text(max_nb_chars=200),
         "note_private": fake.text(max_nb_chars=200),
-        "fk_user_validator": get_random_user(retDataUser)['id'],
+        "fk_user_validator": validatorID,
     }
 
     try:
@@ -45,6 +49,7 @@ def generate_expense_report( dateStart, retDataUser, testing = False):
     # Ajout des lignes de frais
 
     projectList = get_projects_of_contactID(userID)
+    print(projectList)
     
     """ 
         if len(projectList) = 0 :
@@ -97,8 +102,7 @@ def generate_expense_report( dateStart, retDataUser, testing = False):
 if __name__ == "__main__":
     print(
         generate_expense_report( 
-            dateStart= fake.date_this_month(before_today=True),
-            retDataUser =fill_users(), testing = True)
+            dateStart= fake.date_this_month(before_today=True), testing = True)
     )
 
     

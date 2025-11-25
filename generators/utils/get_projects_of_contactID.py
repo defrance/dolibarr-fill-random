@@ -25,5 +25,6 @@ def get_projects_of_contactID(contactID, testing = False):
 # Test unitaire
 if __name__ == "__main__":
     print(get_projects_of_contactID('echec', testing = True)) # id invalide
-    print(get_projects_of_contactID(1, testing = True)) # aucun projet
-    print(get_projects_of_contactID(574, testing = True)) # 2 projets
+    print(get_projects_of_contactID(1, testing = True)) # aucun projet 
+    print(get_projects_of_contactID(574, testing = True)) # 2 projets TIERS
+    print(get_projects_of_contactID(77, testing = True)) # USER /!\ fonctionne pas
