@@ -26,10 +26,7 @@ from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
 
-from generators.utils.fill_users import fill_users
-from generators.utils.fill_projects import fill_projects
-
-
+from generators.utils.fill_data import *
 
 
 # On mémorise l'heure de début de l'alimentation totale
