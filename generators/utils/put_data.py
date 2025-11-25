@@ -5,9 +5,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from dolibarr_api import *
 
 from dolibarr_api import *
-from generators.generate_utils import *
-from generators.utils.get_random_project_id import get_random_project_id
-from generators.utils.get_projects_of_contactID import get_projects_of_contactID
+
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+
+fake = Faker('fr_FR')
 
 def put_fk_project(socID, url, testing=False):
     
@@ -29,7 +32,7 @@ def put_fk_project(socID, url, testing=False):
         print("Données après mise à jour :", r.text)
 
 # tests unitaires
-
-put_fk_project(574, urlBase + "invoices/481", testing=True)
+if __name__ == "__main__":
+    put_fk_project(574, urlBase + "invoices/481", testing=True)
 #put_fk_project(574, urlBase + "orders/1", testing=True)
 

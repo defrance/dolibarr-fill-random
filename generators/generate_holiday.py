@@ -9,8 +9,9 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
-from generators.utils.get_random_holiday_type import get_random_holiday_type
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
 
 fake = Faker('fr_FR')
 

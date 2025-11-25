@@ -7,7 +7,8 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
+
+
 hexColor= fake.hex_color()
 colorWithoutHash= hexColor.lstrip('#')
 
