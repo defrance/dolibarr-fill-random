@@ -1,18 +1,18 @@
-import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+from generators.utils.utils import *
 
 
 hexColor= fake.hex_color()
 colorWithoutHash= hexColor.lstrip('#')
 
-def generate_category(type, testing =False):
+def generate_category(type, testing):
     # on boucle sur les lignes
     url = urlBase + "categories"
     data = {

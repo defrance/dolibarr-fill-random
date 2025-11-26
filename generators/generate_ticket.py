@@ -1,18 +1,18 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
-from generators.utils.fill_projects import fill_projects
-from generators.utils.put_fk_project import put_fk_project
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+from generators.utils.utils import *
 
-def generate_ticket(dateTicket, retDataThirdParties, retDataUser, retDataProject, testing = False):
+def generate_ticket(dateTicket, retDataThirdParties, testing):
+    yearNow = datetime.now().year
+
     # la date doit etre un timestamp
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"

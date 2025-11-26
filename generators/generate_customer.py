@@ -1,17 +1,17 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+from generators.utils.utils import *
 
 
-def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testing=False):
+def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testing):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])

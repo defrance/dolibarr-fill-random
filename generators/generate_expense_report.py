@@ -1,8 +1,5 @@
 from faker import Faker
-import random
-import string
 import requests
-import base64
 import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -11,9 +8,10 @@ from dolibarr_api import *
 from generators.utils.fill_data import *
 from generators.utils.get_data import *
 from generators.utils.put_data import *
+from generators.utils.utils import *
 
 
-def generate_expense_report( dateStart, testing = False):
+def generate_expense_report( dateStart, testing):
     url = urlBase + "expensereports"
     userID = get_random_user(fill_users())['id']
     if testing : 

@@ -1,17 +1,16 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
-from generators.utils.put_fk_project import put_fk_project
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+from generators.utils.utils import *
 
-def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing=False):
+def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing):
     url = urlBase + "invoices"
 
 

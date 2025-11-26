@@ -1,8 +1,6 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
 from datetime import timedelta
 
 import sys, os
@@ -12,10 +10,11 @@ from dolibarr_api import *
 from generators.utils.fill_data import *
 from generators.utils.get_data import *
 from generators.utils.put_data import *
+from generators.utils.utils import *
 
 fake = Faker('fr_FR')
 
-def generate_holiday(dateCreate, retDataUser, testing=False):
+def generate_holiday(dateCreate, retDataUser, testing):
 
     url = urlBase + "holidays"
     user_id = get_random_user(retDataUser)['id']

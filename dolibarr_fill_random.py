@@ -28,10 +28,15 @@ from generators.generate_category import generate_category
 
 from generators.utils.fill_data import *
 
-
 # On mémorise l'heure de début de l'alimentation totale
 start_time = datetime.now()
 print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
+
+# Affiche des messages de tests
+if testing:
+    testToggle = True
+else :
+    testToggle = False
 
 # Récupération des modules actifs coté Dolibarr
 enabledModule = get_enabled_modules()
@@ -41,13 +46,13 @@ print (enabledModule)
 # Création des catégories
 if newCategory > 0 and 'categorie' in enabledModule:
     for i in range(random.randint(1, newCategory)):
-        generate_category("product")
+        generate_category("product", testToggle)
     for i in range(random.randint(1, newCategory)):
-        generate_category("customer")
+        generate_category("customer", testToggle)
     for i in range(random.randint(1, newCategory)):
-        generate_category("contact")
+        generate_category("contact", testToggle)
     for i in range(random.randint(1, newCategory)):
-        generate_category("ticket")
+        generate_category("ticket", testToggle)
 
 retDataCategProduct = fill_categories("product")
 retDataCategCustomer = fill_categories("customer")
@@ -59,7 +64,7 @@ if 'ticket' in enabledModule:
 if nbNewWarehouse > 0 and 'stock' in enabledModule:
     listWareHouseGen = gen_random_following_date(yearToFill, nbNewWarehouse, max_interval = dateinterval)
     for dateCreate in listWareHouseGen:
-        warehouse = generate_warehouse(dateCreate)
+        warehouse = generate_warehouse(dateCreate, testToggle)
 
 # On remplit les entrepots et les utilisateurs pour les alimentations aléatoires
 retDataWarehouse = fill_warehouses()
@@ -67,14 +72,14 @@ retDataWarehouse = fill_warehouses()
 if nbNewUser > 0:
     listUserGen = gen_random_following_date(yearToFill, nbNewUser, max_interval = dateinterval)
     for dateCreate in listUserGen:
-        product = generate_user(dateCreate)
+        product = generate_user(dateCreate, testToggle)
 
 retDataUser = fill_users()
 
 if nbNewBank > 0 and 'banque' in enabledModule:
     listBankGen = gen_random_following_date(yearToFill, nbNewBank, max_interval = dateinterval)
     for dateCreate in listBankGen:
-        bank = generate_bank(dateCreate)
+        bank = generate_bank(dateCreate, testToggle)
 
 if 'banque' in enabledModule:
     retDataBank = fill_banks()
@@ -90,13 +95,12 @@ start_prev = datetime.now()
 if nbNewClient > 0:
     listClientGen = gen_random_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
-        client = generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule)
+        client = generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testToggle)
 
 if nbNewProduct > 0:
     listProductGen = gen_random_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
     for dateCreate in listProductGen:
-        product = generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule)
-
+        product = generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testToggle)
 
 retDataProduct = fill_products()
 
@@ -118,7 +122,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties)
+        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties, testToggle)
 
 retDataProjects = fill_projects()
 
@@ -133,7 +137,7 @@ start_prev = datetime.now()
 if nbNewBill > 0 and 'facture' in enabledModule:
     listFactureGen = gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
     for dateFact in listFactureGen:
-        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser)
+        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testToggle)
 
 start_stop = datetime.now()
 # on affiche la durée
@@ -147,7 +151,7 @@ start_prev = datetime.now()
 if nbNewOrder > 0 and 'commande' in enabledModule:
     listOrderGen = gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
     for dateOrder in listOrderGen:
-        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser)
+        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testToggle)
 
 
 start_stop = datetime.now()
@@ -162,7 +166,7 @@ start_prev = datetime.now()
 if nbNewProposal > 0 and 'propal' in enabledModule:
     listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
     for dateProposal in listProposalGen:
-        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, retDataProjects)
+        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testToggle)
 
 start_stop = datetime.now()
 
@@ -176,12 +180,12 @@ start_prev = datetime.now()
 if nbNewContract > 0 and 'contrat' in enabledModule:
     listContractGen = gen_random_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
     for dateContract in listContractGen:
-        contract = generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser)
+        contract = generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser, testToggle)
 
 if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
     listInterventionGen = gen_random_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
     for dateInter in listInterventionGen:
-        fichinter = generate_intervention(dateInter, retDataThirdParties, enabledModule)
+        fichinter = generate_intervention(dateInter, retDataThirdParties, enabledModule, testToggle)
 
 start_stop = datetime.now()
 # on affiche la durée de l'alimentation
@@ -194,12 +198,12 @@ start_prev = datetime.now()
 if nbNewTicket > 0  and 'ticket' in enabledModule:
     listTicketGen = gen_random_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
-        ticket = generate_ticket(dateTicket, retDataThirdParties, retDataUser)
+        ticket = generate_ticket(dateTicket, retDataThirdParties, retDataUser, testToggle)
 
 if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
     listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
     for dateknowledge in listArticleGen:
-        ticket = generate_knowledge(dateknowledge)
+        ticket = generate_knowledge(dateknowledge, testToggle)
 
 start_stop = datetime.now()
 duration = start_stop - start_prev

@@ -24,6 +24,7 @@ fake = Faker('fr_FR')
 apiToken = config['connection']['apitoken']
 urlBase = config['connection']['urlbase']
 dol_version=config['connection']['dol_version']
+testing =config['connection']['tests']
 
 # on commence par créer les clients et les produits
 nbNewUser=config['elements']['new_user']
@@ -32,6 +33,7 @@ nbNewProduct=config['elements']['new_product']
 nbNewWarehouse=config['elements']['new_warehouse']
 nbNewStockMovement=config['elements']['new_stock_movement']
 nbNewBank=config['elements']['new_bank']
+
 # puis le reste des données basée sur les clients et produits
 nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']

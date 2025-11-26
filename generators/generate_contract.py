@@ -1,16 +1,16 @@
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
+from generators.utils.fill_data import *
+from generators.utils.get_data import *
+from generators.utils.put_data import *
+from generators.utils.utils import *
 
 
-def generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser, testing=False):
+def generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser, testing):
     url = urlBase + "contracts"
 
     data = {
