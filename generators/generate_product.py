@@ -147,17 +147,30 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     # /!\ les prix peuvent varier en fonction de la quantité
 
     # gestion historique prix de vente
-    nbPrice = 10
+    
 
-    if nbPrice > 0 :
+    if nbSalePriceHistoryMax > 0 :
         
-        for i in range (random.randint(1,nbPrice)):
-            price *= 1.10
+        for i in range (random.randint(1,nbSalePriceHistoryMax)):
+            
+            if pourcentageAugPriceMax > 0 :
+                pourcentage = random.randint(0, pourcentageAugPriceMax)
+                price *= 1 + (pourcentage / 100)
+                price = round(price, 2)
+                price_min *= 1 + (pourcentage /100)
+                price_min = round(price_min,2)
+
+           # par défaut l'augmentation simulée est de 10% 
+            else:
+                price *= 1.10
+                price = round(price, 2)
+
             dateUpdate = fake.date_between(start_date = dateCreate + timedelta(days = 1), end_date = dateCreate + timedelta (days=30))
             data = {
                 "price" : price,
-                "date_creation": dateUpdate.strftime('%Y-%m-%d'),
-                "date_modification": dateUpdate.strftime('%Y-%m-%d')
+                "price_min" : price_min,
+                "date_creation": dateUpdate.strftime('%Y-%m-%d'), # fonctionne pas
+                "date_modification": dateUpdate.strftime('%Y-%m-%d') # fonctionne pas
                 }
             r = requests.put(urlProduct, headers=headers, json=data)
 
@@ -233,8 +246,15 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                     if testing:
                         print('prix fournisseur ajouté : ', buying_price)
                 
-                    buying_price *= 1.10
+                if pourcentageAugPriceMax > 0 :
+                    pourcentage = random.randint(0, pourcentageAugPriceMax)
+                    buying_price *= 1 + (pourcentage / 100)
+                    buying_price = round(buying_price,2)
                 
+                else:
+                    buying_price *= 1.10
+                    buying_price = round(buying_price,2)
+
                     if testing:
                         print('nouveau prix fournisseur : ', buying_price)
     return 1

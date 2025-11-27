@@ -42,6 +42,8 @@ nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
+nbSalePriceHistoryMax = config['elements']['nb_sale_price_history_max']
+pourcentageAugPriceMax = config['elements']['pourcentage_aug_price_max']
 
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
