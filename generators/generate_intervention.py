@@ -19,20 +19,19 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)
         fk_contract = get_random_contract(retDataContract)
+        fk_project = get_random_project_id(get_projects_of_contactID(socid))
 
     data = {
         "socid": socid,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
+        "fk_project":fk_project
         #"date": dateintervention.strftime('%Y-%m-%d'),
     }
     r = requests.post(url, headers=headers, json=data)
     interventionID = r.text
 
     urlIntervention = url + "/" + str(interventionID)
-
-    # lie un projet du client à l'intervention
-    put_fk_project(socid, urlIntervention)
 
     # on ajoute les lignes
     urlLine = urlIntervention + "/lines"
@@ -93,7 +92,6 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
     if testing:
         r = requests.get(urlIntervention, headers=headers)
         print('Intervention créée avec succès ID: ' + str(interventionID))
-        return r.json()
 
     return 1
 

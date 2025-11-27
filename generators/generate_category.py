@@ -9,10 +9,11 @@ from generators.utils.put_data import *
 from generators.utils.utils import *
 
 
-hexColor= fake.hex_color()
-colorWithoutHash= hexColor.lstrip('#')
+
 
 def generate_category(type, testing):
+    hexColor= fake.hex_color()
+    colorWithoutHash= hexColor.lstrip('#')
     # on boucle sur les lignes
     url = urlBase + "categories"
     data = {
@@ -35,7 +36,9 @@ def generate_category(type, testing):
 
 # Test unitaire
 if __name__ == "__main__":
-    print(generate_category(
-        type= fake.word(),
-        testing= False
-    ))
+
+    for i in range (10) :
+        print(generate_category(
+            type= fake.word(),
+            testing = True
+            ))

@@ -95,7 +95,7 @@ start_prev = datetime.now()
 if nbNewClient > 0:
     listClientGen = gen_random_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:
-        client = generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testToggle)
+        client = generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, enabledModule, testToggle)
 
 if nbNewProduct > 0:
     listProductGen = gen_random_following_date(yearToFill, nbNewProduct, max_interval = dateinterval)
@@ -198,7 +198,7 @@ start_prev = datetime.now()
 if nbNewTicket > 0  and 'ticket' in enabledModule:
     listTicketGen = gen_random_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
     for dateTicket in listTicketGen:
-        ticket = generate_ticket(dateTicket, retDataThirdParties, retDataUser, testToggle)
+        ticket = generate_ticket(dateTicket, retDataThirdParties, testToggle)
 
 if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
     listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)

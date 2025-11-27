@@ -37,7 +37,7 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
     put_fk_project(socid, urlBase + "tickets/" + str(ticketID))
 
 
-    userAssign = get_random_user(retDataUser)
+    userAssign = get_random_user(fill_users())
     # si la date est inférieur à l'année en cours on valide le ticket
     if dateTicket.year < yearNow:
         url = urlBase + "tickets/" + str(ticketID)

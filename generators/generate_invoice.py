@@ -16,8 +16,6 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
 
     paye = random.choice([0, 1])
     socId = get_random_client(retDataThirdParties)
-    if testing :
-        socId = 574  # Client de test avec projet
     data = {
         "type": "0",
         "date" :dateFact.strftime('%Y-%m-%d'),

@@ -15,9 +15,6 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
     
     socId = get_random_client(retDataThirdParties)
 
-    if testing:
-        socId = 574  # Client de test avec projet
-
     data = {
         "socid": socId,
         "date": dateOrder.strftime('%Y-%m-%d'),
