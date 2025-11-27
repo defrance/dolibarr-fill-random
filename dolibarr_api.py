@@ -64,7 +64,8 @@ nb_shipping = config['others']['nb_shipping']
 
 # fournisseurs
 createSupplier = config['supplier']['create_supplier']
-nb_supplier_product_price = config['supplier']['nb_supplier_product_price']
+nbSupplierProduct = config['supplier']['nb_supplier_product']
+nbSupplierProductPrice = config['supplier']['nb_supplier_product_price']
 new_supplier_order = config['supplier']['new_order']
 new_supplier_bill = config['supplier']['new_bill']
 
