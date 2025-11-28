@@ -27,6 +27,9 @@ elements:
   new_fichinter : 460
   new_ticket : 460
   new_knowledge : 460
+  nb_sale_price_history_max: 10
+  pourcentage_aug_price_max: 10
+
   
 categories:
   new_category : 0
@@ -49,17 +52,17 @@ contacts:
 
 supplier:
   create_supplier : 1 # active la création de fournisseurs
-  nb_supplier_product_price : 3 # active la création de prix fournisseurs
+  nb_supplier_product: 10 # nombre max de fournisseur par produit
+  nb_supplier_product_price: 10 # nombre max de prix d'achat par fournisseur d'un produit
   new_bill : 420
   new_order : 420
 
 project:
-  # new_opportunity: 0
   new_project: 10
   new_max_task: 10 #max by project
   new_max_task_time: 10 #max by task
   new_max_contact: 2 #max by task
-  new_opportunity: 10
+  new_opportunity: 0
 
 others:
   year_to_fill : 2023
