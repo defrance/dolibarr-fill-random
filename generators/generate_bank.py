@@ -1,16 +1,11 @@
-from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
 
-def generate_bank(dateCreate, testing=False):
+def generate_bank(dateCreate, testing):
     # on boucle sur les lignes
     url = urlBase + "bankaccounts"
     lastname = fake.last_name()
@@ -40,5 +35,5 @@ def generate_bank(dateCreate, testing=False):
 if __name__ == "__main__":
     print(generate_bank(
         dateCreate = fake.date_this_year(),
-        testing=False
+        testing=True
         ))

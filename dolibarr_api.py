@@ -18,12 +18,17 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-fake = Faker('fr_FR')
+#fake = Faker('fr_FR')
+lang = config['others']['lang']
+fake = Faker(lang)
+
+yearNow = datetime.now().year
 
 # on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']
 urlBase = config['connection']['urlbase']
 dol_version=config['connection']['dol_version']
+testing =config['connection']['tests']
 
 # on commence par créer les clients et les produits
 nbNewUser=config['elements']['new_user']
@@ -32,6 +37,7 @@ nbNewProduct=config['elements']['new_product']
 nbNewWarehouse=config['elements']['new_warehouse']
 nbNewStockMovement=config['elements']['new_stock_movement']
 nbNewBank=config['elements']['new_bank']
+
 # puis le reste des données basée sur les clients et produits
 nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']
@@ -40,6 +46,8 @@ nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
+nbSalePriceHistoryMax = config['elements']['nb_sale_price_history_max']
+pourcentageAugPriceMax = config['elements']['pourcentage_aug_price_max']
 
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
@@ -60,9 +68,11 @@ dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
 
+
 # fournisseurs
 createSupplier = config['supplier']['create_supplier']
-nb_supplier_product_price = config['supplier']['nb_supplier_product_price']
+nbSupplierProduct = config['supplier']['nb_supplier_product']
+nbSupplierProductPrice = config['supplier']['nb_supplier_product_price']
 new_supplier_order = config['supplier']['new_order']
 new_supplier_bill = config['supplier']['new_bill']
 

@@ -1,17 +1,13 @@
-from faker import Faker
+
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
+from utils.get_random_address import *
 
-
-def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCategCustomer, enabledModule, testing=False):
+def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, enabledModule, testing):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"
     typeTiers = random.choice([0, 1, 2])
@@ -50,7 +46,7 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
     url = urlBase + "thirdparties/" + idSoc + "/representative/"
     for i in range(random.randint(0, 2)):
         # on rajoute un utilisateur référent 
-        userRandom = get_random_user(retDataUser)
+        userRandom = get_random_user(fill_users())
         data = { }
         r = requests.post(url + userRandom['id'], headers=headers, json=data)
         if r.status_code != 200:
@@ -115,11 +111,10 @@ def generate_customer(dateCreate, retDataUser, retDataCategContact, retDataCateg
 if __name__ == "__main__":
     print(generate_customer(
         dateCreate= fake.date_this_year(),
-        retDataUser =fill_users(),
         retDataCategContact=fill_categories("contact"),
         retDataCategCustomer=fill_categories("customer"),
         enabledModule = get_enabled_modules(),
-        testing=False
+        testing=True
         ))
 
 # Erreur 1 fois sur 3

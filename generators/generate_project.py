@@ -1,17 +1,16 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
 import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 
+
 fake = Faker('fr_FR')
 
-def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDataUser, retDataThirdParties, testing=False):
+def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThirdParties, testing):
     # url de création de projet
     urlProjects = urlBase + "projects"
     # url de création de tâche
@@ -144,11 +143,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
         projectContacts = []
         taskContacts = []
 
-        if nbContactByProject > 0:
+        if nbNewMaxContact > 0:
         # Défini un nombre d'user pour le projet
-            nt = random.randint(0,nbContactByProject)
-            if nt > 0:
-                for i in range (nt):
+            nbProjectContacts = random.randint(1,nbNewMaxContact)
+            if nbProjectContacts > 0:
+                for i in range (nbProjectContacts):
 
                     source = random.choice(['internal','external'])
                     typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
@@ -172,7 +171,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                             "type_contact": typeContact, #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
                             "source": source, #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
                             }
-
+                        print(urlContactProject)
                         rC = requests.post(urlContactProject, headers=headers,json=dataContact)
                         if rC.status_code != 200:
                             print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
@@ -205,16 +204,16 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                 print("Création du projet terminée, création des tâches associées...")
 
             # On crée un nombre aléatoire de tâches entre 0 et nbTasks par projet
-            nt = random.randint(0, nbTasks)
-            if nt == 0:
+            nbProjectContacts = random.randint(0, nbTasks)
+            if nbProjectContacts == 0:
                 if testing:
                     print("Aucune tâche créée pour ce projet.") 
 
             else:
             
-                for i in range (nt):
+                for i in range (nbProjectContacts):
                     if testing:
-                        print("Création de la tâche n°", i+1,"sur", nt)
+                        print("Création de la tâche n°", i+1,"sur", nbProjectContacts)
                 
                     if projectStatus == 2: # project closed
                         taskStatus = 3 # task closed
@@ -273,7 +272,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime,nbContactByProject, retDat
                         taskContacts = []
                         if len(projectContacts) > 0:
                             #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
-                            nc =random.randint(1,nbContactByProject)
+                            nc =random.randint(1,nbProjectContacts)
 
                             for i in range(nc):
                                 taskContact = random.choice(projectContacts)
@@ -363,7 +362,6 @@ if __name__ == "__main__":
         dateCreate = fake.date_this_year(),
         nbTasks=10,
         nbtasksTime=10,
-        nbContactByProject=10,
         retDataUser= fill_users(),
         retDataThirdParties= fill_thirdparties(),
         testing=True))

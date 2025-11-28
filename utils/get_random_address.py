@@ -1,18 +1,13 @@
-from faker import Faker
-from datetime import datetime
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-# Choisi la langue pour les fausses données de faker.
-fake = Faker('fr_FR')
-
-# récupération de l'année en cours
-yearNow = datetime.now().year
+from dolibarr_api import *
 
 def get_random_address():
     fulladdress = fake.address()
     arrayaddress = fulladdress.split("\n")
     arraycpville = arrayaddress[1].split(" ")
     return arrayaddress[0], arraycpville[0], arraycpville[1]
-
 
 
 if __name__ == "__main__":

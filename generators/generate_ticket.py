@@ -1,23 +1,24 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
+from utils.fill_projects import *
 
-def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = False):
+def generate_ticket(dateTicket, retDataThirdParties, testing):
+    yearNow = datetime.now().year
+
     # la date doit etre un timestamp
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
     # on récupère les contrats associés au client si il y en a
-    socid= get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) #574
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
+    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+
 
     data = {
         "fk_soc": socid,
@@ -27,12 +28,15 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
         "datec": dateTicketTs,
+        "fk_project" : fk_project
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
 
+    # on lie un projet du client au ticket
 
-    userAssign = get_random_user(retDataUser)
+
+    userAssign = get_random_user(fill_users())
     # si la date est inférieur à l'année en cours on valide le ticket
     if dateTicket.year < yearNow:
         url = urlBase + "tickets/" + str(ticketID)
@@ -71,6 +75,14 @@ def generate_ticket(dateTicket, retDataThirdParties, retDataUser, testing = Fals
     #             "id": random.choice(retDataCategTicket)['id'],
     #         }
     #         r = requests.post(url, headers=headers, json=data)
+    if testing:
+        r= requests.get(urlBase + "tickets/" + str(ticketID), headers=headers)
+        if r.status_code != 200:
+            print("Erreur lors de la récupération du ticket n° " + str(ticketID))
+            print("Status code: " + str(r.status_code))
+            print("Response: " + r.text)
+        
+        return r.json()
 
     return 1
 
@@ -83,7 +95,6 @@ if __name__ == "__main__":
         generate_ticket(
             dateTicket = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
-            retDataUser = fill_users(),
-            testing = False   
+            testing = True   
         )
     )

@@ -1,39 +1,36 @@
-from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
 
 
-def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing=False):
+def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing):
     url = urlBase + "interventions"
-    if testing:
-        print(retDataThirdParties)
 	# on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties)
+    socid = get_random_client(retDataThirdParties) # 574
     fk_contract = 0
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)
         fk_contract = get_random_contract(retDataContract)
+        fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
 
     data = {
         "socid": socid,
-        "fk_project": 0,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
+        "fk_project":fk_project
         #"date": dateintervention.strftime('%Y-%m-%d'),
     }
     r = requests.post(url, headers=headers, json=data)
-    orderID = r.text
+    interventionID = r.text
+
+    urlIntervention = url + "/" + str(interventionID)
 
     # on ajoute les lignes
-    urlLine = urlBase + "interventions/" + str(orderID) + "/lines"
+    urlLine = urlIntervention + "/lines"
+
     jours_a_ajouter = 0
     for i in range(random.randint(1, 5)):
         jours_a_ajouter += random.randint(0, 1)
@@ -49,45 +46,47 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
 
     # si la date est inférieur à l'année en cours
     if nouvelle_date.year < yearNow:
-        url = urlBase + "interventions/" + str(orderID) + "/validate"
+        url = urlIntervention + "/validate"
         data = {
             "notrigger": 1,
         }
         r = requests.post(url, headers=headers, json=data)  
 
-        url = urlBase + "interventions/" + str(orderID) + "/close"
+        url = urlIntervention + "/close"
         r = requests.post(url, headers=headers, json={})
 
         # On met à jour les dates pour les stats
-        url = urlBase + "interventions/" + str(orderID)
         date_close = nouvelle_date + timedelta(days=jours_a_ajouter)
         data = {
             "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
             "datet": date_close.strftime('%Y-%m-%d %H:%M:%S'),
         }
-        r = requests.put(url, headers=headers, json=data)
+        r = requests.put(urlIntervention, headers=headers, json=data)
     else:
         if random.choice([0, 1]) == 1:
-            url = urlBase + "interventions/" + str(orderID) + "/validate"
+            url = urlIntervention + "/validate"
             data = {
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
 
             # On met à jour les dates pour les stats
-            url = urlBase + "interventions/" + str(orderID)
+        
             data = {
                 "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
             }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(urlIntervention, headers=headers, json=data)
 
     # On met à jour les dates pour les stats
-    url = urlBase + "interventions/" + str(orderID)
+
     data = {
         "datec": dateIntervention.strftime('%Y-%m-%d'),
     }
-    r = requests.put(url, headers=headers, json=data)
-
+    r = requests.put(urlIntervention, headers=headers, json=data)
+    
+    if testing:
+        r = requests.get(urlIntervention, headers=headers)
+        print('Intervention créée avec succès ID: ' + str(interventionID))
 
     return 1
 
@@ -101,6 +100,6 @@ if __name__ == "__main__":
         dateIntervention=fake.date_this_year(),
         retDataThirdParties= retDataThirdParties,
         enabledModule=get_enabled_modules(),
-        testing=False
+        testing=True
         )
     )

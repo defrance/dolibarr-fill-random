@@ -1,35 +1,35 @@
 from faker import Faker
+from datetime import timedelta
 import random
 import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
 
 fake = Faker('fr_FR')
 
-def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testing=False):
+def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testing):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
     
     # Nom de produit : combinaison de mot technologique ou marketing
     name = fake.catch_phrase()  # genre "solution intégrée proactive"
     
-    price = random.randint(5, 20)  # prix aléatoire entre 5 et 20€
-    price_min = price - random.randint(1, 5)  # prix minimum aléatoire entre 1 et 5€ de moins que le prix normal
+    price = random.randint(10, 100)  # prix aléatoire entre 5 et 100€
+    price_min = price - random.randint(0,5)  # prix minimum aléatoire entre 1 et 5€ de moins que le prix normal
     status_buy = random.choice([0, 1])  # à l'achat ou non
+
     # utilisation pour le premier mouvement de stock
     buying_price = price_min - round(price_min * (random.randint(10, 50)/100))  
     # Description plus longue
     description = fake.paragraph(nb_sentences=3)
 
-    urlProduct = urlBase + "products"
+    url = urlBase + "products"
     typeProduct = random.choice([0, 1]) # produit ou service
-    # on cree le produit
+    
+    # on crée le produit
     data = {
         "ref": str(ref),
         "label" :name,
@@ -46,9 +46,9 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     }
 
     if testing:
-        print(urlProduct,headers,data)
+        print(url,headers,data)
     
-    r = requests.post(urlProduct, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data)
 
     # on récupère l'id du produit crée
     productId = 0
@@ -57,7 +57,6 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         return None
     else:
         productId = r.text
-
 
     # on transmet le reste des données par update
     urlProduct = urlBase + "products/" + productId
@@ -89,7 +88,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         if len(retDataWarehouse) > 0:
             initWarehouse = get_random_warehouse(retDataWarehouse)
             # ajout de mouvement de stock initial
-            urlProduct = urlBase + "stockmovements" 
+            urlStockMovements = urlBase + "stockmovements" 
             data = {
                 "product_id" : productId,
                 "warehouse_id" : initWarehouse,
@@ -100,7 +99,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "movementlabel": "Initial stock",
                 "price" : buying_price,
             }
-            r = requests.post(urlProduct, headers=headers, json=data)
+            r = requests.post(urlStockMovements, headers=headers, json=data)
 
             # on ventile une partie du stock sur un autre entrepot
             qtyMoved = random.randint(10, 50) ,
@@ -114,7 +113,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "datem" : dateCreate.strftime('%Y-%m-%d'),
                 "price" : buying_price,
             }
-            r = requests.post(urlProduct, headers=headers, json=data)
+            r = requests.post(urlStockMovements, headers=headers, json=data)
 
             # on ventile une partie du stock sur un autre entrepot
             data = {
@@ -127,7 +126,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "datem" : dateCreate.strftime('%Y-%m-%d'),
                 "price" : buying_price,
             }
-            r = requests.post(urlProduct, headers=headers, json=data)
+            r = requests.post(urlStockMovements, headers=headers, json=data)
 
 
     # gestion des catégories de produit
@@ -143,6 +142,117 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     # /!\ les prix d'achats sont toujours associés à un fournisseur et une référence fournisseur
     # /!\ les prix peuvent varier en fonction de la quantité
 
+    # gestion historique prix de vente
+    
+
+    if nbSalePriceHistoryMax > 0 :
+        
+        for i in range (random.randint(1,nbSalePriceHistoryMax)):
+            
+            if pourcentageAugPriceMax > 0 :
+                pourcentage = random.randint(0, pourcentageAugPriceMax)
+                price *= 1 + (pourcentage / 100)
+                price = round(price, 2)
+                price_min *= 1 + (pourcentage /100)
+                price_min = round(price_min,2)
+
+           # par défaut l'augmentation simulée est de 10% 
+            else:
+                price *= 1.10
+                price = round(price, 2)
+
+            dateUpdate = fake.date_between(start_date = dateCreate + timedelta(days = 1), end_date = dateCreate + timedelta (days=30))
+            data = {
+                "price" : price,
+                "price_min" : price_min,
+                "date_creation": dateUpdate.strftime('%Y-%m-%d'), # fonctionne pas
+                "date_modification": dateUpdate.strftime('%Y-%m-%d') # fonctionne pas
+                }
+            r = requests.put(urlProduct, headers=headers, json=data)
+
+            if r.status_code != 200:
+                if testing : 
+                    print ('erreur ajout prix de vente')
+                    print(r.status_code)
+                    print(r.text)
+            else:
+                if testing:
+                    print('ajout prix historique de vente')
+                    print(r.text)
+
+
+    # gestion des prix d'achats fournisseur
+
+    if status_buy == 1 and nbSupplierProduct >0 :
+        supplierList = fill_thirdparties("supplier")
+
+        supplierQty = random.randint(1,nbSupplierProduct)
+    
+        for i in range (supplierQty) :
+            supplierID = get_random_user(supplierList)['id']
+            if testing : 
+                print(" fournisseur id : ", supplierID)
+
+            if nbSupplierProductPrice > 0 :
+
+                purchasePriceQty = random.randint(1, nbSupplierProductPrice)
+                
+                qty = random.choice([1,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,99,100])
+                buyPriceQ = buying_price * qty
+                
+                for i in range (purchasePriceQty) :
+
+                    dataPurchasePrice = {
+                    "qty": qty,
+                    "buyprice": buyPriceQ,
+                    "price_base_type":"HT",
+                    "fourn_id": supplierID,
+                    "availability": 1,
+                    "ref_fourn": ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)),
+                    "tva_tx": 20,
+                    #"charges": 0,
+                    #"remise_percent": 0,
+                    #"remise": 0,
+                    #"newnpr": 0,
+                    #"delivery_time_days": 0,
+                    #"supplier_reputation": "string",
+                    #"localtaxes_array": [
+                    #"string"
+                    #],
+                    #"newdefaultvatcode": "string",
+                    #"multicurrency_buyprice": 0,
+                    #"multicurrency_price_base_type": "string",
+                    #"multicurrency_tx": 0,
+                    #"multicurrency_code": "string",
+                    #"desc_fourn": "string",
+                    #"barcode": "string",
+                    #"fk_barcode_type": 0
+            }
+
+                urlPurchasePrice = urlProduct + '/purchase_prices'
+
+                r = requests.post(urlPurchasePrice, headers=headers, json = dataPurchasePrice)
+
+                if r.status_code != 200 : 
+                    if testing : 
+                        print ('erreur ajout de prix fournisseur')
+                        print(r.status_code)
+                        print(r.text)
+                else:
+                    if testing:
+                        print('prix fournisseur ajouté : ', buying_price)
+                
+                if pourcentageAugPriceMax > 0 :
+                    pourcentage = random.randint(0, pourcentageAugPriceMax)
+                    buying_price *= 1 + (pourcentage / 100)
+                    buying_price = round(buying_price,2)
+                
+                else:
+                    buying_price *= 1.10
+                    buying_price = round(buying_price,2)
+
+                    if testing:
+                        print('nouveau prix fournisseur : ', buying_price)
     return 1
 
 # Testing
@@ -154,7 +264,7 @@ if __name__ == "__main__":
         retDataWarehouse = fill_warehouses(),
         retDataCategProduct = fill_categories("product"),
         enabledModule= get_enabled_modules(),
-        testing=False
+        testing=True
         
 
     ))

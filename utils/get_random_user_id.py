@@ -1,9 +1,11 @@
 import random
 
 import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from generators.utils.fill_users import fill_users
+from dolibarr_api import *
+
+from utils.fill_users import fill_users
 
 
 def get_random_user_id(retDataUser):

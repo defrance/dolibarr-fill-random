@@ -1,28 +1,31 @@
 from faker import Faker
 import random
-import string
 import requests
-import base64
-import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.generate_utils import *
 
 
-def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing = False):
+def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing):
     url = urlBase + "orders"
+    
     socId = get_random_client(retDataThirdParties)
+    fk_project = 1 #get_random_project_id(get_projects_of_contactID(socid))
+
+
     data = {
         "socid": socId,
         "date": dateOrder.strftime('%Y-%m-%d'),
+        "fk_project" : fk_project
     }
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
 
+    urlOrder = url + "/" + str(orderID)
+
     # on ajoute les lignes
-    urlLine = urlBase + "orders/" + str(orderID) + "/lines"
+    urlLine = urlOrder + "/lines"
     productRandomList = {}
     for i in range(random.randint(1, 10)):
         # la quantité se trouve en fin de ligne entre parenthèse
@@ -62,7 +65,13 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             'array_options' : [],
         }
         r = requests.post(urlLine, headers=headers, json=data)
-        lineID = r.text
+        
+        if r.status_code != 200:
+            if testing:
+                print("Erreur lors de l'ajout de ligne à la commande :", r.text)
+        else:
+            lineID = r.text
+
 
         if productRandom['type'] == "0":
             #  on rajote de la donnée pour l'expédition
@@ -90,14 +99,14 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         # pour l'année en cours, on ne valide pas toute les commandes
         orderStatut = random.choice([0, 1])
         if orderStatut == 1:
-            url = urlBase + "orders/" + str(orderID) + "/validate"
+            url = urlOrder + "/validate"
             data = {
                 "notrigger": 1,
             }
             r = requests.post(url, headers=headers, json=data)  
             # et on ne facture pas toute les commandes
             if random.choice([0, 1]) == 1:
-                url = urlBase + "orders/" + str(orderID) + "/setinvoiced"
+                url = urlOrder + "/setinvoiced"
                 data = {
                 }
                 r = requests.post(url, headers=headers, json=data)  
@@ -167,7 +176,11 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/external"
             data = {}
             r = requests.post(url, headers=headers, json=data)
-
+    
+    if testing:
+        r = requests.get(urlBase + "orders/" + str(orderID), headers=headers)
+        print('Commande créée avec succès ID: ' + str(orderID))
+        return r.json()
     return 1
 
 if __name__ == "__main__":
@@ -181,6 +194,6 @@ if __name__ == "__main__":
             retDataThirdParties = retDataThirdParties,
             retDataWarehouse= fill_warehouses(),
             retDataUser= fill_users(),
-            testing = False
+            testing = True
         )
     )
