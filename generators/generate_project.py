@@ -139,7 +139,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         if testing:
             print("Ajout des contacts du projet ....")
 
-        urlContactProject = urlProjects + str(projectID) + "/contacts"
+        urlContactProject = urlBase + "projects/" + str(projectID) + "/contacts"
         projectContacts = []
         taskContacts = []
 
@@ -280,11 +280,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                     print(dataContact)
                                 dataContact = {
                                     "fk_socpeople": taskContact["fk_socpeople"],
-                                    "type_contact": random.choice(["TASKCONTRIBUTOR","TASKEXECUTIVE"]),
+                                    "type_contact": random.choice(["TASKCONTRIBUTOR", "TASKEXECUTIVE"]),
                                     "source":taskContact["source"]
                                 }
 
-                                r = requests.post(urlBase + str(taskID)+"/contacts", headers=headers, json=dataContact)
+                                r = requests.post(urlBase + "tasks/"+ str(taskID)+ "/contacts", headers=headers, json=dataContact)
                             
                                 if r.status_code !=200:
                                     print("erreur lors de l'ajout du contact à la tâche")
