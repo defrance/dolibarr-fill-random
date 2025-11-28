@@ -26,7 +26,7 @@ from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
 
-from generators.utils.fill_data import *
+from utils.fill_projects import *
 
 # On mémorise l'heure de début de l'alimentation totale
 start_time = datetime.now()
@@ -122,7 +122,7 @@ if nbNewProject > 0 and 'projet' in enabledModule:
 
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime,nbNewMaxContact, retDataUser, retDataThirdParties, testToggle)
+        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties, testToggle)
 
 retDataProjects = fill_projects()
 

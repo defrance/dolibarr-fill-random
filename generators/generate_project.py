@@ -90,7 +90,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
     "usage_task": "1",
     # Facturation du temps (par défaut désactivé)
     "usage_bill_time": "0",
-    "status": projectStatus
+    "status": projectStatus,
+    "public" : 1
     }
 
     r = requests.post(urlProjects, headers=headers, json=data)
