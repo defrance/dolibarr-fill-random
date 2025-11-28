@@ -5,27 +5,24 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.utils.fill_data import *
-from generators.utils.get_data import *
-from generators.utils.put_data import *
-from generators.utils.utils import *
+
 
 def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testing):
     url = urlBase + "orders"
     
     socId = get_random_client(retDataThirdParties)
+    fk_project = 1 #get_random_project_id(get_projects_of_contactID(socid))
+
 
     data = {
         "socid": socId,
         "date": dateOrder.strftime('%Y-%m-%d'),
+        "fk_project" : fk_project
     }
     r = requests.post(url, headers=headers, json=data)
     orderID = r.text
 
     urlOrder = url + "/" + str(orderID)
-    # on lie un projet du client à la commande
-
-    put_fk_project(socId, urlOrder)
 
     # on ajoute les lignes
     urlLine = urlOrder + "/lines"

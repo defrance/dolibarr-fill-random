@@ -1,14 +1,10 @@
-from faker import Faker
 import random
 import requests
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.utils.fill_data import *
-from generators.utils.get_data import *
-from generators.utils.put_data import *
-from generators.utils.utils import *
+
 
 def generate_knowledge(dateKnowledge, testing):
     # la date doit etre un timestamp
@@ -61,4 +57,4 @@ def generate_knowledge(dateKnowledge, testing):
 if __name__ == "__main__":
     print(generate_knowledge(
         dateKnowledge=fake.date_time_this_year(),
-        testing=False))
+        testing=True))

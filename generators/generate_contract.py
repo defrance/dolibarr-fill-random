@@ -4,10 +4,6 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.utils.fill_data import *
-from generators.utils.get_data import *
-from generators.utils.put_data import *
-from generators.utils.utils import *
 
 
 def generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser, testing):
@@ -126,6 +122,6 @@ if __name__ == "__main__":
         retDataThirdParties = retDataThirdParties,
         retDataProduct = fill_products(),
         retDataUser = fill_users(),
-        testing=False
+        testing=True
             )
         )

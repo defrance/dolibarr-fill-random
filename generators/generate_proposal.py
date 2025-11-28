@@ -6,10 +6,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.utils.fill_data import *
-from generators.utils.get_data import *
-from generators.utils.put_data import *
-from generators.utils.utils import *
+
 
 def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing):
     yearNow = datetime.now().year
@@ -20,17 +17,20 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
     socID =  get_random_client(retDataThirdParties) #574
+    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+
 
     data = {
         "socid": socID,
         "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
+        "fk_project": fk_project
     }
     r = requests.post(url, headers=headers, json=data)
     proposalID = r.text
 
     # on lie un projet du client à la proposition
-    put_fk_project(socID, urlBase + "proposals/" + str(proposalID))
+
 
 
     # on ajoute les lignes attention, pour les propal, il faut utiliser line et pas lines

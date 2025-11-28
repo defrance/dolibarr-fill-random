@@ -18,7 +18,11 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-fake = Faker('fr_FR')
+#fake = Faker('fr_FR')
+lang = config['others']['lang']
+fake = Faker(lang)
+
+yearNow = datetime.now().year
 
 # on récupère le token et le mot de passe du mail
 apiToken = config['connection']['apitoken']
@@ -63,6 +67,7 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
+
 
 # fournisseurs
 createSupplier = config['supplier']['create_supplier']

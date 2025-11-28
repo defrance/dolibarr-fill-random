@@ -5,10 +5,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from generators.utils.fill_data import *
-from generators.utils.get_data import *
-from generators.utils.put_data import *
-from generators.utils.utils import *
+from utils.fill_projects import *
 
 def generate_ticket(dateTicket, retDataThirdParties, testing):
     yearNow = datetime.now().year
@@ -20,6 +17,8 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
     socid = get_random_client(retDataThirdParties) #574
     retDataContract = fill_contracts(socid)
     fk_contract = get_random_contract(retDataContract)
+    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+
 
     data = {
         "fk_soc": socid,
@@ -29,12 +28,12 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
         "type_code": random.choice(["COM", "HELP", "ISSUE", "PROBLEM", "OTHER", "PROJECT", "REQUEST"]),
         "severity_code": random.choice(["LOW", "NORMAL", "HIGH", "BLOCKING"]),
         "datec": dateTicketTs,
+        "fk_project" : fk_project
     }
     r = requests.post(url, headers=headers, json=data)
     ticketID = r.text
 
     # on lie un projet du client au ticket
-    put_fk_project(socid, urlBase + "tickets/" + str(ticketID))
 
 
     userAssign = get_random_user(fill_users())
@@ -96,8 +95,6 @@ if __name__ == "__main__":
         generate_ticket(
             dateTicket = fake.date_time_this_year(),
             retDataThirdParties = retDataThirdParties,
-            retDataUser = fill_users(),
-            retDataProject= fill_projects(),
             testing = True   
         )
     )
