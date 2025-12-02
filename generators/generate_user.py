@@ -38,7 +38,8 @@ def generate_user(dateCreate, testing):
         "town": town,
         "phone": fake.phone_number(),
         "email": firstname.lower() + lastname.lower() + "@" +fake.free_email_domain(),
-        "thm": random.randint(20, 80)
+        "thm": random.randint(20, 80),
+        "fk_user": random.randint(1, 3),  # id du responsable hiérarchique
     }
 
     r = requests.post(url, headers=headers, json=data)
