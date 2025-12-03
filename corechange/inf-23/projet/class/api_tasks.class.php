@@ -582,7 +582,7 @@ class Tasks extends DolibarrApi
 	 * @phan-return array{success:array{code:int,message:string}}
 	 * @phpstan-return array{success:array{code:int,message:string}}
 	 */
-	public function addTimeSpent($id, $date, $duration, $user_id = 0, $note = '', $progress = null)
+	public function addTimeSpent($id, $date, $duration, $user_id = 0, $note = '', $progress = -1)
 	{
 		if (!DolibarrApiAccess::$user->hasRight('projet', 'creer')) {
 			throw new RestException(403);
@@ -608,8 +608,9 @@ class Tasks extends DolibarrApi
 		$this->task->timespent_duration = $duration;
 		$this->task->timespent_fk_user  = $uid;
 		$this->task->timespent_note     = $note;
-		if (!empty($this->task->progress))
+		if (!empty($progress) && $progress >= 0 && $progress <= 100) {
 			$this->task->progress  		= $progress;
+		}
 
 		$result = $this->task->addTimeSpent(DolibarrApiAccess::$user, 0);
 		if ($result == 0) {

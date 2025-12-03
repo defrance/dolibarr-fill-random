@@ -19,7 +19,7 @@ def load_config(path='param.yml'):
 
 config = load_config()
 #fake = Faker('fr_FR')
-lang = config['others']['lang']
+lang = config['connection']['lang']
 fake = Faker(lang)
 
 yearNow = datetime.now().year
@@ -46,8 +46,9 @@ nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
-nbSalePriceHistoryMax = config['elements']['nb_sale_price_history_max']
-pourcentageAugPriceMax = config['elements']['pourcentage_aug_price_max']
+
+nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
+pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
 
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
@@ -56,7 +57,7 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 # newCategoryTicket=config['categories']['new_category_ticket']
 
 # infos lies au projet
-nbNewProject=config['project']['new_project']
+nbNewProject=config['elements']['new_project']
 nbNewOpportunity=config['project']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
@@ -231,7 +232,7 @@ def fill_contracts(socid):
 def get_random_contract(retDataContract):
 	# on retourne les infos du produit
 	if (len(retDataContract) > 1):
-		return retDataContract[random.randint(0, len(retDataContract)-1)]['id']
+		return retDataContract[random.randint(1, len(retDataContract)-1)]['id']
 	else:
 		return 0
 
