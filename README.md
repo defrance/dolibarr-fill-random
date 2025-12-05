@@ -136,10 +136,12 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
    https://github.com/Dolibarr/dolibarr/pull/36217
    - Gestion de la saisie des temps et des contacts sur les taches
    https://github.com/Dolibarr/dolibarr/pull/35897
-   - Gestion des congés 
-    Attention, nécissite de modifier aussi le fichier /core/lib/functions2.lib.php getModuleDirForApiClass vers la ligne 2700
+   - Gestion des congés
+   https://github.com/Dolibarr/dolibarr/pull/36546  
+
+Attention, nécissite de modifier aussi le fichier /core/lib/functions2.lib.php getModuleDirForApiClass vers la ligne 2700
     il faut ajouter :
+	
 	 	} elseif ($moduleobject == 'holidays') {
 			$moduledirforclass = 'holiday';
 		}
-     https://github.com/Dolibarr/dolibarr/pull/36546
