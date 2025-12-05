@@ -139,6 +139,7 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
    - Gestion des congés 
     Attention, nécissite de modifier aussi le fichier /core/lib/functions2.lib.php getModuleDirForApiClass vers la ligne 2700
     il faut ajouter :
- 	} elseif ($moduleobject == 'holidays') {
-		$moduledirforclass = 'holiday';
-	}
+	 	} elseif ($moduleobject == 'holidays') {
+			$moduledirforclass = 'holiday';
+		}
+     https://github.com/Dolibarr/dolibarr/pull/36546
