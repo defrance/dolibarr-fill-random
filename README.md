@@ -133,10 +133,13 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
 
     - Gestion de la génération automatique de la référence des taches
     https://github.com/Dolibarr/dolibarr/pull/35981/files
+	
     - Ajout de la date de création des taches dans la mises à jour
     https://github.com/Dolibarr/dolibarr/pull/36217
+	
     - Gestion de la saisie des temps et des contacts sur les taches
     https://github.com/Dolibarr/dolibarr/pull/35897
+	
     - Gestion des congés
     https://github.com/Dolibarr/dolibarr/pull/36606
 
