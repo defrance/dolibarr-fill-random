@@ -24,13 +24,13 @@ def generate_holiday(dateCreate, testing=False):
     if testing:
         print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
-        # status = "refuse"
+        status = "cancel"
 
     match holiday_type['rowid']:
         case "1" | "2" : # LEAVE_SICK - LEAVE_OTHER (delais 0)
             dateDebut = dateCreate
             dateFin = fake.date_between(start_date = dateDebut, end_date = dateDebut + timedelta(days = 15))
-            status = "validate"
+            status = "approve"
             if testing:
                 print("Congé de type sans délai, début :", dateDebut, "fin :", dateFin)
         case "4" : # LEAVE_RTT_FR (delais 7)
@@ -74,7 +74,7 @@ def generate_holiday(dateCreate, testing=False):
         "halfday": 0,
         "fk_validator": random.choice([1,2,3]), # id du validateur
         "description": fake.sentence(nb_words=6),
-        "date_create": dateCreate.strftime('%Y-%m-%d'),
+        #"date_create": dateCreate.strftime('%Y-%m-%d'),
     }
 
     r = requests.post(url, headers=headers, json=data)
@@ -116,13 +116,12 @@ def generate_holiday(dateCreate, testing=False):
     if status == "refuse":
 
         data = {
-            "date_refuse": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
             "detail_refuse": "Raison du refus : " + fake.sentence(nb_words=6),
         }
         r = requests.post(urlHoliday + "/" + str(status), headers=headers, json=data)
         if r.status_code != 200:
             if testing:
-                print('Erreur lors de la mise à jour des détails du congé/absence', r.status_code)
+                print('Erreur lors du refus du congé/absence', r.status_code)
                 print (r.text)
         else:
             if testing:
@@ -138,6 +137,35 @@ def generate_holiday(dateCreate, testing=False):
             if testing:
                 print(f'Statut du congé/absence changé avec succès en {status}.')
     
+    # update congés/absences utilisateur après acceptation/refus
+    
+    match status:
+        case "refuse":
+            data = {
+                "date_refuse": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "date_create": dateCreate.strftime('%Y-%m-%d'),
+            }
+        
+        case "validate":
+            data = {
+                "date_valid": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "date_create": dateCreate.strftime('%Y-%m-%d'),
+            }
+        
+        case "cancel":
+            data = {
+                "date_cancel": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "date_create": dateCreate.strftime('%Y-%m-%d'),
+            }
+    
+    r_update = requests.put(urlHoliday, headers=headers, json=data)
+    if r_update.status_code != 200:
+        if testing:
+            print('Erreur lors de la mise à jour du congé/absence après changement de statut', r_update.status_code)
+            print (r_update.text)
+    else:
+        if testing:
+            print("Congé/absence mis à jour avec succès après changement de statut.")
 
     
 
