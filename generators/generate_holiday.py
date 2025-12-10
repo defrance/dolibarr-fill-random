@@ -19,13 +19,14 @@ def generate_holiday(dateCreate, testing=False):
     inTime = random.choice([True, False])
     dateDebut = None
     dateFin = None
-    status = random.choices(["approve,""cancel","refuse","validate"])
-
+    status = random.choice(["approve","cancel","refuse","validate"])
+    print(status)
     if testing:
-        print("Type de congé/absence choisi :", holiday_type['id'])
+        print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
+        # status = "refuse"
 
-    match holiday_type['id']:
+    match holiday_type['rowid']:
         case "1" | "2" : # LEAVE_SICK - LEAVE_OTHER (delais 0)
             dateDebut = dateCreate
             dateFin = fake.date_between(start_date = dateDebut, end_date = dateDebut + timedelta(days = 15))
@@ -60,7 +61,7 @@ def generate_holiday(dateCreate, testing=False):
                 if testing:
                     print("Congé payé hors délais, début :", dateDebut,"fin :", dateFin)
         case _:
-            raise ValueError(f"Type de congé {holiday_type['id']} non géré")
+            raise ValueError(f"Type de congé {holiday_type['rowid']} non géré")
     
     if dateDebut is None:
         raise ValueError("dateDebut n'a pas été défini !")
@@ -69,9 +70,9 @@ def generate_holiday(dateCreate, testing=False):
         "fk_user": user['id'], # id de l'utilisateur
         "date_debut": dateDebut.strftime('%Y-%m-%d'),
         "date_fin": dateFin.strftime('%Y-%m-%d'),
-        "fk_type": holiday_type['id'], # id du type de congé/absence
+        "fk_type": holiday_type['rowid'], # id du type de congé/absence
         "halfday": 0,
-        "fk_validator": 1, # id du validateur
+        "fk_validator": random.choice([1,2,3]), # id du validateur
         "description": fake.sentence(nb_words=6),
         "date_create": dateCreate.strftime('%Y-%m-%d'),
     }
@@ -89,7 +90,7 @@ def generate_holiday(dateCreate, testing=False):
         r_get = requests.get(urlHoliday, headers = headers)
         print("Détails : ", r_get.text)
 
-    
+    # url = urlBase + "/setup/dictionary/holiday_types" 403 Forbidden
     # update date création (Forbidden)
 
     """   
@@ -112,23 +113,13 @@ def generate_holiday(dateCreate, testing=False):
 
     #user_balance = requests.get(urlHoliday, headers = headers)
     #print("Solde congés/absences de l'utilisateur ID ", user['id'], " : ", user_balance.json().get("solde"))
-    
-    r = requests.post(urlHoliday + "/" + status[0], headers = headers)
-    if r.status_code != 200:
-        if testing:
-            print(f'Erreur lors du changement de statut du congé/absence en {status[0]}', r.status_code)
-            print (r.text)
-    else:
-        if testing:
-            print(f'Statut du congé/absence changé avec succès en {status[0]}.')
-    
+    if status == "refuse":
 
-    if status[0] == "refuse":
         data = {
             "date_refuse": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
-            "detail_refus": "Raison du refus : " + fake.sentence(nb_words=6)
+            "detail_refuse": "Raison du refus : " + fake.sentence(nb_words=6),
         }
-        r = requests.put(urlHoliday, headers=headers, json=data)
+        r = requests.post(urlHoliday + "/" + str(status), headers=headers, json=data)
         if r.status_code != 200:
             if testing:
                 print('Erreur lors de la mise à jour des détails du congé/absence', r.status_code)
@@ -136,10 +127,24 @@ def generate_holiday(dateCreate, testing=False):
         else:
             if testing:
                 print("Détails du congé/absence mis à jour avec succès.")
+
+    else:
+        r = requests.post(urlHoliday + "/" + str(status), headers = headers)
+        if r.status_code != 200:
+            if testing:
+                print(f'Erreur lors du changement de statut du congé/absence en {status}', r.status_code)
+                print (r.text)
+        else:
+            if testing:
+                print(f'Statut du congé/absence changé avec succès en {status}.')
+    
+
+    
+
     
     return idHoliday
 # Tests
 if __name__ == "__main__":
     print("Génération de congés/absences")
-    for i in range(5):
+    for i in range(1):
         print(generate_holiday(fake.date_this_year(), testing=True))
