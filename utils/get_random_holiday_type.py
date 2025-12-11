@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 
 def get_random_holiday_type(testing=False):
-    url = urlBase + "/setup/dictionary/holiday_types?fk_country=1&active=1"
+    url = urlBase + "/setup/dictionary/holiday_types?fk_country=" + str(fk_country) + "&active=1"
     r = requests.get(url, headers=headers, verify=False)
 
     if r.status_code != 200:

@@ -48,6 +48,7 @@ others:
   nb_shipping: 1
   year_to_fill: 2025
   lang: fr_FR
+  fk_country: 1
 
 project:
   new_opportunity: 0
@@ -62,5 +63,5 @@ supplier:
   new_bill: 100
   new_order: 100
 
-grh:
+hrm:
   nb_holiday: 200

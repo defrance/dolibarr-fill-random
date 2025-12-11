@@ -18,7 +18,6 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-#fake = Faker('fr_FR')
 lang = config['connection']['lang']
 fake = Faker(lang)
 
@@ -68,6 +67,7 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
+fk_country = config['others']['fk_country']
 
 
 # fournisseurs
@@ -86,8 +86,8 @@ nbOrder_contactExt = config['contacts']['order_externe']
 nbInvoice_contactInt = config['contacts']['invoice_interne']
 nbInvoice_contactExt = config['contacts']['invoice_externe']
 
-# grh
-nbHoliday = config['grh']['nb_holiday']
+# HRM
+nbHoliday = config['hrm']['nb_holiday']
 
 
 headers = {
