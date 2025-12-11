@@ -20,11 +20,13 @@ def generate_holiday(dateCreate, testing=False):
     dateDebut = None
     dateFin = None
     status = random.choice(["approve","cancel","refuse","validate"])
+    validatorID = random.choice([1,2,3])
+
     print(status)
     if testing:
         print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
-        status = "cancel"
+
 
     match holiday_type['rowid']:
         case "1" | "2" : # LEAVE_SICK - LEAVE_OTHER (delais 0)
@@ -72,7 +74,7 @@ def generate_holiday(dateCreate, testing=False):
         "date_fin": dateFin.strftime('%Y-%m-%d'),
         "fk_type": holiday_type['rowid'], # id du type de congé/absence
         "halfday": 0,
-        "fk_validator": random.choice([1,2,3]), # id du validateur
+        "fk_validator": validatorID, # id du validateur
         "description": fake.sentence(nb_words=6),
         #"date_create": dateCreate.strftime('%Y-%m-%d'),
     }
@@ -90,29 +92,7 @@ def generate_holiday(dateCreate, testing=False):
         r_get = requests.get(urlHoliday, headers = headers)
         print("Détails : ", r_get.text)
 
-    # url = urlBase + "/setup/dictionary/holiday_types" 403 Forbidden
-    # update date création (Forbidden)
 
-    """   
-    url_update = urlBase + "holidays/" + idHoliday
-    data_update = {
-        "date_create": dateCreate.strftime('%Y-%m-%d'),
-        "description": "l'update se fait"
-    }
-    r_update = requests.put(url_update, headers=headers, json=data_update)
-    if r_update.status_code != 200:
-        if testing:
-            print('Erreur lors de la mise à jour de la date de création du congé/absence', r_update.status_code)
-            print (r_update.text)
-    else:
-        if testing:
-            print("Date de création du congé/absence mise à jour avec succès.")"""
-    
-
-    # Acceptation, refus ....
-
-    #user_balance = requests.get(urlHoliday, headers = headers)
-    #print("Solde congés/absences de l'utilisateur ID ", user['id'], " : ", user_balance.json().get("solde"))
     if status == "refuse":
 
         data = {
@@ -126,6 +106,22 @@ def generate_holiday(dateCreate, testing=False):
         else:
             if testing:
                 print("Détails du congé/absence mis à jour avec succès.")
+
+    elif status == "approve":
+        r = requests.post(urlHoliday + "/validate", headers = headers)
+        if r.status_code != 200:
+            if testing:
+                print('Erreur lors de la validation du congé/absence approuvé', r.status_code)
+                print (r.text)
+        else:
+            r = requests.post(urlHoliday + "/" + str(status), headers = headers)
+            if r.status_code != 200:
+                if testing:
+                    print('Erreur lors de l\'approbation du congé/absence', r.status_code)
+                    print (r.text)
+            else:
+                if testing:
+                    print("Congé/absence approuvé avec succès.")
 
     else:
         r = requests.post(urlHoliday + "/" + str(status), headers = headers)
@@ -144,18 +140,35 @@ def generate_holiday(dateCreate, testing=False):
             data = {
                 "date_refuse": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
                 "date_create": dateCreate.strftime('%Y-%m-%d'),
+                "fk_user_refuse": validatorID,
+                "fk_user_create": validatorID
             }
         
         case "validate":
             data = {
                 "date_valid": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "fk_user_valid": validatorID,
                 "date_create": dateCreate.strftime('%Y-%m-%d'),
+                "fk_user_create": validatorID
             }
         
         case "cancel":
             data = {
                 "date_cancel": fake.date_between(start_date= dateCreate, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "fk_user_cancel": validatorID,
                 "date_create": dateCreate.strftime('%Y-%m-%d'),
+                "fk_user_create": validatorID
+            }
+
+        case "approve":
+            dateVal = fake.date_between(start_date= dateCreate, end_date = dateDebut)
+            data = {
+                "fk_user_valid": validatorID,
+                "fk_user_approve": validatorID,
+                "date_valid": dateVal.strftime('%Y-%m-%d'),
+                "date_approval": fake.date_between(start_date= dateVal, end_date = dateDebut).strftime('%Y-%m-%d'),
+                "date_create": dateCreate.strftime('%Y-%m-%d'),
+                "fk_user_create": validatorID
             }
     
     r_update = requests.put(urlHoliday, headers=headers, json=data)
