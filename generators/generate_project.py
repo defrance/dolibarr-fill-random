@@ -77,18 +77,18 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
     dateCloseTs = dateClose.timestamp() if dateClose else None
 
     data = {
-    "date_start": dateStartTs,
-    "date_end": dateEndTs,
-    "ref": "auto",
-    "title": fake.catch_phrase(),
-    "description": fake.text(max_nb_chars=200),
-    "date_close":dateCloseTs if projectStatus == 2 else None,
-    # suivis de tache (par défaut activé)
-    "usage_task": "1",
-    # Facturation du temps (par défaut désactivé)
-    "usage_bill_time": "0",
-    "status": projectStatus,
-    "public" : 1
+        "date_start": dateStartTs,
+        "date_end": dateEndTs,
+        "ref": "auto",
+        "title": fake.catch_phrase(),
+        "description": fake.text(max_nb_chars=200),
+        "date_close":dateCloseTs if projectStatus == 2 else None,
+        # suivis de tache (par défaut activé)
+        "usage_task": "1",
+        # Facturation du temps (par défaut désactivé)
+        "usage_bill_time": "0",
+        "status": projectStatus,
+        "public" : 1
     }
 
     r = requests.post(urlProjects, headers=headers, json=data)
@@ -143,7 +143,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
         if nbNewMaxContact > 0:
         # Défini un nombre d'user pour le projet
-            nbProjectContacts = random.randint(1,nbNewMaxContact)
+            nbProjectContacts = random.randint(1, nbNewMaxContact)
             if nbProjectContacts > 0:
                 for i in range (nbProjectContacts):
 
@@ -169,7 +169,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             "type_contact": typeContact, #Required "PROJECTCONTRIBUTOR" - ou Type of contact (code). Must a code found into table llx_c_type_contact. For example: BILLING ,
                             "source": source, #Required  "external" or "internal" -  external=Contact extern (llx_socpeople), internal=Contact intern (llx_user) ,
                             }
-                        print(urlContactProject)
+                        if testing:
+                            print(urlContactProject)
+
                         rC = requests.post(urlContactProject, headers=headers,json=dataContact)
                         if rC.status_code != 200:
                             print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
@@ -227,17 +229,17 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                     dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
 
                     data = {
-                    "ref": "auto", #auto 
-                    "fk_project": projectID,
+                        "ref": "auto", #auto 
+                        "fk_project": projectID,
 
-                    "date_start": dateTaskO.timestamp(),
-                    "date_end":  dateTaskE.timestamp(),
-                    "label": fake.catch_phrase(),
-                    "description":fake.text(max_nb_chars=200),
-                    "planned_workload":fake.random_int(min=1, max=20) * 3600, # en secondes
-                    "note_private": fake.text(max_nb_chars=200),
-                    "note_public": fake.text(max_nb_chars=200),
-                    "status": taskStatus
+                        "date_start": dateTaskO.timestamp(),
+                        "date_end":  dateTaskE.timestamp(),
+                        "label": fake.catch_phrase(),
+                        "description":fake.text(max_nb_chars=200),
+                        "planned_workload":fake.random_int(min=1, max=20) * 3600, # en secondes
+                        "note_private": fake.text(max_nb_chars=200),
+                        "note_public": fake.text(max_nb_chars=200),
+                        "status": taskStatus
                     }
 
                     r = requests.post(urlTasks, headers=headers, json=data)
@@ -254,23 +256,14 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         except Exception:
                             taskID = int(r.text.strip())
 
-                        dataUpdate = {
-                                "date_c": dateTaskC.timestamp(),
-                            }
                         if testing:
                             print("ID de la tâche créée:", taskID)
-
-                        r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
-                        if r.status_code != 200:
-                            print("Erreur lors de l'ajout des dates de la tâche n°", i+1,".", r.status_code)
-                            print (r.text)
-                            return None
 
                         # Ajout de contact à la tâche parmi les contact du projet
                         taskContacts = []
                         if len(projectContacts) > 0:
                             #Choisi un nombre aléatoire de contact à ajouter à la tache entre 1 et le nombre de contact du projet
-                            nc =random.randint(1,nbProjectContacts)
+                            nc =random.randint(1, nbProjectContacts)
 
                             for i in range(nc):
                                 taskContact = random.choice(projectContacts)
@@ -297,6 +290,21 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                 print("contacts associés à la tâche :")
                                 print(taskContacts)
                         
+                        # TODO ajouter l'utilsateur créateur de la tâche dans les contacts de la tâche s'il n'y est pas déjà
+                        # sinon on risque de ne pas pouvoir mettre à jour la date de création de la tâche
+
+                        dataUpdate = {
+                            "date_c": dateTaskC.timestamp(),
+                        }
+
+                        r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
+                        if r.status_code == 403:
+                            print("403 : Not allowed to update task", i+1)
+                        elif r.status_code != 200:
+                            print("Erreur lors de la mise à jour de la date de création de la tâche n°", i+1,".", r.status_code)
+                            print (r.text)
+                            return None
+
                         if testing:
                             print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
 

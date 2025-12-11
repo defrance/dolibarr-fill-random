@@ -225,15 +225,17 @@ def get_random_product(retDataProduct, type = -1):
 def fill_contracts(socid):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contracts?limit=100&thirdparty_ids=" + str(socid)
-	url = url + "&sqlfilters=(statut:=:1)"
+	url = url + "&sqlfilters=(t.statut:=:1)"
 	rRandomContract = requests.get(url, headers=headers, verify=False)
 	if rRandomContract.status_code != 200:
-		print('Erreur lors de la récupération du contracts', rRandomContract.status_code)
+		print('Erreur lors de la récupération du contracts', url, rRandomContract.status_code)
+		print (rRandomContract.text)
+		return None	
 	retDataContract = rRandomContract.json()
 	return retDataContract
 
 def get_random_contract(retDataContract):
-	# on retourne les infos du produit
+	# on retourne les infos d'un contrat 
 	if (len(retDataContract) > 1):
 		return retDataContract[random.randint(1, len(retDataContract)-1)]['id']
 	else:

@@ -22,7 +22,6 @@ def generate_holiday(dateCreate, testing=False):
     status = random.choice(["approve","cancel","refuse","validate"])
     validatorID = random.choice([1,2,3])
 
-    print(status)
     if testing:
         print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
@@ -86,10 +85,14 @@ def generate_holiday(dateCreate, testing=False):
         return None
     else:
         idHoliday= r.text
+
     if testing :
         print("Congé/absence créé ID : ", idHoliday)
-        urlHoliday = urlBase + "holidays/" + idHoliday
-        r_get = requests.get(urlHoliday, headers = headers)
+    
+    urlHoliday = urlBase + "holidays/" + idHoliday
+    r_get = requests.get(urlHoliday, headers = headers)
+    
+    if testing :
         print("Détails : ", r_get.text)
 
 
