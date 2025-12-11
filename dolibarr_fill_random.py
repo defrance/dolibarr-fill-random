@@ -25,6 +25,7 @@ from generators.generate_ticket import generate_ticket
 from generators.generate_knowledge import generate_knowledge
 from generators.generate_contract import generate_contract
 from generators.generate_category import generate_category
+from generators.generate_holiday import generate_holiday
 
 from utils.fill_projects import *
 
@@ -208,6 +209,18 @@ if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
 start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Alimentation Tickets et articles : ", duration)
+
+# Alimentation des congés/absences
+start_prev = datetime.now()
+
+if nbHoliday > 0  and 'holiday' in enabledModule:
+    listHolidayGen = gen_random_following_date(yearToFill, nbHoliday, max_interval = dateinterval)
+    for dateHoliday in listHolidayGen:
+        holiday = generate_holiday(dateHoliday, testToggle)
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Alimentation congés : ", duration)
 
 # On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))

@@ -86,6 +86,9 @@ nbOrder_contactExt = config['contacts']['order_externe']
 nbInvoice_contactInt = config['contacts']['invoice_interne']
 nbInvoice_contactExt = config['contacts']['invoice_externe']
 
+# grh
+nbHoliday = config['grh']['nb_holiday']
+
 
 headers = {
 	'DOLAPIKEY': apiToken,

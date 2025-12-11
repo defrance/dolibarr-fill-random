@@ -7,12 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 
-
-fake = Faker('fr_FR')
-
 def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThirdParties, testing):
     # url de création de projet
-    urlProjects = urlBase + "projects"
+    urlProjects = urlBase + "projects/"
     # url de création de tâche
     urlTasks = urlBase + "tasks"
 

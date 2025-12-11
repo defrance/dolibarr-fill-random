@@ -61,3 +61,6 @@ supplier:
   nb_supplier_product_price: 10 # nombre max de prix d'achat par fournisseur d'un produit
   new_bill: 100
   new_order: 100
+
+grh:
+  nb_holiday: 200
