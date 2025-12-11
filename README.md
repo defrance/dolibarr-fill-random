@@ -60,6 +60,9 @@ Attention, l'utilisateur doit etre admin
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
 
+- Congés
+	- 	Création aléatoire (en test)
+
 - Contrat
     - soucis sur la création des ligne de contrat (warning)
     - on ouvre les services sur une période et on les fermes aussi
