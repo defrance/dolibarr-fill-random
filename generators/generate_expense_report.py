@@ -14,10 +14,13 @@ from utils.get_random_project_id import get_random_project_id
 
 def generate_expense_report( dateStart, testing = False):
     url = urlBase + "expensereports"
-    userID = get_random_user(fill_users())['id']
+    user = get_random_user(fill_users())
+    userID = user['id']
     if testing : 
         print("userID : " , userID)
-    validatorID = get_random_user(fill_users())['id']
+    validatorID = 1 # user['fk_user']
+    if testing :
+        print("validatorID : " , validatorID)
 
 
     # Création de la note de frais par défaut en brouillon
@@ -50,12 +53,11 @@ def generate_expense_report( dateStart, testing = False):
     projectList = get_projects_of_contactID(userID)
     print(projectList)
     
-    """ 
-        if len(projectList) = 0 :
-        projectList = get_projects_of_contactID(574)
-    """
+    if len(projectList) > 0 :
+        fkProject = get_random_project_id(projectList)
 
-    fkProject = get_random_project_id(projectList)
+    else :
+        fkProject = 'null'
 
     dataLine = {
         "comments": fake.text(max_nb_chars=100),
@@ -83,7 +85,15 @@ def generate_expense_report( dateStart, testing = False):
             print('création de la ligne de frais.')
 
 
-
+    print('test validation note de frais')
+    r = requests.post(urlReport + "/validate", headers=headers)
+    if r.status_code != 200 :
+        if testing :  
+            print('Erreur lors de la validation de la note de frais', r.status_code)
+            print (r.text)
+    else :
+        if testing:
+            print('note de frais validée.')
     # modification du statut de la note de frais
     # 0 = brouillon
     # 2 = validé en attente d'approbation
