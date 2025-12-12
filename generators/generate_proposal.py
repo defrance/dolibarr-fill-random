@@ -6,6 +6,8 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+from utils.get_projects_of_contactID import get_projects_of_contactID
+from utils.get_random_project_id import get_random_project_id
 
 
 def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing):
@@ -17,7 +19,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
     socID =  get_random_client(retDataThirdParties) #574
-    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+    fk_project = get_random_project_id(get_projects_of_contactID(socID))
 
 
     data = {

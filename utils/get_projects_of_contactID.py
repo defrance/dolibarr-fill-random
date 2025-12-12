@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 
 def get_projects_of_contactID(contactID, testing = False):
- url = urlBase + 'dolismartprojectsapi'+ str(contactID) +'/contacts'
+ url = urlBase + 'dolismartprojectsapi/'+ str(contactID) +'/contacts'
 
  r = requests.get(url, headers=headers, verify=False)
  if r.status_code != 200:
@@ -17,8 +17,8 @@ def get_projects_of_contactID(contactID, testing = False):
  else:
     if testing:
             print('Projets du contactID ' + str(contactID) + ' récupérés avec succès.')
-    print( r.json())        
-    return r.json()     
+    print (str(len(r.json())) + ' projet(s) trouvé(s).') 
+    return r.json()  
 
 
 # Test unitaire

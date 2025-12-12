@@ -4,6 +4,8 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+from utils.get_projects_of_contactID import get_projects_of_contactID
+from utils.get_random_project_id import get_random_project_id
 
 
 def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing):
@@ -14,7 +16,7 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
     if 'contrat' in enabledModule:
         retDataContract = fill_contracts(socid)
         fk_contract = get_random_contract(retDataContract)
-        fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+        fk_project = get_random_project_id(get_projects_of_contactID(socid))
 
     data = {
         "socid": socid,
