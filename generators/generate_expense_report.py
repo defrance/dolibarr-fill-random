@@ -12,13 +12,16 @@ from dolibarr_api import *
 from utils.get_projects_of_contactID import get_projects_of_contactID
 from utils.get_random_project_id import get_random_project_id
 
-def generate_expense_report( dateStart, testing = False):
+def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"
+    dateStart = fake.date_between(start_date=dateCreate, end_date = dateCreate + timedelta(days = 15))
+    dateEnd = fake.date_between(start_date=dateStart, end_date = dateStart + timedelta(days = 30))
+
     user = get_random_user(fill_users())
     userID = user['id']
     if testing : 
         print("userID : " , userID)
-    validatorID = 0 # par défaut user connecté
+    validatorID = user['fk_user'] #par défaut user connecté
     if testing :
         print("validatorID : " , validatorID)
 
@@ -27,7 +30,7 @@ def generate_expense_report( dateStart, testing = False):
     data = {
         "fk_user_author": userID, # par défaut on met l'admin
         "date_debut": dateStart.strftime('%Y-%m-%d'),
-        "date_fin": fake.date_between_dates(dateStart, datetime.now()).strftime('%Y-%m-%d'),
+        "date_fin": dateEnd.strftime('%Y-%m-%d'),
         "note_public": fake.text(max_nb_chars=200),
         "note_private": fake.text(max_nb_chars=200),
         "fk_user_validator": validatorID,
@@ -89,14 +92,15 @@ def generate_expense_report( dateStart, testing = False):
             if testing:
                 print('création de la ligne de frais.')
 
-    status = random.choice(['brouillon','validate', 'approve', 'refuse'])
+    status = random.choice(['brouillon','validate', 'approve', 'deny'])
 
-    status = 'approve'
+    status = 'brouillon'  # pour test uniquement
     print("status choisi : " , status)
-
+                
+    # validation de la note de frais si elle n'est pas en brouillon
+    
     if status != 'brouillon' :
 
-        # validation de la note de frais si elle n'est pas en brouillon
         r = requests.post(urlReport + "/validate", headers=headers)
         if r.status_code != 200 :
             if testing :  
@@ -107,17 +111,33 @@ def generate_expense_report( dateStart, testing = False):
                 print('note de frais validée.')
 
         # approbation, refus de la note de frais
-        if status != 'validate' :
-            r = requests.post(urlReport + "/" + str(status), headers=headers)
+        if status == 'deny' :
+            data = {
+                "details": "Raison du refus : " + fake.sentence(nb_words=6),
+            }
+            r = requests.post(urlReport + "/" + str(status), headers=headers, json=data)
             print ("url status : " , urlReport + "/" + str(status))
             if r.status_code != 200 :
                 if testing :  
-                    print('Erreur lors du changement de statut de la note de frais', r.status_code)
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
                     print (r.text)
             else :
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
+        if status == 'approve' :
+            r = requests.post(urlReport + "/" + str(status), headers=headers)
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+
+
+    
+        #date_validate}
     # match status :
     #     case "approve":
     #         date_approve = "2025-11-02"
@@ -144,7 +164,8 @@ def generate_expense_report( dateStart, testing = False):
         # date_refuse:
        # detail_refuse: 
 
-# update du validateur de la note de frais après la modification de la note de frais
+# update du validateur de la note de frais après la validation
+    """
     validatorID = user['fk_user']
     dataUpdate = {
         "fk_user_validator": validatorID,
@@ -157,6 +178,7 @@ def generate_expense_report( dateStart, testing = False):
     else :
         if testing:
             print('validateur de la note de frais mis à jour.')
+    """
 
 
 # testing
@@ -165,7 +187,7 @@ if __name__ == "__main__":
     for  i in range(1):
         print(
             generate_expense_report( 
-                dateStart= fake.date_this_month(before_today=True), testing = True)
+                dateCreate= fake.date_this_month(before_today=True), testing = True)
     )
 
     
