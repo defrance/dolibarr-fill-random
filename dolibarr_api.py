@@ -87,6 +87,8 @@ nbInvoice_contactExt = config['contacts']['invoice_externe']
 
 # hrm
 nbHoliday = config['hrm']['nb_holiday']
+nbExpenseReport = config['hrm']['nb_expense_report']
+nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
 
 headers = {

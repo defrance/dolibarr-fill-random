@@ -18,7 +18,7 @@ def generate_expense_report( dateStart, testing = False):
     userID = user['id']
     if testing : 
         print("userID : " , userID)
-    validatorID = 1 # user['fk_user']
+    validatorID = 0 # par défaut user connecté
     if testing :
         print("validatorID : " , validatorID)
 
@@ -49,6 +49,7 @@ def generate_expense_report( dateStart, testing = False):
         print("Erreur lors de la création du note de frais :", e)
 
     # Ajout des lignes de frais
+    urlAddLine = urlReport + "/lines"
 
     projectList = get_projects_of_contactID(userID)
     print(projectList)
@@ -59,41 +60,80 @@ def generate_expense_report( dateStart, testing = False):
     else :
         fkProject = 'null'
 
-    dataLine = {
-        "comments": fake.text(max_nb_chars=100),
-        "fk_project" : fkProject,
-        "qty": "1",
-        "value_unit": "120.00000000",
-        "fk_c_type_fees": 2,
-        # vatrate
-        "date": "2025-11-02",
-        # fk_c_exp_tax_cat,
-        #"fk_ecm_files":
-        
+    if nbExpenseReportLineMax < 1 :
+        nbLines = 1
+    else :
+        nbLines = random.randint(1, nbExpenseReportLineMax)
+    
+    for i in range (nbLines) :
+
+        dataLine = {
+            "comments": fake.text(max_nb_chars=100),
+            "fk_project" : fkProject,
+            "qty": "1",
+            "value_unit": "120.00000000",
+            "fk_c_type_fees": 2,
+            # vatrate
+            "date": "2025-11-02",
+            # fk_c_exp_tax_cat,
+            #"fk_ecm_files":
         }
     
-    urlAddLine = urlReport + "/lines"
+        r = requests.post(urlAddLine, headers=headers, json = dataLine)
+
+        if r.status_code != 200 :
+            if testing :  
+                print('Erreur lors de la création de la ligne de frais', r.status_code)
+                print (r.text)
+        else :
+            if testing:
+                print('création de la ligne de frais.')
+
+    status = random.choice(['brouillon','validate', 'approve', 'refuse'])
+
+    status = 'approve'
+    print("status choisi : " , status)
+
+    if status != 'brouillon' :
+
+        # validation de la note de frais si elle n'est pas en brouillon
+        r = requests.post(urlReport + "/validate", headers=headers)
+        if r.status_code != 200 :
+            if testing :  
+                print('Erreur lors de la validation de la note de frais', r.status_code)
+                print (r.text)
+        else :
+            if testing:
+                print('note de frais validée.')
+
+        # approbation, refus de la note de frais
+        if status != 'validate' :
+            r = requests.post(urlReport + "/" + str(status), headers=headers)
+            print ("url status : " , urlReport + "/" + str(status))
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais', r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+
+    # match status :
+    #     case "approve":
+    #         date_approve = "2025-11-02"
+    #         dataStatus = {
+
+    #             "date_approve": date_approve,
+    #         }
+    #         r = requests.post(urlReport, headers=headers, json=dataStatus)
+    #         if r.status_code != 200 :
+    #             if testing :  
+    #                 print('Erreur lors de la mise à jour de la date d\'approbation de la note de frais', r.status_code)
+    #                 print (r.text)
+    #         else :
+    #             if testing:
+    #                 print('date d\'approbation mise à jour.')
     
-    r = requests.post(urlAddLine, headers=headers, json = dataLine)
-
-    if r.status_code != 200 :
-        if testing :  
-            print('Erreur lors de la création de la ligne de frais', r.status_code)
-            print (r.text)
-    else :
-        if testing:
-            print('création de la ligne de frais.')
-
-
-    print('test validation note de frais')
-    r = requests.post(urlReport + "/validate", headers=headers)
-    if r.status_code != 200 :
-        if testing :  
-            print('Erreur lors de la validation de la note de frais', r.status_code)
-            print (r.text)
-    else :
-        if testing:
-            print('note de frais validée.')
     # modification du statut de la note de frais
     # 0 = brouillon
     # 2 = validé en attente d'approbation
@@ -103,15 +143,29 @@ def generate_expense_report( dateStart, testing = False):
     # 99 = refusé
         # date_refuse:
        # detail_refuse: 
-    
+
+# update du validateur de la note de frais après la modification de la note de frais
+    validatorID = user['fk_user']
+    dataUpdate = {
+        "fk_user_validator": validatorID,
+    }
+    r = requests.put(urlReport, headers=headers, json=dataUpdate)
+    if r.status_code != 200 :
+        if testing :  
+            print('Erreur lors de la mise à jour du validateur de la note de frais', r.status_code)
+            print (r.text)
+    else :
+        if testing:
+            print('validateur de la note de frais mis à jour.')
 
 
 # testing
 
 if __name__ == "__main__":
-    print(
-        generate_expense_report( 
-            dateStart= fake.date_this_month(before_today=True), testing = True)
+    for  i in range(1):
+        print(
+            generate_expense_report( 
+                dateStart= fake.date_this_month(before_today=True), testing = True)
     )
 
     
