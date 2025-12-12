@@ -87,7 +87,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         "usage_task": "1",
         # Facturation du temps (par défaut désactivé)
         "usage_bill_time": "0",
-        "status": projectStatus,
+        "status": "0", # initial status draft, will be updated juste après
         "public" : 1
     }
 
@@ -112,27 +112,35 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         #Update pour ajouter les data non prises en compte à la création
         if testing:
             print("Update des données complémentaires du projet...")
-        try:
-            dataUpdate = {
-                # Modification de la date de la création du projet pour qu'elle ne soit pas la date du jours mais la date de création transmisse
-                "date_c": dateCreateWithTime.strftime("%Y-%m-%d %H:%M:%S"),
-                # Ajout de fausses notes
-                "note_private": fake.text(max_nb_chars=200),
-                "note_public": fake.text(max_nb_chars=200),
-            }
 
-            rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
-            if rU.status_code != 200:
-                print("Erreur lors de la mise à jour du projet", rU.status_code)
-                print (rU.text)
-                return None 
-            else:
-                if testing:
-                    print("Mise à jour du projet terminée.")
-        except Exception as e:
-            print("Erreur lors de la mise à jour du projet:", str(e))
-            return None
-        
+        dataUpdate = {
+            # Modification de la date de la création du projet pour qu'elle ne soit pas la date du jours mais la date de création transmisse
+            "date_c": dateCreateWithTime.strftime("%Y-%m-%d %H:%M:%S"),
+            # Ajout de fausses notes
+            "note_private": fake.text(max_nb_chars=200),
+            "note_public": fake.text(max_nb_chars=200),
+        }
+
+        rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
+        if rU.status_code != 200:
+            print("Erreur lors de la mise à jour du projet", rU.status_code)
+            print (rU.text)
+            return None 
+        else:
+            if testing:
+                print("Mise à jour du projet terminée.")
+
+    if projectStatus == 1 or projectStatus ==2:
+        rU = requests.post(urlBase + "projects/" + str(projectID) + "/validate", headers=headers)
+        if rU.status_code != 200:
+            print("Erreur lors de la validation du projet", rU.status_code)
+            print (rU.text)
+            return None 
+        else:
+            if testing:
+                print("Validation du projet ")
+
+
         # Association user au projet
         if testing:
             print("Ajout des contacts du projet ....")
@@ -210,7 +218,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                     print("Aucune tâche créée pour ce projet.") 
 
             else:
-            
                 for i in range (nbProjectContacts):
                     if testing:
                         print("Création de la tâche n°", i+1,"sur", nbProjectContacts)
@@ -239,7 +246,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         "planned_workload":fake.random_int(min=1, max=20) * 3600, # en secondes
                         "note_private": fake.text(max_nb_chars=200),
                         "note_public": fake.text(max_nb_chars=200),
-                        "status": taskStatus
+                        "status": "0" # initial status draft, will be updated juste après
                     }
 
                     r = requests.post(urlTasks, headers=headers, json=data)
@@ -305,6 +312,20 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             print (r.text)
                             return None
 
+                        if taskStatus > 0:
+                            dataUpdate = {
+                                "status": taskStatus
+                            }
+
+                            r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
+                            if r.status_code == 403:
+                                print("403 : Not allowed to update task", i+1)
+                            elif r.status_code != 200:
+                                print("Erreur lors de la mise à jour du statut de la tâche n°", i+1,".", r.status_code)
+                                print (r.text)
+                                return None
+
+
                         if testing:
                             print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
 
@@ -360,6 +381,24 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         else:
            print("Nombre de tâches incorrect. Aucune tâche créée.")
            return None
+
+        # et on change le statut du projet
+        if projectStatus == 2: # closed
+            dataUpdate = {
+                "statut": projectStatus
+            }
+
+            rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
+            if rU.status_code != 200:
+                print("Erreur lors de la mise à jour du projet", rU.status_code)
+                print (rU.text)
+                return None 
+            else:
+                if testing:
+                    print("Mise à jour du projet terminée.")
+
+
+
 
 # Test unitaire
 
