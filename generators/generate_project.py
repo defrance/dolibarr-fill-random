@@ -207,7 +207,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         if nbProjectContacts == 0:
             if testing:
                 print("Aucune tâche créée pour ce projet.") 
-
         else:
             for i in range (nbProjectContacts):
                 if testing:
@@ -222,9 +221,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                 if projectStatus == 0: # project draft
                     taskStatus = 0 # task draft
                 
-                dateTaskC = fake.date_time_between_dates(dateCreate,dateEnd)
+                dateTaskC = fake.date_time_between_dates(dateCreate, dateEnd)
                 dateTaskO = fake.date_time_between_dates(dateTaskC, dateEnd)
-                dateTaskE = fake.date_time_between_dates(dateTaskO,dateEnd)
+                dateTaskE = fake.date_time_between_dates(dateTaskO, dateEnd)
 
                 data = {
                     "ref": "auto", #auto 
@@ -296,7 +295,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         "status": taskStatus
                     }
 
-                    r = requests.put(urlBase + "tasks/"+ str(taskID),headers=headers,json=dataUpdate)
+                    r = requests.put(urlBase + "tasks/"+ str(taskID), headers=headers, json=dataUpdate)
                     if r.status_code == 403:
                         print("403 : Not allowed to update task", i+1)
                     elif r.status_code != 200:
@@ -305,7 +304,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         return None
 
                     if testing:
-                        print("Création de la tâche n°", i+1," terminée. Création des pointages associés...")
+                        print(dataUpdate)
+                        print("Maj de la tâche n°", str(taskID)," terminée. Création des pointages associés...")
 
                     # Si la tâche est en cours ou clôturé :
                     if taskStatus > 0:
@@ -326,15 +326,15 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         else:
                             for j in range (ntt):
                                 if testing:
-                                    print("Création du pointage n°", j+1,"sur", ntt)
+                                    print("Création du pointage n°", j+1,"sur task ", taskID)
 
                                 randomDate = fake.date_time_between_dates(dateTaskO, dateTaskE)
                         
-                            # Gestion de l'user associé au pointage
+                                # Gestion de l'user associé au pointage
                                 if len(taskContacts) > 0:
                                     userId = random.choice(taskContacts)['fk_socpeople']
-                            # Si pas de contact associé à la tâche alors le pointage est attribué à l'user connecté
                                 else:
+                                    # Si pas de contact associé à la tâche alors le pointage est attribué à l'user connecté
                                     userId = 0
 
                                 data = {
@@ -342,7 +342,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                     "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
                                     "user_id" : userId, # (integer, optional): User (Use 0 for connected user).
                                     "note" : fake.sentence(nb_words=10), # (string, optional): Note
-                                    "progress":15
+                                    "progress" :fake.random_int(min=0, max=100)  # (integer, optional): Progress percentage (0-100)
                                 }
 
                                 r = requests.post(urlTasksTime, headers=headers, json=data)
@@ -351,7 +351,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                     print("Erreur lors de la création du pointage", r.status_code)
                                     print (r.json())
                                     return None
-                                
                                 else:
                                     if testing:
                                         print("Création du pointage :  ", data)
@@ -363,7 +362,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
     # et on change le statut du projet
     if projectStatus == 2: # closed
         dataUpdate = {
-            "statut": projectStatus
+            "status": projectStatus
         }
 
         rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
