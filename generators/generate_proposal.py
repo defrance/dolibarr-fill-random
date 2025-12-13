@@ -6,6 +6,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+from utils.get_random_project_id import *
 
 
 def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing):
@@ -16,12 +17,13 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
     # on rajoute 5 jours à la date de la proposition
     date_finValidite = dateProposal + timedelta(days=5)  
     dateProposalTs  = dateProposal.timestamp()
-    socID =  get_random_client(retDataThirdParties) #574
-    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+    socId =  get_random_client(retDataThirdParties) #574
 
+    retDataProject = fill_projects(socId)
+    fk_project = get_random_project_id(retDataProject)
 
     data = {
-        "socid": socID,
+        "socid": socId,
         "date": dateProposalTs,
         "duree_validite": random.randint(5, 15),
         "fk_project": fk_project
@@ -111,7 +113,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
 
     if nbProposal_contactExt > 0:
         arrayTypeContactExterne = fill_contact_types("propal", "external")
-        arrayuser = fill_socpeople(socID)
+        arrayuser = fill_socpeople(socId)
         if len(arrayuser) > 0:
             if len(arrayuser) == 1:
                 userID = arrayuser[0]['id']

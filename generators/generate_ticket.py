@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from utils.fill_projects import *
+from utils.get_random_project_id import *
 
 def generate_ticket(dateTicket, retDataThirdParties, testing):
     yearNow = datetime.now().year
@@ -14,14 +15,18 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
     dateTicketTs = dateTicket.timestamp()
     url = urlBase + "tickets"
     # on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties) #574
-    retDataContract = fill_contracts(socid)
+    socId = get_random_client(retDataThirdParties) #574
+
+    retDataContract = fill_contracts(socId)
     fk_contract = get_random_contract(retDataContract)
-    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+
+
+    retDataProject = fill_projects(socId)
+    fk_project = get_random_project_id(retDataProject)
 
 
     data = {
-        "fk_soc": socid,
+        "fk_soc": socId,
         'subject': fake.catch_phrase(),
         "fk_contract": fk_contract,
         "message": fake.catch_phrase(),

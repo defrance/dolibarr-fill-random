@@ -5,6 +5,8 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+from utils.get_random_project_id import *
+
 
 
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing):
@@ -13,7 +15,12 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
 
     paye = random.choice([0, 1])
     socId = get_random_client(retDataThirdParties)
-    fk_project = 1#get_random_project_id(get_projects_of_contactID(socid))
+
+    # fk_project = 0
+    # if 'project' in enabledModule:
+    retDataProject = fill_projects(socId)
+    fk_project = get_random_project_id(retDataProject)
+
 
     data = {
         "type": "0",
