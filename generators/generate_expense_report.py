@@ -11,6 +11,7 @@ from dolibarr_api import *
 
 from utils.get_projects_of_contactID import get_projects_of_contactID
 from utils.get_random_project_id import get_random_project_id
+from utils.get_projects_of_userID import get_projects_of_userID
 
 def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"
@@ -54,14 +55,16 @@ def generate_expense_report( dateCreate, testing = False):
     # Ajout des lignes de frais
     urlAddLine = urlReport + "/lines"
 
-    projectList = get_projects_of_contactID(userID)
-    print(projectList)
-    
-    if len(projectList) > 0 :
-        fkProject = get_random_project_id(projectList)
+    projectsList = get_projects_of_userID(userID)
 
-    else :
+    if not projectsList:
         fkProject = 'null'
+    
+    elif len(projectsList) > 1 :
+            fkProject = projectsList[random.randint(1, len(projectsList)-1)]['element_id']
+    
+    elif len(projectsList) == 1:
+        fkProject = projectsList[0]['element_id']
 
     if nbExpenseReportLineMax < 1 :
         nbLines = 1
@@ -94,8 +97,9 @@ def generate_expense_report( dateCreate, testing = False):
 
     status = random.choice(['brouillon','validate', 'approve', 'deny'])
 
-    status = 'brouillon'  # pour test uniquement
-    print("status choisi : " , status)
+    # status = 'brouillon'  # pour test uniquement
+    if testing:
+        print("status choisi : " , status)
                 
     # validation de la note de frais si elle n'est pas en brouillon
     
@@ -110,13 +114,23 @@ def generate_expense_report( dateCreate, testing = False):
             if testing:
                 print('note de frais validée.')
 
-        # approbation, refus de la note de frais
+            dataValidate = {
+                'fk_user_valid': validatorID,
+                'date_valid': dateCreate.strftime('%Y-%m-%d'),
+                'user_create': userID
+                }
+            
+            r = requests.put(urlReport, headers=headers, json = dataValidate)
+
+        # modification user_validate et date_validate
+
+        # refus de la note de frais
         if status == 'deny' :
             data = {
                 "details": "Raison du refus : " + fake.sentence(nb_words=6),
             }
             r = requests.post(urlReport + "/" + str(status), headers=headers, json=data)
-            print ("url status : " , urlReport + "/" + str(status))
+
             if r.status_code != 200 :
                 if testing :  
                     print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
@@ -125,6 +139,23 @@ def generate_expense_report( dateCreate, testing = False):
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
+                dataDeny = {
+                    'date_refuse': dateCreate.strftime('%Y-%m-%d'),
+                    'fk_user_refuse': validatorID
+                }
+
+                r = requests.put(urlReport, headers=headers, json=dataDeny)
+
+                if r.status_code != 200 : 
+                    if testing:
+                        print('Erreur lors de la mise à jours du refus.')
+                        print(r.text)
+                
+                if testing:
+                    print('data refus update avec succés.')
+
+            
+        # approbation de la note de frais
         if status == 'approve' :
             r = requests.post(urlReport + "/" + str(status), headers=headers)
             if r.status_code != 200 :
