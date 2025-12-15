@@ -52,19 +52,9 @@ def generate_expense_report( dateCreate, testing = False):
     except Exception as e:
         print("Erreur lors de la création du note de frais :", e)
 
-    # Ajout des lignes de frais
-    urlAddLine = urlReport + "/lines"
+
 
     projectsList = get_projects_of_userID(userID)
-
-    if not projectsList:
-        fkProject = 'null'
-    
-    elif len(projectsList) > 1 :
-            fkProject = projectsList[random.randint(0, len(projectsList)-1)]['element_id']
-    
-    elif len(projectsList) == 1:
-        fkProject = projectsList[0]['element_id']
 
     if nbExpenseReportLineMax < 1 :
         nbLines = 1
@@ -78,23 +68,49 @@ def generate_expense_report( dateCreate, testing = False):
     
     vatrateList = r.json()
 
-    try:
-        vatrate = vatrateList[random.randint(0, len(vatrateList)-1)]['taux']
-        if testing:
-            print('taux taxe :', vatrate)
-    except:
-            print('erreur lors du choix du taux de taxe.')
-
     # récupére la liste des types
+
+    r = requests.get(urlDictionary + 'expensereport_types?active=1', headers = headers)
+        
+    if r.status_code != 200:
+        print('erreur lors de la récupération des types de notes de frais.')
+    
+    typefeesList = r.json()
+
+    # Ajout des lignes de frais
+    urlAddLine = urlReport + "/lines"
     
     for i in range (nbLines) :
+
+        if not projectsList:
+            fkProject = 'null'
+    
+        elif len(projectsList) > 1 :
+            fkProject = projectsList[random.randint(0, len(projectsList)-1)]['element_id']
+    
+        elif len(projectsList) == 1:
+            fkProject = projectsList[0]['element_id']
+
+        try:
+            typefeeID = typefeesList[random.randint(0, len(typefeesList)-1)]['id']
+            if testing:
+                print('id type de frais :', typefeeID)
+        except:
+            print('erreur lors de la récupération de l id du type de frais.')
+        
+        try:
+            vatrate = vatrateList[random.randint(0, len(vatrateList)-1)]['taux']
+            if testing:
+                print('taux taxe :', vatrate)
+        except:
+            print('erreur lors du choix du taux de taxe.')
 
         dataLine = {
             "comments": fake.text(max_nb_chars=100),
             "fk_project" : fkProject,
-            "qty": "1",
-            "value_unit": "120.00000000",
-            "fk_c_type_fees": 2,
+            "qty": random.randint(1,10),
+            "value_unit": random.randint(10,200),
+            "fk_c_type_fees": typefeeID,
             "vatrate" : vatrate,
             "date": fake.date_between_dates(dateStart,dateEnd).strftime('%Y-%m-%d'),
         }
@@ -111,9 +127,14 @@ def generate_expense_report( dateCreate, testing = False):
 
     status = random.choice(['brouillon','validate', 'approve', 'deny'])
 
-    status = 'approve'  # pour test uniquement
+    #status = 'approve'  # pour test uniquement
     if testing:
         print("status choisi : " , status)
+
+    # si date de fin pas atteinte, obligatoirement en brouillon
+
+    if dateEnd > datetime.now().date():
+        status = 'brouillon'
                 
     # validation de la note de frais si elle n'est pas en brouillon
     
@@ -129,6 +150,7 @@ def generate_expense_report( dateCreate, testing = False):
                 print('note de frais validée.')
 
             # probleme API
+            dateValidate = fake.date_between_dates(date_start= dateEnd, date_end= dateEnd + timedelta(days=7))
             dataValidate = {
                 'fk_user_valid': validatorID,
                 'date_valid': dateCreate.strftime('%Y-%m-%d'),
@@ -189,7 +211,7 @@ def generate_expense_report( dateCreate, testing = False):
         r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
 
         if r.status_code != 200:
-            print('erreur lorsd de la récupération des types de paiements.')
+            print('erreur lors de la récupération des types de paiements.')
         
         paymentTypeList = r.json()
 
@@ -201,56 +223,12 @@ def generate_expense_report( dateCreate, testing = False):
             print('erreur lors du choix du types de paiement.')
     
         data_payment = {
-"fk_typepayment":2,
-"datepaid":"2025-12-15",
-"amounts":2,
-"bank_account":1
-}
-        
-       
-
-        #date_validate}
-    # match status :
-    #     case "approve":
-    #         date_approve = "2025-11-02"
-    #         dataStatus = {
-
-    #             "date_approve": date_approve,
-    #         }
-    #         r = requests.post(urlReport, headers=headers, json=dataStatus)
-    #         if r.status_code != 200 :
-    #             if testing :  
-    #                 print('Erreur lors de la mise à jour de la date d\'approbation de la note de frais', r.status_code)
-    #                 print (r.text)
-    #         else :
-    #             if testing:
-    #                 print('date d\'approbation mise à jour.')
+            "fk_typepayment":fkTypePayment,
+            "datepaid":"2025-12-15",
+            "amounts":2,
+            "bank_account":1
+        }
     
-    # modification du statut de la note de frais
-    # 0 = brouillon
-    # 2 = validé en attente d'approbation
-    # 5 = approuvé
-        # date_approve:
-    # 6 = payé
-    # 99 = refusé
-        # date_refuse:
-       # detail_refuse: 
-
-# update du validateur de la note de frais après la validation
-    """
-    validatorID = user['fk_user']
-    dataUpdate = {
-        "fk_user_validator": validatorID,
-    }
-    r = requests.put(urlReport, headers=headers, json=dataUpdate)
-    if r.status_code != 200 :
-        if testing :  
-            print('Erreur lors de la mise à jour du validateur de la note de frais', r.status_code)
-            print (r.text)
-    else :
-        if testing:
-            print('validateur de la note de frais mis à jour.')
-    """
 
 # testing
 
@@ -258,7 +236,7 @@ if __name__ == "__main__":
     for  i in range(10):
         print(
             generate_expense_report( 
-                dateCreate= fake.date_this_month(before_today=True), testing = True)
+                dateCreate= fake.date_this_year(before_today=True), testing = True)
     )
 
     
