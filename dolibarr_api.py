@@ -30,6 +30,10 @@ urlBase = config['connection']['urlbase']
 dol_version=config['connection']['dol_version']
 testing =config['connection']['tests']
 
+
+#URL
+urlDictionary = urlBase + 'setup/dictionary/'
+
 # on commence par créer les clients et les produits
 nbNewUser=config['elements']['new_user']
 nbNewClient=config['elements']['new_client']

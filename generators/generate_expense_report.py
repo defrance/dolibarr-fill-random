@@ -61,7 +61,7 @@ def generate_expense_report( dateCreate, testing = False):
         fkProject = 'null'
     
     elif len(projectsList) > 1 :
-            fkProject = projectsList[random.randint(1, len(projectsList)-1)]['element_id']
+            fkProject = projectsList[random.randint(0, len(projectsList)-1)]['element_id']
     
     elif len(projectsList) == 1:
         fkProject = projectsList[0]['element_id']
@@ -70,6 +70,22 @@ def generate_expense_report( dateCreate, testing = False):
         nbLines = 1
     else :
         nbLines = random.randint(1, nbExpenseReportLineMax)
+
+    # recupére les taux de taxes de France par défaut
+    r = requests.get(urlDictionary + 'vat?actibr=1&fk_country=-1', headers = headers)
+    if r.status_code != 200:
+        print('erreur lors de la récupération des taux de taxes.')
+    
+    vatrateList = r.json()
+
+    try:
+        vatrate = vatrateList[random.randint(0, len(vatrateList)-1)]['taux']
+        if testing:
+            print('taux taxe :', vatrate)
+    except:
+            print('erreur lors du choix du taux de taxe.')
+
+    # récupére la liste des types
     
     for i in range (nbLines) :
 
@@ -79,10 +95,8 @@ def generate_expense_report( dateCreate, testing = False):
             "qty": "1",
             "value_unit": "120.00000000",
             "fk_c_type_fees": 2,
-            # vatrate
-            "date": "2025-11-02",
-            # fk_c_exp_tax_cat,
-            #"fk_ecm_files":
+            "vatrate" : vatrate,
+            "date": fake.date_between_dates(dateStart,dateEnd).strftime('%Y-%m-%d'),
         }
     
         r = requests.post(urlAddLine, headers=headers, json = dataLine)
@@ -172,6 +186,19 @@ def generate_expense_report( dateCreate, testing = False):
 
     if status == 'approve':
 
+        r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
+
+        if r.status_code != 200:
+            print('erreur lorsd de la récupération des types de paiements.')
+        
+        paymentTypeList = r.json()
+
+        try:
+          fkTypePayment = paymentTypeList[random.randint(0, len(paymentTypeList)-1)]['id']
+          if testing:
+            print('id type de paiement :', fkTypePayment)
+        except:
+            print('erreur lors du choix du types de paiement.')
     
         data_payment = {
 "fk_typepayment":2,
@@ -179,6 +206,8 @@ def generate_expense_report( dateCreate, testing = False):
 "amounts":2,
 "bank_account":1
 }
+        
+       
 
         #date_validate}
     # match status :
