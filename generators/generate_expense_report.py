@@ -97,7 +97,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     status = random.choice(['brouillon','validate', 'approve', 'deny'])
 
-    # status = 'brouillon'  # pour test uniquement
+    status = 'approve'  # pour test uniquement
     if testing:
         print("status choisi : " , status)
                 
@@ -114,6 +114,7 @@ def generate_expense_report( dateCreate, testing = False):
             if testing:
                 print('note de frais validée.')
 
+            # probleme API
             dataValidate = {
                 'fk_user_valid': validatorID,
                 'date_valid': dateCreate.strftime('%Y-%m-%d'),
@@ -139,6 +140,7 @@ def generate_expense_report( dateCreate, testing = False):
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
+                # probleme API
                 dataDeny = {
                     'date_refuse': dateCreate.strftime('%Y-%m-%d'),
                     'fk_user_refuse': validatorID
@@ -166,8 +168,18 @@ def generate_expense_report( dateCreate, testing = False):
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
+    # paiements
+
+    if status == 'approve':
 
     
+        data_payment = {
+"fk_typepayment":2,
+"datepaid":"2025-12-15",
+"amounts":2,
+"bank_account":1
+}
+
         #date_validate}
     # match status :
     #     case "approve":
@@ -210,7 +222,6 @@ def generate_expense_report( dateCreate, testing = False):
         if testing:
             print('validateur de la note de frais mis à jour.')
     """
-
 
 # testing
 
