@@ -92,7 +92,7 @@ duration = start_stop - start_time
 print("Alimentation Initiale : ", duration)
 start_prev = datetime.now()
 
-# On crée les clients avant les produits pour associer les prix fournisseurs si besoinz"ez"erdsssssssssssssssss tyuhggggggggggggggggggggggggguug
+# On crée les clients avant les produits pour associer les prix fournisseurs si besoin
 if nbNewClient > 0:
     listClientGen = gen_random_following_date(yearToFill, nbNewClient, max_interval = dateinterval)
     for dateCreate in listClientGen:

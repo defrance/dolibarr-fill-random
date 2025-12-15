@@ -139,6 +139,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
         urlContactProject = urlProjects + str(projectID) + "/contacts"
         projectContacts = []
+
         taskContacts = []
 
         if nbNewMaxContact > 0:
@@ -356,10 +357,12 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 # Test unitaire
 
 if __name__ == "__main__":
-    print(generate_project(
-        dateCreate = fake.date_this_year(),
-        nbTasks=10,
-        nbtasksTime=10,
-        retDataUser= fill_users(),
-        retDataThirdParties= fill_thirdparties(),
-        testing=True))
+
+    for i in range(20):
+        print(generate_project(
+            dateCreate = fake.date_this_year(),
+            nbTasks=10,
+            nbtasksTime=10,
+            retDataUser= fill_users(),
+            retDataThirdParties= fill_thirdparties(),
+            testing=True))
