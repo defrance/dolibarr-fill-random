@@ -26,7 +26,6 @@ def generate_expense_report( dateCreate, testing = False):
     if testing :
         print("validatorID : " , validatorID)
 
-
     # Création de la note de frais par défaut en brouillon
     data = {
         "fk_user_author": userID, # par défaut on met l'admin
@@ -79,7 +78,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     # Ajout des lignes de frais
     urlAddLine = urlReport + "/lines"
-    
+
     for i in range (nbLines) :
 
         if not projectsList:
