@@ -8,8 +8,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 
-fake = Faker('fr_FR')
-
 def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testing):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
