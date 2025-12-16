@@ -18,13 +18,6 @@ def generate_productlot (dateCreate, testing):
     dlc = None
     dluo = None
 
-    match typeDate:
-        # 3 a 18 mois
-        case 'dlc':
-            dlc = fake.date_between_dates(date_start = dateCreate + timedelta(days=90), date_end = dateCreate + timedelta(days=548) )
-        # entre 18 mois et 4 ans
-        case 'dluo':
-            dluo = fake.date_between_dates(date_start = dateCreate + timedelta(days = 548), date_end = dateCreate + timedelta (days = 1460))
 
 # Récupération de la liste des produits
     urlProductsList = urlBase + 'products?sortfield=t.ref&mode=1'
@@ -41,24 +34,42 @@ def generate_productlot (dateCreate, testing):
     elif len(productsList) == 1:
             fkProduct = productsList[0]['id']
 
-    data = {
-    "fk_product": fkProduct,
-    "batch": ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)),
-    "eatby": dlc.strftime('%Y-%m-%d') if dlc else None,
-    "sellby": dluo.strftime('%Y-%m-%d') if dluo else None
-    }
+    # Génération de plusieurs lots par produit
+    nbLot = 1
 
-    try:
-        r = requests.post(url, headers=headers, json=data)
-        if testing:
-            print("lot créé.")
+    if nbMaxLotByProduct > 1:
+         nbLot = random.randint(1, nbMaxLotByProduct)
 
-    except:
-        print("erreur lors de la création du lot")
-        print(r.status_code)
-        print(r.text)
+    for i in range (nbLot):
+        
+        match typeDate:
+        # 3 a 18 mois
+            case 'dlc':
+                dlc = fake.date_between_dates(date_start = dateCreate + timedelta(days=90), date_end = dateCreate + timedelta(days=548) )
+        # entre 18 mois et 4 ans
+            case 'dluo':
+                dluo = fake.date_between_dates(date_start = dateCreate + timedelta(days = 548), date_end = dateCreate + timedelta (days = 1460))
 
+        data = {
+        "fk_product": fkProduct,
+        "batch": ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)),
+        "eatby": dluo.strftime('%Y-%m-%d') if dlc else None,
+        "sellby": dlc.strftime('%Y-%m-%d') if dluo else None
+        }
+
+        try:
+            r = requests.post(url, headers=headers, json=data)
+            if testing:
+                print("lot créé.")
+
+        except:
+            print("erreur lors de la création du lot")
+            print(r.status_code)
+            print(r.text)
+
+    if testing:
+         print("création de " , nbLot, "lots terminés.")
 
 if __name__ == "__main__":
-    for i in range (10):
+    for i in range (nbProductwithLot):
         generate_productlot(fake.date_this_year(before_today=True),testing = True)

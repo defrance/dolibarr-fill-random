@@ -94,6 +94,10 @@ nbHoliday = config['hrm']['nb_holiday']
 nbExpenseReport = config['hrm']['nb_expense_report']
 nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
+# productslots
+nbProductwithLot = config['productlots']['nb_product_with_lot']
+nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
+
 
 headers = {
 	'DOLAPIKEY': apiToken,
