@@ -18,8 +18,7 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-#fake = Faker('fr_FR')
-lang = config['others']['lang']
+lang = config['connection']['lang']
 fake = Faker(lang)
 
 yearNow = datetime.now().year
@@ -50,8 +49,9 @@ nbNewContract=config['elements']['new_contract']
 nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
-nbSalePriceHistoryMax = config['elements']['nb_sale_price_history_max']
-pourcentageAugPriceMax = config['elements']['pourcentage_aug_price_max']
+
+nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
+pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
 
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
@@ -60,7 +60,7 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 # newCategoryTicket=config['categories']['new_category_ticket']
 
 # infos lies au projet
-nbNewProject=config['project']['new_project']
+nbNewProject=config['elements']['new_project']
 nbNewOpportunity=config['project']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
@@ -71,6 +71,7 @@ yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nb_shipping = config['others']['nb_shipping']
+fk_country = config['others']['fk_country']
 
 
 # fournisseurs
@@ -89,14 +90,8 @@ nbOrder_contactExt = config['contacts']['order_externe']
 nbInvoice_contactInt = config['contacts']['invoice_interne']
 nbInvoice_contactExt = config['contacts']['invoice_externe']
 
-# hrm
+# HRM
 nbHoliday = config['hrm']['nb_holiday']
-nbExpenseReport = config['hrm']['nb_expense_report']
-nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
-
-# productslots
-nbProductwithLot = config['productlots']['nb_product_with_lot']
-nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
 
 
 headers = {
@@ -234,17 +229,19 @@ def get_random_product(retDataProduct, type = -1):
 def fill_contracts(socid):
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api
 	url = urlBase + "contracts?limit=100&thirdparty_ids=" + str(socid)
-	url = url + "&sqlfilters=(statut:=:1)"
+	url = url + "&sqlfilters=(t.statut:=:1)"
 	rRandomContract = requests.get(url, headers=headers, verify=False)
 	if rRandomContract.status_code != 200:
-		print('Erreur lors de la récupération du contracts', rRandomContract.status_code)
+		print('Erreur lors de la récupération du contracts', url, rRandomContract.status_code)
+		print (rRandomContract.text)
+		return None	
 	retDataContract = rRandomContract.json()
 	return retDataContract
 
 def get_random_contract(retDataContract):
-	# on retourne les infos du produit
+	# on retourne les infos d'un contrat 
 	if (len(retDataContract) > 1):
-		return retDataContract[random.randint(0, len(retDataContract)-1)]['id']
+		return retDataContract[random.randint(1, len(retDataContract)-1)]['id']
 	else:
 		return 0
 

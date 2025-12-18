@@ -8,6 +8,7 @@ import os, sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+# neeeded ??
 fake = Faker('fr_FR')
 
 from dolibarr_api import *

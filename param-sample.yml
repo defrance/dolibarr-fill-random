@@ -38,6 +38,7 @@ elements:
   new_ticket: 10
   new_user: 3
   new_warehouse: 3
+  new_project: 3
   nb_sale_price_history_max: 10
   pourcentage_aug_price_max: 10
 
@@ -47,10 +48,10 @@ others:
   nb_shipping: 1
   year_to_fill: 2025
   lang: fr_FR
+  fk_country: 1
 
 project:
   new_opportunity: 0
-  new_project: 3
   new_max_task: 3
   new_max_task_time: 3
   new_max_contact: 3
@@ -62,5 +63,5 @@ supplier:
   new_bill: 100
   new_order: 100
 
-grh:
+hrm:
   nb_holiday: 200

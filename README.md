@@ -60,6 +60,9 @@ Attention, l'utilisateur doit etre admin
     - les éléments antérieur à l'année en cours sont traité
     - les éléments de l'année en cours sont soit brouillon soit validé
 
+- Congés
+	- 	Création aléatoire (en test)
+
 - Contrat
     - soucis sur la création des ligne de contrat (warning)
     - on ouvre les services sur une période et on les fermes aussi
@@ -101,7 +104,7 @@ il n'y a pas à proprement parlé de tests unitaire mais chaque import à son pr
 # PR réalisées sur le core de dolibarr pour activer certaines fonctions :
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 22, il sera nécessaire de réaliser les correctifs suivants :
 
-    - creation des lignes de contrats
+    - création des lignes de contrats
     https://github.com/Dolibarr/dolibarr/pull/33938
 
     - Mise à jour des interventions (date d'opération)
@@ -130,5 +133,22 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     https://github.com/Dolibarr/dolibarr/pull/34398
 
 Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur à la 23, il sera nécessaire de réaliser les correctifs suivants :
-   - Ajout de la date de création des taches dans la mises à jour
-   https://github.com/Dolibarr/dolibarr/pull/36217
+
+    - Gestion de la génération automatique de la référence des taches
+    https://github.com/Dolibarr/dolibarr/pull/35981/files
+	
+    - Ajout de la date de création des taches dans la mises à jour
+    https://github.com/Dolibarr/dolibarr/pull/36217
+	
+    - Gestion de la saisie des temps et des contacts sur les taches
+    https://github.com/Dolibarr/dolibarr/pull/35897
+	
+    - Gestion des congés
+    https://github.com/Dolibarr/dolibarr/pull/36606
+
+Attention, nécéssite sur les versions antérieur à la V23 de modifier aussi le fichier /core/lib/functions2.lib.php getModuleDirForApiClass vers la ligne 2700
+    il faut ajouter :
+	
+	 	} elseif ($moduleobject == 'holidays') {
+			$moduledirforclass = 'holiday';
+		}

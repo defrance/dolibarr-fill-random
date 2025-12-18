@@ -4,26 +4,27 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from utils.get_projects_of_contactID import get_projects_of_contactID
-from utils.get_random_project_id import get_random_project_id
+from utils.get_random_project_id import *
 
 
 def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, testing):
     url = urlBase + "interventions"
 	# on récupère les contrats associés au client si il y en a
-    socid = get_random_client(retDataThirdParties) # 574
+    socId = get_random_client(retDataThirdParties) # 574
     fk_contract = 0
     if 'contrat' in enabledModule:
-        retDataContract = fill_contracts(socid)
+        retDataContract = fill_contracts(socId)
         fk_contract = get_random_contract(retDataContract)
-        fk_project = get_random_project_id(get_projects_of_contactID(socid))
+    fk_project = 0
+    if 'project' in enabledModule:
+        retDataProject = fill_projects(socId)
+        fk_project = get_random_project_id(retDataProject)
 
     data = {
-        "socid": socid,
+        "socid": socId,
         "fk_contrat": fk_contract,
         "description": fake.catch_phrase(),
         "fk_project":fk_project
-        #"date": dateintervention.strftime('%Y-%m-%d'),
     }
     r = requests.post(url, headers=headers, json=data)
     interventionID = r.text
@@ -42,9 +43,12 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
         data = {
             "description": fake.catch_phrase(),
             "date": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
-            "duree": random.randint(1, 4) * 3600, # en secondes
+            "duree": random.randint(1, 4) * 3600, # en secondes  (ancienne version)
+            "duration": random.randint(1, 4) * 3600, # en secondes
         }
         r = requests.post(urlLine, headers=headers, json=data)
+        if testing:
+            print ('  Ligne d\'intervention créée ID: ' + r.text)
 
     # si la date est inférieur à l'année en cours
     if nouvelle_date.year < yearNow:
@@ -96,7 +100,6 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
 
 if __name__ == "__main__":
     retDataThirdParties = fill_thirdparties("customer")
-    retDataThirdParties = fill_thirdparties("supplier")
 
     print(generate_intervention(
         dateIntervention=fake.date_this_year(),
