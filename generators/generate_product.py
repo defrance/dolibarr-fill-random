@@ -8,8 +8,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 
-fake = Faker('fr_FR')
-
 def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testing):
     # Référence produit alphanumérique
     ref = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -20,6 +18,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     price = random.randint(10, 100)  # prix aléatoire entre 5 et 100€
     price_min = price - random.randint(0,5)  # prix minimum aléatoire entre 1 et 5€ de moins que le prix normal
     status_buy = random.choice([0, 1])  # à l'achat ou non
+    
 
     # utilisation pour le premier mouvement de stock
     buying_price = price_min - round(price_min * (random.randint(10, 50)/100))  
@@ -27,14 +26,34 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     description = fake.paragraph(nb_sentences=3)
 
     url = urlBase + "products"
+
+    # recupére les taux de taxes de France par défaut
+    
+    r = requests.get(urlDictionary + 'vat?actibr=1&fk_country=-1', headers = headers)
+    if r.status_code != 200:
+        print('erreur lors de la récupération des taux de taxes.')
+    vatrateList = r.json()
+
+    try:
+        vatrate = vatrateList[random.randint(0, len(vatrateList)-1)]['taux']
+        if testing:
+                print('taux taxe :', vatrate)
+    except:
+            print('erreur lors du choix du taux de taxe.')
+
     typeProduct = random.choice([0, 1]) # produit ou service
+
+    if typeProduct == 0:
+        status_batch = 1
+    
+    else:
+        status_batch = None
     
     # on crée le produit
     data = {
         "ref": str(ref),
         "label" :name,
-        #faire un get_random_tva a partir de l'api
-        "tva_tx" : random.choice([5, 10, 20]), # taux de TVA aléatoire entre 5 et 20%
+        "tva_tx" : vatrate, # taux de TVA aléatoire entre 5 et 20%
         "type" : typeProduct,
         "price" : price,
         "price_min" : price_min,
@@ -43,6 +62,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         "status_buy" : status_buy,
         "price_base_type" : "HT",
         "price_min_ttc" : 13,
+        "status_batch" : status_batch
     }
 
     if testing:
@@ -88,8 +108,53 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         if len(retDataWarehouse) > 0:
             initWarehouse = get_random_warehouse(retDataWarehouse)
             # ajout de mouvement de stock initial
-            urlStockMovements = urlBase + "stockmovements" 
-            data = {
+            urlStockMovements = urlBase + "stockmovements"
+            dlc = None
+            dluo = None
+            batch = None
+
+            if nbMaxLotByProduct > 0 and 'productbatch' in enabledModule:
+                    
+                for i in range (random.randint(1,nbMaxLotByProduct)):
+                    typeDate = random.choice(['dlc', 'dluo', 'both'])
+                    batch = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+                    match typeDate:
+                        # 3 a 18 mois (a consommer avant)
+                        case 'dlc':
+                            dlc = fake.date_between_dates(date_start = dateCreate + timedelta(days=90), date_end = dateCreate + timedelta(days=548) )
+        
+                        # entre 18 mois et 4 ans (à consommer de préférence avant le :)
+                        case 'dluo':
+                            dluo = fake.date_between_dates(date_start = dateCreate + timedelta(days = 548), date_end = dateCreate + timedelta (days = 1460))
+                        
+                        # Si les deux, alors dlc avant dluo
+                        case 'both':
+                            dlc = fake.date_between_dates(date_start = dateCreate + timedelta(days=90), date_end = dateCreate + timedelta(days=548) )
+                            dluo = fake.date_between_dates(date_start = dlc + timedelta(days = 3), date_end = dlc + timedelta (days = 1460)) 
+
+                    data = {
+                    "product_id" : productId,
+                    "warehouse_id" : initWarehouse,
+                    "qty" : random.randint(50, 100) ,
+                    "type" : 0, # au début on ajoute du stock
+                    "datem" : dateCreate.strftime('%Y-%m-%d'),
+                    "movementcode": "INIT-" + productId,
+                    "movementlabel": "Initial stock",
+                    "price" : buying_price,
+                    "batch": batch or None,
+                    "eatby": "2020-12-12",# dluo.strftime('%Y-%m-%d') if dluo else None, # API à modifier
+                    "sellby": "2020-12-12" # dlc.strftime('%Y-%m-%d') if dlc else None # API à modifier.
+                    }
+
+                    r = requests.post(urlStockMovements, headers=headers, json=data)
+
+                    dataUpdateBatch = {
+                        
+                    }
+
+            else:
+                data = {
                 "product_id" : productId,
                 "warehouse_id" : initWarehouse,
                 "qty" : random.randint(50, 100) ,
@@ -98,8 +163,9 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "movementcode": "INIT-" + productId,
                 "movementlabel": "Initial stock",
                 "price" : buying_price,
-            }
-            r = requests.post(urlStockMovements, headers=headers, json=data)
+                }
+            
+                r = requests.post(urlStockMovements, headers=headers, json=data)
 
             # on ventile une partie du stock sur un autre entrepot
             qtyMoved = random.randint(10, 50) ,
@@ -137,10 +203,6 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
             url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/product/" + str(productId)
             data = { }
             r = requests.post(url, headers=headers, json=data)
-
-# ajout alimentation des prix d'achats et des prix de ventes
-    # /!\ les prix d'achats sont toujours associés à un fournisseur et une référence fournisseur
-    # /!\ les prix peuvent varier en fonction de la quantité
 
     # gestion historique prix de vente
     
@@ -253,18 +315,24 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
                     if testing:
                         print('nouveau prix fournisseur : ', buying_price)
+
     return 1
 
 # Testing
 
 if __name__ == "__main__":
 
-    print(generate_product(
-        dateCreate= fake.date_time_this_year(),
-        retDataWarehouse = fill_warehouses(),
-        retDataCategProduct = fill_categories("product"),
-        enabledModule= get_enabled_modules(),
-        testing=True
-        
+    print("début alimentation.")
+
+    for i in range (10):
+
+        print(generate_product(
+            dateCreate= fake.date_time_this_year(),
+            retDataWarehouse = fill_warehouses(),
+            retDataCategProduct = fill_categories("product"),
+            enabledModule= get_enabled_modules(),
+            testing=True
 
     ))
+        
+    print("fin de l'alimentation.")
