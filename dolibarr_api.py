@@ -52,6 +52,9 @@ nbNewKnowledge=config['elements']['new_knowledge']
 
 nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
 pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
+	
+nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
+nbProductWithLot = config['productlots']['nb_product_with_lot']
 
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']

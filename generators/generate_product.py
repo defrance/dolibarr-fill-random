@@ -115,7 +115,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
             if nbMaxLotByProduct > 0 and 'productbatch' in enabledModule:
                     
-                for i in range (random.randint(1,nbMaxLotByProduct)):
+                for i in range (random.randint(1, nbMaxLotByProduct)):
                     typeDate = random.choice(['dlc', 'dluo', 'both'])
                     batch = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
@@ -209,7 +209,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
     if nbSalePriceHistoryMax > 0 :
         
-        for i in range (random.randint(1,nbSalePriceHistoryMax)):
+        for i in range (random.randint(1, nbSalePriceHistoryMax)):
             
             if pourcentageAugPriceMax > 0 :
                 pourcentage = random.randint(0, pourcentageAugPriceMax)

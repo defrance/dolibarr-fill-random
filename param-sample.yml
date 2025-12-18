@@ -39,6 +39,8 @@ elements:
   new_user: 3
   new_warehouse: 3
   new_project: 3
+
+products:
   nb_sale_price_history_max: 10
   pourcentage_aug_price_max: 10
 
@@ -65,3 +67,9 @@ supplier:
 
 hrm:
   nb_holiday: 200
+  nb_expense_report: 10
+  nb_expense_report_line_max: 10
+
+productlots:
+  nb_lot_by_product_max : 10
+  nb_product_with_lot : 20
