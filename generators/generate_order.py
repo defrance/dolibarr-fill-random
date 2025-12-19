@@ -116,7 +116,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
                 r = requests.post(url, headers=headers, json=data)  
 
     # gestion des expéditions si activé et qu'il y a des produits à expédier
-    if nb_shipping >0 and len(productRandomList) > 0:
+    if nbShipping >0 and len(productRandomList) > 0:
         # print (productRandomList)
         jours_a_ajouter = random.randint(0, 1)
         dateExpedition = dateOrder + timedelta(days=jours_a_ajouter)

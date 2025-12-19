@@ -70,8 +70,8 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 # newCategoryTicket=config['categories']['new_category_ticket']
 
 # Projets
-nbNewProject=config['project']['new_project']
-nbNewOpportunity=config['project']['new_opportunity']
+nbNewProject=config['elements']['new_project']
+nbNewOpportunity=config['elements']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
 nbNewMaxContact = config['project']['new_max_contact']
@@ -80,8 +80,8 @@ nbNewMaxContact = config['project']['new_max_contact']
 createSupplier = config['supplier']['create_supplier']
 nbSupplierProduct = config['supplier']['nb_supplier_product']
 nbSupplierProductPrice = config['supplier']['nb_supplier_product_price']
-new_supplier_order = config['supplier']['new_order']
-new_supplier_bill = config['supplier']['new_bill']
+newsupplierorder = config['elements']['new_supplier_order']
+newsupplierbill = config['elements']['new_supplier_bill']
 
 # Contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
@@ -92,15 +92,15 @@ nbInvoice_contactInt = config['contacts']['invoice_interne']
 nbInvoice_contactExt = config['contacts']['invoice_externe']
 
 # HRM
-nbHoliday = config['hrm']['nb_holiday']
-nbExpenseReport = config['hrm']['nb_expense_report']
+nbHoliday = config['elements']['new_holiday']
+nbExpenseReport = config['elements']['new_expense_report']
 nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
 # Autres infos 
 yearToFill=config['others']['year_to_fill']
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
-nb_shipping = config['others']['nb_shipping']
+nbShipping = config['others']['nb_shipping']
 fk_country = config['others']['fk_country']
 testing =config['others']['tests']
 lang = config['others']['lang']
