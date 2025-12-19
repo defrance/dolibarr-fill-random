@@ -97,6 +97,7 @@ il faut donc réaliser les commandes suivantes:
 pip install faker
 pip install pyyaml
 pip install requests
+pip install tqdm
 
 # Tests unitaires
 il n'y a pas à proprement parlé de tests unitaire mais chaque import à son propre lancement autonome

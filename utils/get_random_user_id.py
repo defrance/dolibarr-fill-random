@@ -5,7 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 
-from utils.fill_users import fill_users
+from utils import fill_users
 
 
 def get_random_user_id(retDataUser):

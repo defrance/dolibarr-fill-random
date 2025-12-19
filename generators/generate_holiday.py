@@ -1,15 +1,12 @@
-from faker import Faker
 import random
-import string
 import requests
-import base64
 from datetime import timedelta
-
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+
 from dolibarr_api import *
-from utils.get_random_holiday_type import get_random_holiday_type
+from utils import *
 
 def generate_holiday(dateCreate, testing=False):
 
