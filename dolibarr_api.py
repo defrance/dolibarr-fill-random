@@ -18,30 +18,33 @@ def load_config(path='param.yml'):
     return config
 
 config = load_config()
-lang = config['connection']['lang']
-fake = Faker(lang)
 
-yearNow = datetime.now().year
 
-# on récupère le token et le mot de passe du mail
+# Connection
 apiToken = config['connection']['apitoken']
-urlBase = config['connection']['urlbase']
-dol_version=config['connection']['dol_version']
-testing =config['connection']['tests']
 
+dol_version=config['connection']['dol_version']
+
+headers = {
+	'DOLAPIKEY': apiToken,
+	'DOLAPIENTITY' : '1',				# l'entité de la société (ICI 2)
+	'Content-Type': 'application/json', 
+	'Accept': 'application/json'
+}
 
 #URL
+urlBase = config['connection']['urlbase']
 urlDictionary = urlBase + 'setup/dictionary/'
 
-# on commence par créer les clients et les produits
+# Tiers
 nbNewUser=config['elements']['new_user']
 nbNewClient=config['elements']['new_client']
-nbNewProduct=config['elements']['new_product']
+
+# Structures
 nbNewWarehouse=config['elements']['new_warehouse']
-nbNewStockMovement=config['elements']['new_stock_movement']
 nbNewBank=config['elements']['new_bank']
 
-# puis le reste des données basée sur les clients et produits
+# Documents
 nbNewBill=config['elements']['new_bill']
 nbNewOrder=config['elements']['new_order']
 nbNewProposal=config['elements']['new_proposal']
@@ -50,42 +53,37 @@ nbNewFichinter=config['elements']['new_fichinter']
 nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
 
+# Produits
+nbNewProduct=config['elements']['new_product']
 nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
 pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
-	
-nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
-nbProductWithLot = config['productlots']['nb_product_with_lot']
+nbNewStockMovement=config['elements']['new_stock_movement']
 
+# Lots
+nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
+
+# Catégories
 newCategory=config['categories']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
 newCategoryCustomer=config['categories']['new_category_customer']
 newCategorySocpeople=config['categories']['new_category_socpeople']
 # newCategoryTicket=config['categories']['new_category_ticket']
 
-# infos lies au projet
-nbNewProject=config['elements']['new_project']
+# Projets
+nbNewProject=config['project']['new_project']
 nbNewOpportunity=config['project']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
 nbNewMaxContact = config['project']['new_max_contact']
 
-# autres infos 
-yearToFill=config['others']['year_to_fill']
-dateinterval = config['others']['date_interval']
-nbCountry = config['others']['nb_country']
-nb_shipping = config['others']['nb_shipping']
-fk_country = config['others']['fk_country']
-
-
-# fournisseurs
+# Fournisseurs
 createSupplier = config['supplier']['create_supplier']
 nbSupplierProduct = config['supplier']['nb_supplier_product']
 nbSupplierProductPrice = config['supplier']['nb_supplier_product_price']
 new_supplier_order = config['supplier']['new_order']
 new_supplier_bill = config['supplier']['new_bill']
 
-
-# chargement des contacts
+# Contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
 nbProposal_contactExt = config['contacts']['proposal_externe']
 nbOrder_contactInt = config['contacts']['order_interne']
@@ -95,14 +93,21 @@ nbInvoice_contactExt = config['contacts']['invoice_externe']
 
 # HRM
 nbHoliday = config['hrm']['nb_holiday']
+nbExpenseReport = config['hrm']['nb_expense_report']
+nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
+# Autres infos 
+yearToFill=config['others']['year_to_fill']
+dateinterval = config['others']['date_interval']
+nbCountry = config['others']['nb_country']
+nb_shipping = config['others']['nb_shipping']
+fk_country = config['others']['fk_country']
+testing =config['others']['tests']
+lang = config['others']['lang']
 
-headers = {
-	'DOLAPIKEY': apiToken,
-	'DOLAPIENTITY' : '1',				# l'entité de la société (ICI 2)
-	'Content-Type': 'application/json', 
-	'Accept': 'application/json'
-}
+# 
+fake = Faker(lang)
+yearNow = datetime.now().year
 
 # Regles de nommage des fonctions
 # fill_ = on récupère les données de l'api et on retourne un tableau

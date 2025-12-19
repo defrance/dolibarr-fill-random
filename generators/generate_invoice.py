@@ -1,12 +1,10 @@
-from faker import Faker
 import random
 import requests
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from utils import *
 from dolibarr_api import *
-from utils.get_random_project_id import *
-
 
 
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing):

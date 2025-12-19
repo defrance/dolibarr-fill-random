@@ -1,15 +1,13 @@
 categories:
-  new_category: 9
+  new_category: 10
   new_category_customer: 3
   new_category_product: 3
   new_category_socpeople: 3
 
 connection:
-  apitoken: 31I9uFzb26RNLVf5EepqJTW29F10amiv
+  apitoken: 12D5lTwfF8MqhPR7CJmJe546cRHs23yx
   dol_version: 22
   urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
-  
-  tests: True
 
 connection-test2:
   apitoken: cRduhj3B0b15diN04MN95rOvnC9ZV3yO
@@ -17,59 +15,63 @@ connection-test2:
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
 
 contacts:
-  invoice_externe: 10
-  invoice_interne: 10
-  order_externe: 10
-  order_interne: 10
-  proposal_externe: 10
-  proposal_interne: 10
+  invoice_externe: 1
+  invoice_interne: 1
+  order_externe: 1
+  order_interne: 1
+  proposal_externe: 1
+  proposal_interne: 1
 
 elements:
-  new_bank: 10
-  new_bill: 10
-  new_client: 10
-  new_contract: 10
-  new_fichinter: 10
-  new_knowledge: 10
-  new_order: 10
-  new_product: 10
-  new_proposal: 10
-  new_stock_movement: 3
-  new_ticket: 10
-  new_user: 3
-  new_warehouse: 3
-  new_project: 3
-
-products:
-  nb_sale_price_history_max: 10
-  pourcentage_aug_price_max: 10
+  new_bank: 0
+  new_bill: 0
+  new_client: 0
+  new_contract: 0
+  new_fichinter: 0
+  new_knowledge: 0
+  new_order: 0
+  new_product: 0
+  new_proposal: 0
+  new_stock_movement: 0
+  new_ticket: 0
+  new_user: 0
+  new_warehouse: 0
+  nb_sale_price_history_max: 0
+  pourcentage_aug_price_max: 0
 
 others:
   date_interval: 3
   nb_country: 3
   nb_shipping: 1
-  year_to_fill: 2025
-  lang: fr_FR
-  fk_country: 1
+  year_to_fill: 2023
+  lang: fr_FR # es_ES
+  fk_country : 1 # France
+  tests: False
 
 project:
   new_opportunity: 0
-  new_max_task: 3
-  new_max_task_time: 3
-  new_max_contact: 3
+  new_project: 0
+  new_max_task: 0
+  new_max_task_time: 0
+  new_max_contact: 0
 
 supplier:
-  create_supplier: 1
-  nb_supplier_product: 10 # nombre max de fournisseur par produit
-  nb_supplier_product_price: 10 # nombre max de prix d'achat par fournisseur d'un produit
-  new_bill: 100
-  new_order: 100
+  create_supplier: 0
+  nb_supplier_product: 0 # nombre max de fournisseur par produit
+  nb_supplier_product_price: 0 # nombre max de prix d'achat par fournisseur d'un produit
+  new_bill: 0
+  new_order: 0
 
 hrm:
-  nb_holiday: 200
+  nb_holiday: 0
   nb_expense_report: 10
   nb_expense_report_line_max: 10
 
+products:
+  nb_sale_price_history_max: 0
+  pourcentage_aug_price_max: 0
+
 productlots:
-  nb_lot_by_product_max : 10
-  nb_product_with_lot : 20
+  nb_lot_by_product_max : 0
+
+

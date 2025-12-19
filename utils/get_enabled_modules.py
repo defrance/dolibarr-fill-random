@@ -1,11 +1,8 @@
 import requests
 import sys, os
-
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-
-
 
 def get_enabled_modules():
 	# l'url correspond à l'adresse de du site ainsi que le chemin de l'api

@@ -1,4 +1,3 @@
-from faker import Faker
 import random
 import requests
 import datetime
@@ -6,7 +5,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-from utils.get_random_project_id import *
+from utils import *
 
 
 def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testing):

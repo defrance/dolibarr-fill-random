@@ -1,17 +1,11 @@
-from faker import Faker
 import random
-import string
 import requests
-import base64
 import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
-
-from utils.get_projects_of_contactID import get_projects_of_contactID
-from utils.get_random_project_id import get_random_project_id
-from utils.get_projects_of_userID import get_projects_of_userID
+from utils import *
 
 def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"

@@ -1,34 +1,15 @@
-from faker import Faker
 import random
-import string
-import requests
-import base64
 import datetime
+from tqdm import tqdm
 import os, sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-# neeeded ??
-fake = Faker('fr_FR')
 
 from dolibarr_api import *
-from generators.generate_project import generate_project
-from generators.generate_user import generate_user
-from generators.generate_bank import generate_bank
-from generators.generate_customer import generate_customer
-from generators.generate_warehouse import generate_warehouse
-from generators.generate_product import generate_product
-from generators.generate_invoice import generate_invoice
-from generators.generate_order import generate_order
-from generators.generate_proposal import generate_proposal
-from generators.generate_intervention import generate_intervention
-from generators.generate_ticket import generate_ticket
-from generators.generate_knowledge import generate_knowledge
-from generators.generate_contract import generate_contract
-from generators.generate_category import generate_category
-from generators.generate_holiday import generate_holiday
+from generators import *
+from utils import *
 
-from utils.fill_projects import *
 
 # On mémorise l'heure de début de l'alimentation totale
 start_time = datetime.now()
@@ -42,8 +23,9 @@ else :
 
 # Récupération des modules actifs coté Dolibarr
 enabledModule = get_enabled_modules()
-print ("Liste des modules activés dans Dolibarr")
-print (enabledModule)
+if testing:
+    print ("Liste des modules activés dans Dolibarr")
+    print (enabledModule)
 
 # Création des catégories
 if newCategory > 0 and 'categorie' in enabledModule:
@@ -223,8 +205,90 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Alimentation congés : ", duration)
 
+# Alimentation des notes de frais
+start_prev = datetime.now()
+
+if nbExpenseReport > 0 and 'expensereport' in enabledModule:
+    ListExpenseReport = gen_random_following_date(yearToFill, nbExpenseReport, max_interval = dateinterval)
+    
+    for dateExpenseReport in tqdm(
+        ListExpenseReport,
+        desc="Création des notes de frais",
+        unit="report"
+    ):
+        generate_expense_report(dateExpenseReport, testToggle)
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Alimentation notes de frais : ", duration)
+
 # On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 # on affiche la durée
 duration = start_stop - start_time
 print("Durée totale de l'alimentation : ", duration)
+
+
+
+
+"""
+Refacto in progress
+
+import datetime
+from tqdm import tqdm
+import traceback
+import os, sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from dolibarr_api import *
+from generators import *
+from utils import *
+from generators.generators_config import GENERATORS
+
+# On mémorise l'heure de début de l'alimentation totale
+start_time = datetime.now()
+print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
+
+# Affiche des messages de tests
+if testing:
+    testToggle = True
+else :
+    testToggle = False
+
+# Récupération des modules actifs coté Dolibarr
+enabledModule = get_enabled_modules()
+
+for gen in GENERATORS:
+    if gen["module"] not in enabledModule:
+        print(f"⏭ Module {gen['module']} non activé — skip {gen['name']}")
+        continue
+
+    if gen["count"] <= 0:
+        continue
+
+    start_prev = datetime.datetime.now()
+
+    try:
+        dates = gen_random_following_date(
+            yearToFill,
+            gen["count"],
+            max_interval=dateinterval
+        )
+
+        for date in tqdm(dates, desc=gen["progress_label"], unit="item"):
+            gen["generator"](date, testToggle)
+
+        duration = datetime.datetime.now() - start_prev
+        print(f"✔ Alimentation {gen['name']} : {duration}")
+
+    except Exception as e:
+        print(f"❌ Erreur sur {gen['name']}: {e}")
+        traceback.print_exc()
+
+duration_total = datetime.datetime.now() - start_time
+print("Fin de l'alimentation à ", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+print("Durée totale de l'alimentation : ", duration_total)
+
+
+"""

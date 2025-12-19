@@ -1,11 +1,13 @@
-from faker import Faker
+
 import random
 import requests
 import datetime
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+
 from dolibarr_api import *
+from utils import *
 
 def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThirdParties, testing):
     # url de création de projet
@@ -30,17 +32,10 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
     diffDaysEndNow = (dateNow - dateEnd).days
     diffDaysStartNow = (dateNow - dateStart).days
 
-    # Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
-    if diffDaysEndNow > 365:
-        projectStatus = 2  # closed 
-
-    # Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est antérieure à la date du jour,
-    # le projet est ouvert ou fermé de façon aléatoire
-    elif diffDaysEndNow >= 183 and diffDaysEndNow <= 365:
-        projectStatus = random.choice([1, 2])
+    projectStatus = 1
 
     # Si la date de début du projet est inférieure à 1 an, le projet est ouvert ou brouillon ou fermé
-    elif diffDaysEndNow < 183 and diffDaysStartNow <= 0:
+    if diffDaysEndNow < 183 and diffDaysStartNow <= 0:
         projectStatus = random.choice([0,1,2])  # Draft, Open, Closed
     elif diffDaysStartNow > 0:
         projectStatus = random.choice([0,1])  # Draft, Open
@@ -358,6 +353,15 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
     else:
         print("Nombre de tâches incorrect. Aucune tâche créée.")
         return None
+    
+        # Si la date de fin du projet prévue est plus ancienne que 1 an, le projet est fermé
+    if diffDaysEndNow > 365:
+        projectStatus = 2  # closed 
+
+    # Si la date de fin prévue du projet est entre 6 mois et 1 ans et la date début du projet est antérieure à la date du jour,
+    # le projet est ouvert ou fermé de façon aléatoire
+    elif diffDaysEndNow >= 183 and diffDaysEndNow <= 365:
+        projectStatus = random.choice([1, 2])
 
     # et on change le statut du projet
     if projectStatus == 2: # closed
@@ -383,7 +387,7 @@ if __name__ == "__main__":
 
     for i in range(20):
         print(generate_project(
-            dateCreate = fake.date_this_year(),
+            dateCreate = fake.date_this_decade(),
             nbTasks=10,
             nbtasksTime=10,
             retDataUser= fill_users(),
