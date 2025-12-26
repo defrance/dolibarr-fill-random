@@ -98,6 +98,7 @@ nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
 # Autres infos 
 yearToFill=config['others']['year_to_fill']
+max_workers=config['others'].get('max_workers', 20)  # Nombre de workers pour la parallélisation
 dateinterval = config['others']['date_interval']
 nbCountry = config['others']['nb_country']
 nbShipping = config['others']['nb_shipping']

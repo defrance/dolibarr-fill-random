@@ -48,6 +48,7 @@ others:
   nb_country: 3
   nb_shipping: 1
   year_to_fill: 2023
+  max_workers: 20  # Nombre de requêtes HTTP simultanées (ajuster selon les capacités du serveur: 10-50)
   lang: fr_FR # es_ES
   fk_country : 1 # France
   tests: False

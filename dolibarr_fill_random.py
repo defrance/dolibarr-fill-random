@@ -2,6 +2,7 @@ import random
 import datetime
 from tqdm import tqdm
 import os, sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -9,6 +10,18 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from dolibarr_api import *
 from generators import *
 from utils import *
+
+
+def generate_with_error_handling(generator_func, date, *args, **kwargs):
+    """
+    Wrapper pour exécuter une fonction de génération avec gestion d'erreur
+    """
+    try:
+        return generator_func(date, *args, **kwargs)
+    except Exception as e:
+        if testing:
+            print(f"Erreur lors de la génération à la date {date}: {e}")
+        return None
 
 
 # On mémorise l'heure de début de l'alimentation totale
@@ -103,7 +116,6 @@ print("Durée Alimentation Tiers et produits : ", duration)
 start_prev = datetime.now()
 
 if nbNewProject > 0 and 'projet' in enabledModule:
-
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
         generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties, testToggle)
@@ -115,48 +127,90 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Durée Alimentation Projet et tâches : ", duration)
 
-# ALimentation des factures
+# ALimentation des factures, commandes et devis EN PARALLÈLE
 start_prev = datetime.now()
 
-if nbNewBill > 0 and 'facture' in enabledModule:
-    listFactureGen = gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
+# Préparer les listes de dates pour chaque type de génération
+listFactureGen = [] if nbNewBill <= 0 or 'facture' not in enabledModule else gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
+listOrderGen = [] if nbNewOrder <= 0 or 'commande' not in enabledModule else gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
+listProposalGen = [] if nbNewProposal <= 0 or 'propal' not in enabledModule else gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+
+# Soumettre TOUTES les tâches (factures, commandes, devis) au pool en même temps
+# pour qu'elles s'exécutent vraiment en parallèle
+print(f"Utilisation de {max_workers} workers pour la parallélisation")
+with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    all_futures = []
+    
+    # Soumettre toutes les factures
     for dateFact in listFactureGen:
-        facture = generate_invoice(dateFact, retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testToggle)
-
-start_stop = datetime.now()
-# on affiche la durée
-duration = start_stop - start_prev
-print("Durée Alimentation Factures et Règlement: ", duration)
-
-
-# Alimentation des commandes et expéditions
-start_prev = datetime.now()
-
-if nbNewOrder > 0 and 'commande' in enabledModule:
-    listOrderGen = gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_invoice,
+                dateFact,
+                retDataPayment,
+                retDataBank,
+                retDataProduct,
+                retDataThirdParties,
+                retDataUser,
+                testToggle
+            ),
+            'type': 'facture'
+        })
+    
+    # Soumettre toutes les commandes
     for dateOrder in listOrderGen:
-        commande = generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWarehouse, retDataUser, testToggle)
-
-
-start_stop = datetime.now()
-
-# on affiche la durée
-duration = start_stop - start_prev
-print("Alimentation Commande et Expédition : ", duration)
-
-# Alimentation des devis
-start_prev = datetime.now()
-
-if nbNewProposal > 0 and 'propal' in enabledModule:
-    listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_order,
+                dateOrder,
+                retDataProduct,
+                retDataThirdParties,
+                retDataWarehouse,
+                retDataUser,
+                testToggle
+            ),
+            'type': 'commande'
+        })
+    
+    # Soumettre tous les devis
     for dateProposal in listProposalGen:
-        propal = generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retDataUser, testToggle)
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_proposal,
+                dateProposal,
+                retDataThirdParties,
+                retDataProduct,
+                retDataUser,
+                testToggle
+            ),
+            'type': 'devis'
+        })
+    
+    # Compteurs pour le suivi
+    completed = {'facture': 0, 'commande': 0, 'devis': 0}
+    total = {'facture': len(listFactureGen), 'commande': len(listOrderGen), 'devis': len(listProposalGen)}
+    
+    # Attendre la complétion avec barre de progression globale
+    for item in tqdm(
+        all_futures,
+        desc="Création factures/commandes/devis",
+        unit="doc"
+    ):
+        item['future'].result()
+        completed[item['type']] += 1
+    
+    # Afficher les statistiques
+    print(f"  → Factures: {completed['facture']}/{total['facture']}, "
+          f"Commandes: {completed['commande']}/{total['commande']}, "
+          f"Devis: {completed['devis']}/{total['devis']}")
 
 start_stop = datetime.now()
-
 # on affiche la durée
 duration = start_stop - start_prev
-print("Alimentation Devis : ", duration)
+print("Durée Alimentation Factures, Commandes et Devis (en parallèle) : ", duration)
 
 # Alimentation des contrats et interventions
 start_prev = datetime.now()
