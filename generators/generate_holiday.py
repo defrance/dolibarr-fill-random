@@ -22,7 +22,7 @@ def generate_holiday(dateCreate, testing=False):
     if testing:
         print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
-        status = "brouillon"
+        #status = "brouillon"
 
 
     match holiday_type['rowid']:
