@@ -45,7 +45,7 @@ others:
   max_workers: 10
   lang: fr_FR
   fk_country: 1
-  tests: true
+  tests: False
 
 project:
   new_project: 10
