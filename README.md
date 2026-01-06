@@ -99,6 +99,16 @@ pip install pyyaml
 pip install requests
 pip install tqdm
 
+
+sous windows
+```
+python -m venv venv
+venv\Scripts\activate
+
+python -m pip install --upgrade pip setuptools wheel
+
+pip install kivy
+```
 # Tests unitaires
 il n'y a pas à proprement parlé de tests unitaire mais chaque import à son propre lancement autonome
 
