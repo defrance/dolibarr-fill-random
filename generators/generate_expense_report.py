@@ -122,7 +122,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     
     if testing:
-        status = 'paid' # 'approve'   pour test uniquement
+        status = 'cancel' # 'paid'  'approve'   pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -251,7 +251,7 @@ def generate_expense_report( dateCreate, testing = False):
 # testing
 
 if __name__ == "__main__":
-    for  i in range(1):
+    for  i in range(5):
         print(
             generate_expense_report( 
                 dateCreate= fake.date_this_decade(before_today=True), testing = True)
