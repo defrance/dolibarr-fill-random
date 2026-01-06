@@ -23,58 +23,55 @@ contacts:
   proposal_interne: 1
 
 elements:
-  new_bank: 0
-  new_bill: 0
-  new_client: 0
-  new_contract: 0
-  new_fichinter: 0
-  new_knowledge: 0
-  new_order: 0
-  new_product: 0
-  new_proposal: 0
-  new_stock_movement: 0
-  new_ticket: 0
-  new_user: 0
-  new_warehouse: 0
-  new_opportunity: 0
-  new_project: 0
-  new_supplier_bill: 0
-  new_supplier_order: 0
-  new_holiday: 0
-  new_expense_report: 10
+  new_user: 20
+  new_bank: 3
+  new_client: 50
+  new_warehouse: 3
+
+documents:
+  new_bill: 50
+  new_contract: 50
+  new_fichinter: 50
+  new_knowledge: 50
+  new_order: 50
+  new_proposal: 50
+  new_ticket: 50
 
 others:
   date_interval: 3
   nb_country: 3
-  nb_shipping: 1
+  nb_shipping: 3
   year_to_fill: 2023
-  max_workers: 20  # Nombre de requêtes HTTP simultanées (ajuster selon les capacités du serveur: 10-50)
-  lang: fr_FR # es_ES
-  fk_country : 1 # France
-  tests: False
+  max_workers: 10
+  lang: fr_FR
+  fk_country: 1
+  tests: true
 
 project:
-  new_opportunity: 0
-  new_project: 0
-  new_max_task: 0
-  new_max_task_time: 0
-  new_max_contact: 0
+  new_project: 50
+  new_max_task: 20
+  new_max_task_time: 20
+  new_max_contact: 10
 
 supplier:
-  create_supplier: 0  # active la création de fournisseurs
-  nb_supplier_product: 0 # nombre max de fournisseur par produit
-  nb_supplier_product_price: 0 # nombre max de prix d'achat par fournisseur d'un produit
+  create_supplier: 1
+  nb_supplier_product: 5
+  nb_supplier_product_price: 5
+  new_supplier_bill: 50
+  new_supplier_order: 50
 
 hrm:
-  nb_holiday: 0
-  nb_expense_report: 10
-  nb_expense_report_line_max: 10
+  nb_holiday: 50
+  nb_expense_report: 50
+  nb_expense_report_line_max: 5
 
 products:
-  nb_sale_price_history_max: 0
-  pourcentage_aug_price_max: 0
+  new_product: 10
+  nb_sale_price_history_max: 10
+  pourcentage_aug_price_max: 5
+  new_stock_movement: 3
 
 productlots:
-  nb_lot_by_product_max : 0
+  nb_lot_by_product_max: 5
 
 
