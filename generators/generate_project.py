@@ -271,6 +271,10 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         
                             if r.status_code !=200:
                                 print("erreur lors de l'ajout du contact à la tâche")
+                                print(r.text)
+                                print(r.status_code)
+                                if testing:
+                                    print(dataContact)
                         
                             else:
                                 if testing:
