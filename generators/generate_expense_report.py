@@ -118,11 +118,11 @@ def generate_expense_report( dateCreate, testing = False):
             if testing:
                 print('création de la ligne de frais.')
 
-    status = random.choice(['brouillon','validate', 'approve', 'deny', 'cancel'])
+    status = random.choice(['brouillon','validate', 'approve', 'deny', 'cancel', 'paid'])
 
     
     if testing:
-        status = 'cancel' # 'approve'   pour test uniquement
+        status = 'paid' # 'approve'   pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -188,8 +188,8 @@ def generate_expense_report( dateCreate, testing = False):
 
             
         # approbation de la note de frais
-        if status == 'approve' :
-            r = requests.post(urlReport + "/" + str(status), headers=headers)
+        if status == 'approve' or 'paid' :
+            r = requests.post(urlReport + "/approve" , headers=headers)
             if r.status_code != 200 :
                 if testing :  
                     print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
@@ -214,12 +214,15 @@ def generate_expense_report( dateCreate, testing = False):
 
     # paiements des notes approuvées
 
-    if status == 'approve':
+    if status == 'paid':
 
         r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
 
         if r.status_code != 200:
             print('erreur lors de la récupération des types de paiements.')
+            print(r.status_code)
+            print(r.text)
+
         
         paymentTypeList = r.json()
 
@@ -234,14 +237,16 @@ def generate_expense_report( dateCreate, testing = False):
 
         data_payment = {
             "fk_typepayment":fkTypePayment,
-            "datepaid":"2025-12-15",
-            "amounts":2,
-            "bank_account":1
+            "datepaid":dateValidate.strftime('%Y-%m-%d'),
+            "amounts":200,
+            "bank_account":3
         }
         r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
 
         if r.status_code != 200:
             print('erreur lors du paiement de la note de frais.')
+            print(r.status_code)
+            print(r.text)
 
 # testing
 

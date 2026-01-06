@@ -13,7 +13,7 @@ def generate_bank(dateCreate, testing):
     data = {
         "country_id": 1,
         "ref" : lastname,
-        "type" : random.choice([1, 2]), # 0 = epargne, 1, 2 = caisse classique
+        "type" : 1, # random.choice([1, 2]), # 0 = epargne, 1, 2 = caisse classique
         "label": fake.company(),
         "rappro" : 0, # pas besoin de rapprocher
         "date_solde" : dateCreate.strftime('%Y-%m-%d'),
