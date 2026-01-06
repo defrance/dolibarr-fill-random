@@ -12,6 +12,7 @@ from .fill_banks import fill_banks
 from .get_enabled_modules import get_enabled_modules
 from .get_projects_of_contactID import get_projects_of_contactID
 from .get_projects_of_userID import get_projects_of_userID
+from .get_created_id import get_created_id
 
 # get random
 from .get_random_address import get_random_address
@@ -34,4 +35,5 @@ __all__ = [
     "get_random_holiday_type",
     "get_random_project_id",
     "get_random_user_id",
+    "get_created_id"
 ]

@@ -74,7 +74,8 @@ nbNewProject=config['project']['new_project']
 #nbNewOpportunity=config['project']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
-nbNewMaxContact = config['project']['new_max_contact']
+nbInternalContactMax = config['project']['max_internal_contacts']
+nbExternalContactMax = config['project']['max_external_contacts']
 
 # Fournisseurs
 createSupplier = config['supplier']['create_supplier']
