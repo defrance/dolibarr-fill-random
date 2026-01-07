@@ -9,12 +9,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
-def generate_project(dateCreate, testing=False):
+def generate_project(dateCreate, retDataUser, retDataThirdParties, testing=False):
 
     # DATA DE BASE
-
-    retDataUser = fill_users()
-    retDataThirdParties = fill_thirdparties('customer')
 
     urlProjects = urlBase + "projects/"
     urlTasks = urlBase + "tasks"

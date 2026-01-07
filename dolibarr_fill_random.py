@@ -118,7 +118,7 @@ start_prev = datetime.now()
 if nbNewProject > 0 and 'projet' in enabledModule:
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject, testToggle)
+        generate_project(dateProject, retDataUser, retDataThirdParties, testToggle)
 
 retDataProjects = fill_projects()
 
