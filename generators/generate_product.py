@@ -250,7 +250,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     if status_buy == 1 and nbSupplierProduct >0 :
         supplierList = fill_thirdparties("supplier")
 
-        supplierQty = random.randint(1,nbSupplierProduct)
+        supplierQty = random.randint(1, nbSupplierProduct)
     
         for i in range (supplierQty) :
             supplierID = get_random_user(supplierList)['id']
