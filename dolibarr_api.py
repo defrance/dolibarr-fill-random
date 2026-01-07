@@ -45,13 +45,13 @@ nbNewWarehouse=config['elements']['new_warehouse']
 nbNewBank=config['elements']['new_bank']
 
 # Documents
-nbNewBill=config['documents']['new_bill']
-nbNewOrder=config['documents']['new_order']
-nbNewProposal=config['documents']['new_proposal']
-nbNewContract=config['documents']['new_contract']
-nbNewFichinter=config['documents']['new_fichinter']
-nbNewTicket=config['documents']['new_ticket']
-nbNewKnowledge=config['documents']['new_knowledge']
+nbNewBill=config['elements']['new_bill']
+nbNewOrder=config['elements']['new_order']
+nbNewProposal=config['elements']['new_proposal']
+nbNewContract=config['elements']['new_contract']
+nbNewFichinter=config['elements']['new_fichinter']
+nbNewTicket=config['elements']['new_ticket']
+nbNewKnowledge=config['elements']['new_knowledge']
 
 # Produits
 nbNewProduct=config['products']['new_product']
