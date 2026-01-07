@@ -16,12 +16,13 @@ def generate_holiday(dateCreate, testing=False):
     inTime = random.choice([True, False])
     dateDebut = None
     dateFin = None
-    status = random.choice(["approve","cancel","refuse","validate"])
+    status = random.choice(["brouillon","approve","cancel","refuse","validate"])
     validatorID = random.choice([1,2,3])
 
     if testing:
         print("Type de congé/absence choisi :", holiday_type['rowid'])
         print("Le congé/absence est-il dans les temps ?", inTime)
+        #status = "brouillon"
 
 
     match holiday_type['rowid']:
@@ -187,5 +188,5 @@ def generate_holiday(dateCreate, testing=False):
 # Tests
 if __name__ == "__main__":
     print("Génération de congés/absences")
-    for i in range(1):
+    for i in range(10):
         print(generate_holiday(fake.date_this_year(), testing=True))

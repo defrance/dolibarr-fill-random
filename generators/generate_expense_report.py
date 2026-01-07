@@ -71,7 +71,7 @@ def generate_expense_report( dateCreate, testing = False):
     typefeesList = r.json()
 
     # Ajout des lignes de frais
-    urlAddLine = urlReport + "/lines"
+    urlAddLine = urlReport + "/line"
 
     for i in range (nbLines) :
 
@@ -118,10 +118,11 @@ def generate_expense_report( dateCreate, testing = False):
             if testing:
                 print('création de la ligne de frais.')
 
-    status = random.choice(['brouillon','validate', 'approve', 'deny'])
+    status = random.choice(['brouillon','validate', 'approve', 'deny', 'cancel', 'paid'])
 
-    #status = 'approve'  # pour test uniquement
+    
     if testing:
+        #status = 'cancel' # 'paid'  'approve'   pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -187,8 +188,22 @@ def generate_expense_report( dateCreate, testing = False):
 
             
         # approbation de la note de frais
-        if status == 'approve' :
-            r = requests.post(urlReport + "/" + str(status), headers=headers)
+        if status == 'approve' or 'paid' :
+            r = requests.post(urlReport + "/approve" , headers=headers)
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+        
+        #annulation de la note de frais
+        if status == 'cancel' : 
+            data_cancel ={
+                'detail': fake.text(max_nb_chars=200)
+            }
+            r = requests.post(urlReport + "/" + str(status), headers=headers, json = data_cancel)
             if r.status_code != 200 :
                 if testing :  
                     print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
@@ -197,14 +212,17 @@ def generate_expense_report( dateCreate, testing = False):
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
-    # paiements
+    # paiements des notes approuvées
 
-    if status == 'approve':
+    if status == 'paid':
 
         r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
 
         if r.status_code != 200:
             print('erreur lors de la récupération des types de paiements.')
+            print(r.status_code)
+            print(r.text)
+
         
         paymentTypeList = r.json()
 
@@ -215,21 +233,28 @@ def generate_expense_report( dateCreate, testing = False):
         except:
             print('erreur lors du choix du types de paiement.')
     
+    # Prévoir récupération du total de la note de frais.
+
         data_payment = {
             "fk_typepayment":fkTypePayment,
-            "datepaid":"2025-12-15",
-            "amounts":2,
-            "bank_account":1
+            "datepaid":dateValidate.strftime('%Y-%m-%d'),
+            "amounts":200,
+            "bank_account":3
         }
-    
+        r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
+
+        if r.status_code != 200:
+            print('erreur lors du paiement de la note de frais.')
+            print(r.status_code)
+            print(r.text)
 
 # testing
 
 if __name__ == "__main__":
-    for  i in range(10):
+    for  i in range(5):
         print(
             generate_expense_report( 
-                dateCreate= fake.date_this_year(before_today=True), testing = True)
+                dateCreate= fake.date_this_decade(before_today=True), testing = True)
     )
 
     
