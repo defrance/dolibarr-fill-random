@@ -254,7 +254,7 @@ if __name__ == "__main__":
     for  i in range(5):
         print(
             generate_expense_report( 
-                dateCreate= fake.date_this_decade(before_today=True), testing = True)
+                dateCreate= fake.date_this_year(before_today=True), testing = True)
     )
 
     
