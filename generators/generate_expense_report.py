@@ -71,7 +71,7 @@ def generate_expense_report( dateCreate, testing = False):
     typefeesList = r.json()
 
     # Ajout des lignes de frais
-    urlAddLine = urlReport + "/line"
+    urlAddLine = urlReport + "/lines"
 
     for i in range (nbLines) :
 
