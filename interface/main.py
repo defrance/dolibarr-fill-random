@@ -19,8 +19,7 @@ from tabs.project_tab import ProjectTab
 from tabs.supplier_tab import SupplierTab
 from tabs.hrm_tab import HRMTab
 from tabs.products_tab import ProductsTab
-from tabs.productlots_tab import ProductLotsTab
-from tabs.documents_tab import DocumentsTab
+
 
 # --- Logger pour rediriger stdout/stderr vers TextInput ---
 class Logger:
@@ -76,12 +75,10 @@ class MainInterface(BoxLayout):
             "categories": CategoriesTab(self.yaml_manager),
             "contacts": ContactsTab(self.yaml_manager),
             "elements": ElementsTab(self.yaml_manager),
-            "documents": DocumentsTab(self.yaml_manager),
             "project": ProjectTab(self.yaml_manager),
             "supplier": SupplierTab(self.yaml_manager),
             "hrm": HRMTab(self.yaml_manager),
             "products": ProductsTab(self.yaml_manager),
-            "productlots": ProductLotsTab(self.yaml_manager),
             "others": OthersTab(self.yaml_manager),
         }
 
