@@ -9,34 +9,29 @@ connection-test2:
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
 
 categories:
-  new_category: 0
-  new_category_customer: 0
-  new_category_product: 0
-  new_category_socpeople: 0
-
+  new_category: 10
+  new_category_customer: 3
+  new_category_product: 3
+  new_category_socpeople: 3
 contacts:
-  invoice_externe: 0
-  invoice_interne: 0
-  order_externe: 0
-  order_interne: 0
-  proposal_externe: 0
-  proposal_interne: 0
-
+  invoice_externe: 1
+  invoice_interne: 1
+  order_externe: 1
+  order_interne: 1
+  proposal_externe: 1
+  proposal_interne: 1
 elements:
-  new_user: 0
-  new_bank: 0
-  new_client: 0
-  new_warehouse: 0
-
-documents:
-  new_bill: 0
-  new_contract: 0
-  new_fichinter: 0
-  new_knowledge: 0
-  new_order: 0
-  new_proposal: 0
-  new_ticket: 0
-
+  new_user: 20
+  new_bank: 3
+  new_client: 50
+  new_warehouse: 3
+  new_bill: 10
+  new_contract: 10
+  new_fichinter: 10
+  new_knowledge: 10
+  new_order: 10
+  new_proposal: 10
+  new_ticket: 10
 others:
   date_interval: 3
   nb_country: 3
@@ -45,34 +40,31 @@ others:
   max_workers: 10
   lang: fr_FR
   fk_country: 1
-  tests: False
-
+  tests: false
 project:
   new_project: 10
   new_max_task: 5
   new_max_task_time: 5
-  max_internal_contacts : 5
-  max_external_contacts : 5
-
-
+  max_internal_contacts: 5
+  max_external_contacts: 5
+  new_max_contact: 5 # nombre max de contact par projet => disparaitra avec différence interne/externe
 supplier:
   create_supplier: 1
-  nb_supplier_product: 0
-  nb_supplier_product_price: 0
-  new_supplier_bill: 0
-  new_supplier_order: 0
-
+  nb_supplier_product: 5
+  nb_supplier_product_price: 5
+  new_supplier_bill: 100
+  new_supplier_order: 100
 hrm:
   new_holiday: 0
   new_expense_report: 0
-  nb_expense_report_line_max: 0
-
+  nb_expense_report_line_max: 5
+  nb_holiday: 100
+  nb_expense_report: 100
 products:
-  new_product: 10
-  nb_sale_price_history_max: 0
-  pourcentage_aug_price_max: 0
+  new_product: 40
+  nb_sale_price_history_max: 5
+  pourcentage_aug_price_max: 5
   new_stock_movement: 3
-
 productlots:
   nb_lot_by_product_max: 0
 
