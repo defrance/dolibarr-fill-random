@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
-def generate_project(dateCreate, retDataUser, retDataThirdParties, testing=False):
+def generate_project(dateCreate, retDataUser, retDataThirdParties, nbTask, nb testing=False):
 
     # DATA DE BASE
 
