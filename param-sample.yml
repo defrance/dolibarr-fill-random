@@ -47,7 +47,7 @@ project:
   new_max_task_time: 5
   max_internal_contacts: 5
   max_external_contacts: 5
-  new_max_contact: 5 # nombre max de contact par projet => disparaitra avec différence interne/externe
+
 supplier:
   create_supplier: 1
   nb_supplier_product: 5

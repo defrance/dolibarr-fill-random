@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
-def generate_project(dateCreate, retDataUser, retDataThirdParties, nbTask, nb testing=False):
+def generate_project(dateCreate, retDataUser, retDataThirdParties, nbNewMaxTask = nbNewMaxTask, nbNewMaxTaskTime = nbNewMaxTaskTime, nbInternalContactMax = nbInternalContactMax, nbExternalContactMax = nbExternalContactMax,  testing=False):
 
     # DATA DE BASE
 
@@ -179,5 +179,10 @@ if __name__ == "__main__":
 
     for i in range(10):
         print(generate_project(
-            dateCreate = fake.date_this_decade(),
+            dateCreate = fake.date_this_year(),
+            retDataThirdParties=fill_thirdparties(),
+            retDataUser= fill_users(),
+            nbNewMaxTask = nbNewMaxTask,
+            nbNewMaxTaskTime = nbNewMaxTaskTime,
+            nbInternalContactMax = nbInternalContactMax,
             testing=True))
