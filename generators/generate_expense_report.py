@@ -10,7 +10,7 @@ from utils import *
 def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"
 
-    urlConf = urlBase + "setup/conf/{constantname}"
+    urlConf = urlBase + "setup/conf/expensereport_prefill_dates_with_current_month"
     try:
 
         r = requests.get(urlConf, headers = headers)
@@ -21,11 +21,11 @@ def generate_expense_report( dateCreate, testing = False):
         
         match r.text:
             case "1":
-            
+                print("activé")
             case "0":
-            
+                print("désactivé")
             case _:
-            raise ValueError(f"Type de congé {]} non géré")
+                raise ValueError(f"configuration {r.text} non géré")
 
 
     except Exception as e:
@@ -274,12 +274,12 @@ def generate_expense_report( dateCreate, testing = False):
 # testing
 
 if __name__ == "__main__":
-    for  i in range(50):
+    for  i in range(1):
         print(
             generate_expense_report( 
                 dateCreate= fake.date_this_decade(before_today=True), testing = True)
     )
-    for  i in range(10):
+    for  i in range(1):
         print(
             generate_expense_report( 
                 dateCreate= fake.date_this_year(before_today=True), testing = True)
