@@ -6,13 +6,13 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
-def generate_user_group( dateCreate, testing = False):
-    url = urlBase + "groups/"
+def generate_user_group(testing = False):
+    url = urlBase + "users/groups/"
 
     if nbNewGroup > 0:
 
         data={
-            "groupname":fake.random_name_complements()
+            "name":fake.word()
         }
 
         r = requests.post( url, headers=headers, json=data)
@@ -23,10 +23,13 @@ def generate_user_group( dateCreate, testing = False):
             print(r.text)
         
         else :
+            print("groupe d'utilisateur créé : ")
             print(r.text)
             groupID = r.text
+        return groupID
 
 
 if __name__ == "__main__":
-    for  i in range(50):
-        print(generate_user_group())
+    for  i in range(10):
+        print(generate_user_group(testing = True))
+
