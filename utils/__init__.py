@@ -7,6 +7,7 @@ from .fill_expensereport_types import fill_expensereport_types
 from .fill_projects import fill_projects
 from .fill_users import fill_users
 from .fill_banks import fill_banks
+from .fill_groups_users import fill_groups_users
 
 # get
 from .get_enabled_modules import get_enabled_modules
@@ -27,6 +28,7 @@ __all__ = [
     "fill_projects",
     "fill_users",
     "fill_banks",
+    "fill_groups_users",
     "get_enabled_modules",
     "get_projects_of_contactID",
     "get_projects_of_userID",

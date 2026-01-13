@@ -4,13 +4,11 @@ from datetime import datetime, timedelta
 from faker import Faker
 import sys, os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 from dolibarr_api import *
 
-config = load_config()
-fake = Faker('fr_FR')
 
 def fill_expensereport_types():
     url = urlBase + "setup/dictionary/expensereport_types"
