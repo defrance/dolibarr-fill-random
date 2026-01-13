@@ -122,7 +122,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     
     if testing:
-        status =  'deny' # 'cancel' 'approve' 'paid' 'validate' pour test uniquement
+        # status = 'paid'   'cancel' 'deny' 'approve'  'validate' pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -134,7 +134,7 @@ def generate_expense_report( dateCreate, testing = False):
     
     if status != 'brouillon' :
 
-        r = requests.post(urlReport + "/validate", headers=headers, json ={"notrigger": 0 })
+        r = requests.post(urlReport + "/validate", headers=headers)
         if r.status_code != 200 :
             if testing :  
                 print('Erreur lors de la validation de la note de frais', r.status_code)
@@ -252,10 +252,15 @@ def generate_expense_report( dateCreate, testing = False):
 # testing
 
 if __name__ == "__main__":
-    for  i in range(3):
+    for  i in range(50):
         print(
             generate_expense_report( 
                 dateCreate= fake.date_this_decade(before_today=True), testing = True)
+    )
+    for  i in range(10):
+        print(
+            generate_expense_report( 
+                dateCreate= fake.date_this_year(before_today=True), testing = True)
     )
 
 
