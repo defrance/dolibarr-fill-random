@@ -122,7 +122,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     
     if testing:
-        status = 'validate' # 'cancel' 'approve' 'paid'  pour test uniquement
+        status =  'deny' # 'cancel' 'approve' 'paid' 'validate' pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -259,6 +259,4 @@ if __name__ == "__main__":
     )
 
 
-# deny => 200, quand on passe par swagger c'est bon mais pas avec le script ?!?! url ok, data ok
-# validate
 # paid => probleme sur les valeurs API
