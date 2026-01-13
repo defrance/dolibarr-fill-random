@@ -1,4 +1,3 @@
-import random
 import requests
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -12,7 +11,7 @@ def generate_user_group(testing = False):
     if nbNewGroup > 0:
 
         data={
-            "name":fake.word()
+            "name":fake.company(),
         }
 
         r = requests.post( url, headers=headers, json=data)
@@ -23,11 +22,12 @@ def generate_user_group(testing = False):
             print(r.text)
         
         else :
-            print("groupe d'utilisateur créé : ")
-            print(r.text)
+            if testing:
+                print("groupe d'utilisateur créé : ")
+                print(r.text)
+
             groupID = r.text
         return groupID
-
 
 if __name__ == "__main__":
     for  i in range(10):

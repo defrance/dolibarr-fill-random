@@ -55,6 +55,10 @@ retDataCategProduct = fill_categories("product")
 retDataCategCustomer = fill_categories("customer")
 retDataCategContact = fill_categories("contact")
 
+if nbNewGroup > 0 :
+    for i in range(nbNewGroup):
+        userGroup = generate_user_group(testToggle)
+
 if 'ticket' in enabledModule:
     retDataCategTicket = fill_categories("ticket")
 

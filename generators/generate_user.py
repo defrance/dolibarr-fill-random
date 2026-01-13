@@ -46,6 +46,21 @@ def generate_user(dateCreate, testing):
         idSoc= r.text
         if testing:
             r = requests.get(url + '/' + str(idSoc), headers=headers)
+        
+        GroupsUsersList = fill_groups_users()
+
+        if len(GroupsUsersList) > 0 :
+            
+            groupId = GroupsUsersList[random.randint(1, len(GroupsUsersList)-1)]['id']
+
+            url = urlBase + "users/" + str(idSoc) + "/setGroup/" + str(groupId)
+            
+            r = requests.get(url, headers=headers)
+
+            if r.status_code != 200 :
+                print("Erreur lors de l'ajout du groupe.")
+                print(r.status_code)
+                print(r.text)
 
     return 1
 
