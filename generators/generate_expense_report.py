@@ -122,7 +122,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     
     if testing:
-        #status = 'cancel' # 'paid'  'approve'   pour test uniquement
+        status = 'validate' # 'cancel' 'approve' 'paid'  pour test uniquement
         print("status choisi : " , status)
 
     # si date de fin pas atteinte, obligatoirement en brouillon
@@ -134,7 +134,7 @@ def generate_expense_report( dateCreate, testing = False):
     
     if status != 'brouillon' :
 
-        r = requests.post(urlReport + "/validate", headers=headers)
+        r = requests.post(urlReport + "/validate", headers=headers, json ={"notrigger": 0 })
         if r.status_code != 200 :
             if testing :  
                 print('Erreur lors de la validation de la note de frais', r.status_code)
@@ -159,8 +159,9 @@ def generate_expense_report( dateCreate, testing = False):
         if status == 'deny' :
             data = {
                 "details": "Raison du refus : " + fake.sentence(nb_words=6),
+                "notrigger" : 0
             }
-            r = requests.post(urlReport + "/" + str(status), headers=headers, json=data)
+            r = requests.post(urlReport + "/deny" , headers=headers, json=data)
 
             if r.status_code != 200 :
                 if testing :  
@@ -188,7 +189,7 @@ def generate_expense_report( dateCreate, testing = False):
 
             
         # approbation de la note de frais
-        if status == 'approve' or 'paid' :
+        if status in ('approve', 'paid'):
             r = requests.post(urlReport + "/approve" , headers=headers)
             if r.status_code != 200 :
                 if testing :  
@@ -238,7 +239,7 @@ def generate_expense_report( dateCreate, testing = False):
         data_payment = {
             "fk_typepayment":fkTypePayment,
             "datepaid":dateValidate.strftime('%Y-%m-%d'),
-            "amounts":200,
+            "amount":200,
             "bank_account":3
         }
         r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
@@ -251,10 +252,13 @@ def generate_expense_report( dateCreate, testing = False):
 # testing
 
 if __name__ == "__main__":
-    for  i in range(5):
+    for  i in range(3):
         print(
             generate_expense_report( 
                 dateCreate= fake.date_this_decade(before_today=True), testing = True)
     )
 
-    
+
+# deny => 200, quand on passe par swagger c'est bon mais pas avec le script ?!?! url ok, data ok
+# validate
+# paid => probleme sur les valeurs API

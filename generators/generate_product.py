@@ -41,7 +41,8 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
         if testing:
                 print('taux taxe :', vatrate)
     except:
-            print('erreur lors du choix du taux de taxe.')
+            print('erreur lors du choix du taux de taxe. Taux pas défaut.')
+            vatrate = random.choice([0,5,20])
 
     typeProduct = random.choice([0, 1]) # produit ou service
 
