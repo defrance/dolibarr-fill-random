@@ -252,11 +252,6 @@ def generate_expense_report( dateCreate, testing = False):
 # testing
 
 if __name__ == "__main__":
-    for  i in range(50):
-        print(
-            generate_expense_report( 
-                dateCreate= fake.date_this_decade(before_today=True), testing = True)
-    )
     for  i in range(10):
         print(
             generate_expense_report( 

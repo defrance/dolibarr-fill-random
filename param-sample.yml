@@ -68,7 +68,7 @@ supplier:
 hrm:
   nb_holiday: 0
   nb_expense_report: 10
-  nb_expense_report_line_max: 10
+  nb_expense_report_line_max: 5
 
 products:
   nb_sale_price_history_max: 0

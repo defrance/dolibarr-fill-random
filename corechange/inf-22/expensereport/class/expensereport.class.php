@@ -1833,11 +1833,10 @@ class ExpenseReport extends CommonObject
 
 		$result = '';
 
-		$baseurl = DOL_URL_ROOT.'/expensereport/card.php';
-		$query = ['id' => $this->id];
+		$url = DOL_URL_ROOT.'/expensereport/card.php?id='.$this->id;
 
 		if ($short) {
-			return dolBuildUrl($baseurl, $query);
+			return $url;
 		}
 
 		$params = [
@@ -1864,10 +1863,9 @@ class ExpenseReport extends CommonObject
 				$add_save_lastsearch_values = 1;
 			}
 			if ($add_save_lastsearch_values) {
-				$query += ['save_lastsearch_values' => 1];
+				$url .= '&save_lastsearch_values=1';
 			}
 		}
-		$url = dolBuildUrl($baseurl, $query);
 
 		$ref = $this->ref;
 		if (empty($ref)) {
