@@ -9,6 +9,28 @@ from utils import *
 
 def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"
+
+    urlConf = urlBase + "setup/conf/{constantname}"
+    try:
+
+        r = requests.get(urlConf, headers = headers)
+
+        if r.status_code != 200 :
+            print('Erreur lors de la récupération des configations : ', r.status_code)
+            print(r.text)
+        
+        match r.text:
+            case "1":
+            
+            case "0":
+            
+            case _:
+            raise ValueError(f"Type de congé {]} non géré")
+
+
+    except Exception as e:
+        print('Erreur lors de la création de la note de frais', e)
+
     dateStart = fake.date_between(start_date=dateCreate, end_date = dateCreate + timedelta(days = 15))
     dateEnd = fake.date_between(start_date=dateStart, end_date = dateStart + timedelta(days = 30))
 
