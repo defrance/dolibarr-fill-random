@@ -116,14 +116,22 @@ def generate_expense_report(dateCreate, testing=False):
         else:
             fkProject = random.choice(projectsList)["element_id"]
 
-        typefeeID = random.choice(typefeesList)["id"]
+        typefee = random.choice(typefeesList)
+        typefeeID = typefee["id"]
+        typefeeCode = typefee["code"]
         vatrate = random.choice(vatrateList)["taux"]
+
+        
+        qty, value_unit = get_realistic_qty_price(typefeeCode)
+
+        if testing:
+            print(f"Type frais {typefeeCode} → qty = {qty}, value_unit = {value_unit} €")
 
         dataLine = {
             "comments": fake.text(max_nb_chars=100),
             "fk_project": fkProject,
-            "qty": random.randint(1, 10),
-            "value_unit": random.randint(10, 200),
+            "qty": qty,
+            "value_unit": value_unit,
             "fk_c_type_fees": typefeeID,
             "vatrate": vatrate,
             "date": fake.date_between_dates(dateStart, dateEnd).strftime("%Y-%m-%d"),
@@ -178,7 +186,7 @@ def generate_expense_report(dateCreate, testing=False):
 
     # PAIEMENT
 
-    if status == "paid":
+    """    if status == "paid":
         r = requests.get(urlDictionary + "payment_types?active=1", headers=headers)
         paymentTypeList = r.json()
 
@@ -193,7 +201,7 @@ def generate_expense_report(dateCreate, testing=False):
 
         r = requests.post(urlReport + "/payments", headers=headers, json=data_payment)
         if testing and r.status_code == 200:
-            print("Paiement effectué")
+            print("Paiement effectué")"""
 
     return expenseReportID
 
@@ -203,5 +211,10 @@ if __name__ == "__main__":
     for i in range(10):
         generate_expense_report(
             dateCreate=fake.date_this_decade(before_today=True),
+            testing=True,
+        )
+    for i in range(3):
+        generate_expense_report(
+            dateCreate=fake.date_this_year(before_today=True),
             testing=True,
         )
