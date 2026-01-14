@@ -208,12 +208,12 @@ def generate_expense_report(dateCreate, testing=False):
 
 # TEST
 if __name__ == "__main__":
-    for i in range(10):
+    for i in range(2):
         generate_expense_report(
             dateCreate=fake.date_this_decade(before_today=True),
             testing=True,
         )
-    for i in range(3):
+    for i in range(2):
         generate_expense_report(
             dateCreate=fake.date_this_year(before_today=True),
             testing=True,
