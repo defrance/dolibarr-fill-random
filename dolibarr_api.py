@@ -55,10 +55,10 @@ nbNewTicket=config['elements']['new_ticket']
 nbNewKnowledge=config['elements']['new_knowledge']
 
 # Produits
-nbNewProduct=config['elements']['new_product']
+nbNewProduct=config['products']['new_product']
 nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
 pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
-nbNewStockMovement=config['elements']['new_stock_movement']
+nbNewStockMovement=config['products']['new_stock_movement']
 
 # Lots
 nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
@@ -71,18 +71,19 @@ newCategorySocpeople=config['categories']['new_category_socpeople']
 # newCategoryTicket=config['categories']['new_category_ticket']
 
 # Projets
-nbNewProject=config['elements']['new_project']
-nbNewOpportunity=config['elements']['new_opportunity']
+nbNewProject=config['project']['new_project']
+#nbNewOpportunity=config['project']['new_opportunity']
 nbNewMaxTask=config['project']['new_max_task']
 nbNewMaxTaskTime=config['project']['new_max_task_time']
-nbNewMaxContact = config['project']['new_max_contact']
+nbInternalContactMax = config['project']['max_internal_contacts']
+nbExternalContactMax = config['project']['max_external_contacts']
 
 # Fournisseurs
 createSupplier = config['supplier']['create_supplier']
 nbSupplierProduct = config['supplier']['nb_supplier_product']
 nbSupplierProductPrice = config['supplier']['nb_supplier_product_price']
-newsupplierorder = config['elements']['new_supplier_order']
-newsupplierbill = config['elements']['new_supplier_bill']
+newsupplierorder = config['supplier']['new_supplier_order']
+newsupplierbill = config['supplier']['new_supplier_bill']
 
 # Contacts
 nbProposal_contactInt = config['contacts']['proposal_interne']
@@ -93,8 +94,8 @@ nbInvoice_contactInt = config['contacts']['invoice_interne']
 nbInvoice_contactExt = config['contacts']['invoice_externe']
 
 # HRM
-nbHoliday = config['elements']['new_holiday']
-nbExpenseReport = config['elements']['new_expense_report']
+nbHoliday = config['hrm']['new_holiday']
+nbExpenseReport = config['hrm']['new_expense_report']
 nbExpenseReportLineMax = config['hrm']['nb_expense_report_line_max']
 
 # Autres infos 

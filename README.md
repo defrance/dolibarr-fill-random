@@ -94,11 +94,19 @@ Le programme utilise faker pour générer des données aléatoire
 Il utilise aussi yaml pour le fichier de paramétrage
 
 il faut donc réaliser les commandes suivantes: 
+```
 pip install faker
+
 pip install pyyaml
+
 pip install requests
+
 pip install tqdm
 
+python -m pip install --upgrade pip setuptools wheel
+
+pip install kivy
+```
 # Tests unitaires
 il n'y a pas à proprement parlé de tests unitaire mais chaque import à son propre lancement autonome
 

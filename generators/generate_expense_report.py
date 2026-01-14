@@ -110,11 +110,8 @@ def generate_expense_report(dateCreate, testing=False):
     r = requests.get(urlDictionary + "expensereport_types?active=1", headers=headers)
     typefeesList = r.json()
 
-    for _ in range(nbLines):
-        if not projectsList:
-            fkProject = None
-        else:
-            fkProject = random.choice(projectsList)["element_id"]
+    # Ajout des lignes de frais
+    urlAddLine = urlReport + "/line"
 
         typefee = random.choice(typefeesList)
         typefeeID = typefee["id"]
@@ -204,7 +201,6 @@ def generate_expense_report(dateCreate, testing=False):
             print("Paiement effectué")"""
 
     return expenseReportID
-
 
 # TEST
 if __name__ == "__main__":

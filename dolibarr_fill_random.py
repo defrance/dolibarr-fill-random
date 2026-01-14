@@ -104,7 +104,6 @@ if nbNewProduct > 0:
         product = generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledModule, testToggle)
 
 retDataProduct = fill_products()
-
 retDataThirdParties = fill_thirdparties("customer")
 
 if createSupplier == 1  and 'fournisseur' in enabledModule:
@@ -122,7 +121,7 @@ start_prev = datetime.now()
 if nbNewProject > 0 and 'projet' in enabledModule:
     listProjectGen = gen_random_following_date(yearToFill, nbNewProject, max_interval = dateinterval)
     for dateProject in listProjectGen:
-        generate_project(dateProject,nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties, testToggle)
+        generate_project(dateProject, retDataUser, retDataThirdParties, testToggle)
 
 retDataProjects = fill_projects()
 
@@ -135,9 +134,22 @@ print("Durée Alimentation Projet et tâches : ", duration)
 start_prev = datetime.now()
 
 # Préparer les listes de dates pour chaque type de génération
-listFactureGen = [] if nbNewBill <= 0 or 'facture' not in enabledModule else gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
-listOrderGen = [] if nbNewOrder <= 0 or 'commande' not in enabledModule else gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
-listProposalGen = [] if nbNewProposal <= 0 or 'propal' not in enabledModule else gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+listFactureGen = [] 
+if nbNewBill > 0 and 'facture' in enabledModule :
+    listFactureGen = gen_random_following_date(yearToFill, nbNewBill, max_interval = dateinterval)
+
+listOrderGen = [] 
+if nbNewOrder > 0 and 'commande' in enabledModule:
+    listOrderGen = gen_random_following_date(yearToFill, nbNewOrder, max_interval = dateinterval)
+
+listProposalGen = [] 
+if nbNewProposal > 0 and 'propal' in enabledModule:
+    listProposalGen = gen_random_following_date(yearToFill, nbNewProposal, max_interval = dateinterval)
+
+listContractGen = []
+if nbNewContract > 0 and 'contrat' in enabledModule:
+    listContractGen = gen_random_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
+ 
 
 # Soumettre TOUTES les tâches (factures, commandes, devis) au pool en même temps
 # pour qu'elles s'exécutent vraiment en parallèle
@@ -193,14 +205,27 @@ with ThreadPoolExecutor(max_workers=max_workers) as executor:
             'type': 'devis'
         })
     
+    for dateContract in listContractGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_contract,
+                dateContract,
+                retDataThirdParties,
+                retDataProduct,
+                retDataUser,
+                testToggle
+            ),
+            'type': 'contrat'
+        })
+
     # Compteurs pour le suivi
-    completed = {'facture': 0, 'commande': 0, 'devis': 0}
-    total = {'facture': len(listFactureGen), 'commande': len(listOrderGen), 'devis': len(listProposalGen)}
+    completed = {'facture': 0, 'commande': 0, 'devis': 0, 'contrat': 0}
+    total = {'facture': len(listFactureGen), 'commande': len(listOrderGen), 'devis': len(listProposalGen), 'contrat': len(listContractGen)}
     
     # Attendre la complétion avec barre de progression globale
     for item in tqdm(
         all_futures,
-        desc="Création factures/commandes/devis",
+        desc="Création factures/commandes/devis/contrats",
         unit="doc"
     ):
         item['future'].result()
@@ -209,144 +234,160 @@ with ThreadPoolExecutor(max_workers=max_workers) as executor:
     # Afficher les statistiques
     print(f"  → Factures: {completed['facture']}/{total['facture']}, "
           f"Commandes: {completed['commande']}/{total['commande']}, "
-          f"Devis: {completed['devis']}/{total['devis']}")
+          f"Devis: {completed['devis']}/{total['devis']}, "
+          f"Contrats: {completed['contrat']}/{total['contrat']}")
 
 start_stop = datetime.now()
 # on affiche la durée
 duration = start_stop - start_prev
-print("Durée Alimentation Factures, Commandes et Devis (en parallèle) : ", duration)
+print("Durée Alimentation Factures, Commandes, Devis et contrat (en parallèle) : ", duration)
 
-# Alimentation des contrats et interventions
+# Alimentation des interventions et tickets EN PARALLÈLE
 start_prev = datetime.now()
 
-if nbNewContract > 0 and 'contrat' in enabledModule:
-    listContractGen = gen_random_following_date(yearToFill, nbNewContract, max_interval = dateinterval)
-    for dateContract in listContractGen:
-        contract = generate_contract(dateContract, retDataThirdParties, retDataProduct, retDataUser, testToggle)
-
+# Préparer les listes de dates pour chaque type de génération
+listInterventionGen = []
 if nbNewFichinter > 0 and 'ficheinter' in enabledModule:
     listInterventionGen = gen_random_following_date(yearToFill, nbNewFichinter, max_interval = dateinterval)
-    for dateInter in listInterventionGen:
-        fichinter = generate_intervention(dateInter, retDataThirdParties, enabledModule, testToggle)
 
-start_stop = datetime.now()
-# on affiche la durée de l'alimentation
-duration = start_stop - start_prev
-print("Durée Alimentation Contrat et intervention : ", duration)
-
-# Alimentation des tickets et articles
-start_prev = datetime.now()
-
-if nbNewTicket > 0  and 'ticket' in enabledModule:
+listTicketGen = []
+if nbNewTicket > 0 and 'ticket' in enabledModule:
     listTicketGen = gen_random_following_date(yearToFill, nbNewTicket, max_interval = dateinterval)
-    for dateTicket in listTicketGen:
-        ticket = generate_ticket(dateTicket, retDataThirdParties, testToggle)
 
-if nbNewKnowledge > 0  and 'knowledgemanagement' in enabledModule:
-    listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
-    for dateknowledge in listArticleGen:
-        ticket = generate_knowledge(dateknowledge, testToggle)
-
-start_stop = datetime.now()
-duration = start_stop - start_prev
-print("Alimentation Tickets et articles : ", duration)
-
-# Alimentation des congés/absences
-start_prev = datetime.now()
-
-if nbHoliday > 0  and 'holiday' in enabledModule:
-    listHolidayGen = gen_random_following_date(yearToFill, nbHoliday, max_interval = dateinterval)
-    for dateHoliday in listHolidayGen:
-        holiday = generate_holiday(dateHoliday, testToggle)
-
-start_stop = datetime.now()
-duration = start_stop - start_prev
-print("Alimentation congés : ", duration)
-
-# Alimentation des notes de frais
-start_prev = datetime.now()
-
-if nbExpenseReport > 0 and 'expensereport' in enabledModule:
-    ListExpenseReport = gen_random_following_date(yearToFill, nbExpenseReport, max_interval = dateinterval)
+# Soumettre TOUTES les tâches (interventions, tickets) au pool en même temps
+print(f"Utilisation de {max_workers} workers pour la parallélisation")
+with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    all_futures = []
     
-    for dateExpenseReport in tqdm(
-        ListExpenseReport,
-        desc="Création des notes de frais",
-        unit="report"
+    # Soumettre toutes les interventions
+    for dateInter in listInterventionGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_intervention,
+                dateInter,
+                retDataThirdParties,
+                enabledModule,
+                testToggle
+            ),
+            'type': 'intervention'
+        })
+    
+    # Soumettre tous les tickets
+    for dateTicket in listTicketGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_ticket,
+                dateTicket,
+                retDataThirdParties,
+                testToggle
+            ),
+            'type': 'ticket'
+        })
+
+    # Compteurs pour le suivi
+    completed = {'intervention': 0, 'ticket': 0}
+    total = {'intervention': len(listInterventionGen), 'ticket': len(listTicketGen)}
+    
+    # Attendre la complétion avec barre de progression globale
+    for item in tqdm(
+        all_futures,
+        desc="Création interventions/tickets",
+        unit="doc"
     ):
-        generate_expense_report(dateExpenseReport, testToggle)
+        item['future'].result()
+        completed[item['type']] += 1
+    
+    # Afficher les statistiques
+    print(f"  → Interventions: {completed['intervention']}/{total['intervention']}, "
+          f"Tickets: {completed['ticket']}/{total['ticket']}")
 
 start_stop = datetime.now()
 duration = start_stop - start_prev
-print("Alimentation notes de frais : ", duration)
+print("Durée Alimentation Interventions et Tickets (en parallèle) : ", duration)
+
+# Alimentation des congés/absences et notes de frais EN PARALLÈLE
+start_prev = datetime.now()
+
+# Préparer les listes de dates pour chaque type de génération
+listArticleGen = []
+if nbNewKnowledge > 0 and 'knowledgemanagement' in enabledModule:
+    listArticleGen = gen_random_following_date(yearToFill, nbNewKnowledge, max_interval = dateinterval)
+
+listHolidayGen = []
+if nbHoliday > 0 and 'holiday' in enabledModule:
+    listHolidayGen = gen_random_following_date(yearToFill, nbHoliday, max_interval = dateinterval)
+
+listExpenseReportGen = []
+if nbExpenseReport > 0 and 'expensereport' in enabledModule:
+    listExpenseReportGen = gen_random_following_date(yearToFill, nbExpenseReport, max_interval = dateinterval)
+
+# Soumettre TOUTES les tâches (knowledge, congés, notes de frais) au pool en même temps
+print(f"Utilisation de {max_workers} workers pour la parallélisation")
+with ThreadPoolExecutor(max_workers=max_workers) as executor:
+    all_futures = []
+    
+    # Soumettre toutes les connaissances
+    for dateknowledge in listArticleGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_knowledge,
+                dateknowledge,
+                testToggle
+            ),
+            'type': 'knowledge'
+        })
+    
+    # Soumettre tous les congés
+    for dateHoliday in listHolidayGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_holiday,
+                dateHoliday,
+                testToggle
+            ),
+            'type': 'holiday'
+        })
+    
+    # Soumettre toutes les notes de frais
+    for dateExpenseReport in listExpenseReportGen:
+        all_futures.append({
+            'future': executor.submit(
+                generate_with_error_handling,
+                generate_expense_report,
+                dateExpenseReport,
+                testToggle
+            ),
+            'type': 'expense'
+        })
+
+    # Compteurs pour le suivi
+    completed = {'knowledge': 0, 'holiday': 0, 'expense': 0}
+    total = {'Base connaissance': len(listArticleGen), 'Congés': len(listHolidayGen), 'note de frais': len(listExpenseReportGen)}
+    
+    # Attendre la complétion avec barre de progression globale
+    for item in tqdm(
+        all_futures,
+        desc="Création knowledge/congés/notes de frais",
+        unit="doc"
+    ):
+        item['future'].result()
+        completed[item['type']] += 1
+    
+    # Afficher les statistiques
+    print(f"  → Base connaissance: {completed['knowledge']}/{total['Base connaissance']}, "
+          f"Congés: {completed['holiday']}/{total['Congés']}, "
+          f"Notes de frais: {completed['expense']}/{total['note de frais']}")
+
+start_stop = datetime.now()
+duration = start_stop - start_prev
+print("Durée Alimentation Knowledge, Congés et Notes de frais (en parallèle) : ", duration)
 
 # On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 # on affiche la durée
 duration = start_stop - start_time
 print("Durée totale de l'alimentation : ", duration)
-
-
-
-
-"""
-Refacto in progress
-
-import datetime
-from tqdm import tqdm
-import traceback
-import os, sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-from dolibarr_api import *
-from generators import *
-from utils import *
-from generators.generators_config import GENERATORS
-
-# On mémorise l'heure de début de l'alimentation totale
-start_time = datetime.now()
-print("Début de l'alimentation à ", start_time.strftime('%Y-%m-%d %H:%M:%S'))
-
-# Affiche des messages de tests
-if testing:
-    testToggle = True
-else :
-    testToggle = False
-
-# Récupération des modules actifs coté Dolibarr
-enabledModule = get_enabled_modules()
-
-for gen in GENERATORS:
-    if gen["module"] not in enabledModule:
-        print(f"⏭ Module {gen['module']} non activé — skip {gen['name']}")
-        continue
-
-    if gen["count"] <= 0:
-        continue
-
-    start_prev = datetime.datetime.now()
-
-    try:
-        dates = gen_random_following_date(
-            yearToFill,
-            gen["count"],
-            max_interval=dateinterval
-        )
-
-        for date in tqdm(dates, desc=gen["progress_label"], unit="item"):
-            gen["generator"](date, testToggle)
-
-        duration = datetime.datetime.now() - start_prev
-        print(f"✔ Alimentation {gen['name']} : {duration}")
-
-    except Exception as e:
-        print(f"❌ Erreur sur {gen['name']}: {e}")
-        traceback.print_exc()
-
-duration_total = datetime.datetime.now() - start_time
-print("Fin de l'alimentation à ", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-print("Durée totale de l'alimentation : ", duration_total)
-
-
-"""
