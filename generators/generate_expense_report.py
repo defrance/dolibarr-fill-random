@@ -10,29 +10,31 @@ from utils import *
 def generate_expense_report( dateCreate, testing = False):
     url = urlBase + "expensereports"
 
-    urlConf = urlBase + "setup/conf/expensereport_prefill_dates_with_current_month"
+    urlConf = urlBase + "setup/conf/EXPENSEREPORT_PREFILL_DATES_WITH_CURRENT_MONTH"
     try:
 
         r = requests.get(urlConf, headers = headers)
-
+        
+        configPrefillActived = "0"
+        
         if r.status_code != 200 :
             print('Erreur lors de la récupération des configations : ', r.status_code)
             print(r.text)
+
+        else:
+            configPrefillActived = str(r.text)
         
-        match r.text:
-            case "1":
-                print("activé")
-            case "0":
-                print("désactivé")
-            case _:
-                raise ValueError(f"configuration {r.text} non géré")
+        print("configuration :")
+        print(configPrefillActived)
 
-
+        if configPrefillActived == "1":
+            print("date debut de mois")
+        else:
+            dateStart = fake.date_between(start_date=dateCreate, end_date = dateCreate + timedelta(days = 15))
+            dateEnd = fake.date_between(start_date=dateStart, end_date = dateStart + timedelta(days = 30))
+    
     except Exception as e:
-        print('Erreur lors de la création de la note de frais', e)
-
-    dateStart = fake.date_between(start_date=dateCreate, end_date = dateCreate + timedelta(days = 15))
-    dateEnd = fake.date_between(start_date=dateStart, end_date = dateStart + timedelta(days = 30))
+        print('Erreur lors de la configuration des dates de la note de frais', e)
 
     user = get_random_user(fill_users())
     userID = user['id']
