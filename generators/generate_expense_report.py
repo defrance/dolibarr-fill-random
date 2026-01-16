@@ -99,11 +99,12 @@ def generate_expense_report( dateCreate, testing = False):
             print('erreur lors du choix du taux de taxe.')
 
         amountHT = random.randint(10, 200)
-        totalAmountHT += amountHT
+        qty = random.randint(1,10)
+        totalAmountHT += amountHT * qty
         dataLine = {
             "comments": fake.text(max_nb_chars=100),
             "fk_project" : fkProject,
-            "qty": random.randint(1,10),
+            "qty": qty,
             "value_unit": amountHT,
             "fk_c_type_fees": typefeeID,
             "vatrate" : vatrate,
@@ -117,6 +118,7 @@ def generate_expense_report( dateCreate, testing = False):
                 print('Erreur lors de la création de la ligne de frais', r.status_code)
                 print (r.text)
         else :
+
             if testing:
                 print('création de la ligne de frais.')
 
@@ -235,11 +237,11 @@ def generate_expense_report( dateCreate, testing = False):
             print('erreur lors du choix du types de paiement.')
     
     # Prévoir récupération du total de la note de frais.
-
         data_payment = {
             "fk_typepayment":fkTypePayment,
             "datep":dateValidate.strftime('%Y-%m-%d'),
             "amount":totalAmountHT,
+            "amounts": [totalAmountHT],
             "bank_account":3
         }
         r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
@@ -248,6 +250,9 @@ def generate_expense_report( dateCreate, testing = False):
             print('erreur lors du paiement de la note de frais.')
             print(r.status_code)
             print(r.text)
+        else :
+            r = requests.post(urlReport + "/setpaid", headers=headers)
+
 
 # testing
 
