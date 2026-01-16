@@ -13,12 +13,14 @@ from .fill_groups_users import fill_groups_users
 from .get_enabled_modules import get_enabled_modules
 from .get_projects_of_contactID import get_projects_of_contactID
 from .get_projects_of_userID import get_projects_of_userID
+from .get_realistic_qty_price import get_realistic_qty_price
 
 # get random
 from .get_random_address import get_random_address
 from .get_random_holiday_type import get_random_holiday_type
 from .get_random_project_id import get_random_project_id
 from .get_random_user_id import get_random_user_id
+
 
 
 # all
@@ -36,4 +38,5 @@ __all__ = [
     "get_random_holiday_type",
     "get_random_project_id",
     "get_random_user_id",
+    "get_realistic_qty_price"
 ]
