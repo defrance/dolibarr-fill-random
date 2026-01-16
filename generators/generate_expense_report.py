@@ -72,7 +72,7 @@ def generate_expense_report( dateCreate, testing = False):
 
     # Ajout des lignes de frais
     urlAddLine = urlReport + "/line"
-
+    totalAmountHT = 0
     for i in range (nbLines) :
 
         if not projectsList:
@@ -98,11 +98,13 @@ def generate_expense_report( dateCreate, testing = False):
         except:
             print('erreur lors du choix du taux de taxe.')
 
+        amountHT = random.randint(10, 200)
+        totalAmountHT += amountHT
         dataLine = {
             "comments": fake.text(max_nb_chars=100),
             "fk_project" : fkProject,
             "qty": random.randint(1,10),
-            "value_unit": random.randint(10,200),
+            "value_unit": amountHT,
             "fk_c_type_fees": typefeeID,
             "vatrate" : vatrate,
             "date": fake.date_between_dates(dateStart,dateEnd).strftime('%Y-%m-%d'),
@@ -131,9 +133,7 @@ def generate_expense_report( dateCreate, testing = False):
         status = 'brouillon'
                 
     # validation de la note de frais si elle n'est pas en brouillon
-    
     if status != 'brouillon' :
-
         r = requests.post(urlReport + "/validate", headers=headers)
         if r.status_code != 200 :
             if testing :  
@@ -238,8 +238,8 @@ def generate_expense_report( dateCreate, testing = False):
 
         data_payment = {
             "fk_typepayment":fkTypePayment,
-            "datepaid":dateValidate.strftime('%Y-%m-%d'),
-            "amount":200,
+            "datep":dateValidate.strftime('%Y-%m-%d'),
+            "amount":totalAmountHT,
             "bank_account":3
         }
         r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
