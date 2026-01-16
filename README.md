@@ -150,6 +150,12 @@ Si vous souhaitez utiliser le programme sur une version de dolibarr inférieur �
     - Gestion des congés
     https://github.com/Dolibarr/dolibarr/pull/36606
 
+    - Gestion des groupes d'utilisateurs
+    https://github.com/Dolibarr/dolibarr/pull/36337
+
+    - Gestion des notes de frais
+    
+
 Attention, nécéssite sur les versions antérieur à la V23 de modifier aussi le fichier /core/lib/functions2.lib.php getModuleDirForApiClass vers la ligne 2700
     il faut ajouter :
 	
