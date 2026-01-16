@@ -110,6 +110,7 @@ def generate_expense_report(dateCreate, testing=False):
     r = requests.get(urlDictionary + "expensereport_types?active=1", headers=headers)
     typefeesList = r.json()
 
+    totalAmountHT = 0
     for _ in range(nbLines):
         if not projectsList:
             fkProject = None
@@ -120,13 +121,13 @@ def generate_expense_report(dateCreate, testing=False):
         typefeeID = typefee["id"]
         typefeeCode = typefee["code"]
         vatrate = random.choice(vatrateList)["taux"]
-
         
         qty, value_unit = get_realistic_qty_price(typefeeCode)
 
         if testing:
             print(f"Type frais {typefeeCode} → qty = {qty}, value_unit = {value_unit} €")
 
+        totalAmountHT += value_unit * qty
         dataLine = {
             "comments": fake.text(max_nb_chars=100),
             "fk_project": fkProject,
@@ -151,8 +152,95 @@ def generate_expense_report(dateCreate, testing=False):
 
     if dateEnd > datetime.today().date():
 
-        status = "brouillon"
+    if dateEnd > datetime.now().date():
+        status = 'brouillon'
+                
+    # validation de la note de frais si elle n'est pas en brouillon
+    if status != 'brouillon' :
+        r = requests.post(urlReport + "/validate", headers=headers)
+        if r.status_code != 200 :
+            if testing :  
+                print('Erreur lors de la validation de la note de frais', r.status_code)
+                print (r.text)
+        else :
+            if testing:
+                print('note de frais validée.')
 
+            # probleme API
+            dateValidate = fake.date_between_dates(date_start= dateEnd, date_end= dateEnd + timedelta(days=7))
+            dataValidate = {
+                'fk_user_valid': validatorID,
+                'date_valid': dateCreate.strftime('%Y-%m-%d'),
+                'user_create': userID
+                }
+            
+            r = requests.put(urlReport, headers=headers, json = dataValidate)
+
+        # modification user_validate et date_validate
+
+        # refus de la note de frais
+        if status == 'deny' :
+            data = {
+                "details": "Raison du refus : " + fake.sentence(nb_words=6),
+                "notrigger" : 0
+            }
+            r = requests.post(urlReport + "/deny" , headers=headers, json=data)
+
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+
+                # probleme API
+                dataDeny = {
+                    'date_refuse': dateCreate.strftime('%Y-%m-%d'),
+                    'fk_user_refuse': validatorID
+                }
+
+                r = requests.put(urlReport, headers=headers, json=dataDeny)
+
+                if r.status_code != 200 : 
+                    if testing:
+                        print('Erreur lors de la mise à jours du refus.')
+                        print(r.text)
+                
+                if testing:
+                    print('data refus update avec succés.')
+
+            
+        # approbation de la note de frais
+        if status in ('approve', 'paid'):
+            r = requests.post(urlReport + "/approve" , headers=headers)
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+        
+        #annulation de la note de frais
+        if status == 'cancel' : 
+            data_cancel ={
+                'detail': fake.text(max_nb_chars=200)
+            }
+            r = requests.post(urlReport + "/" + str(status), headers=headers, json = data_cancel)
+            if r.status_code != 200 :
+                if testing :  
+                    print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
+                    print (r.text)
+            else :
+                if testing:
+                    print('note de frais passée au statut : ' , status)
+
+    # paiements des notes approuvées
+
+    if status == 'paid':
+
+        r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
 
     if status != "brouillon":
 
@@ -190,31 +278,38 @@ def generate_expense_report(dateCreate, testing=False):
         r = requests.get(urlDictionary + "payment_types?active=1", headers=headers)
         paymentTypeList = r.json()
 
-        fkTypePayment = random.choice(paymentTypeList)["id"]
-
+        try:
+          fkTypePayment = paymentTypeList[random.randint(0, len(paymentTypeList)-1)]['id']
+          if testing:
+            print('id type de paiement :', fkTypePayment)
+        except:
+            print('erreur lors du choix du types de paiement.')
+    
+    # Prévoir récupération du total de la note de frais.
         data_payment = {
-            "fk_typepayment": fkTypePayment,
-            "datepaid": datetime.date.today().strftime("%Y-%m-%d"),
-            "amount": 200,
-            "bank_account": 3,
+            "fk_typepayment":fkTypePayment,
+            "datep":dateValidate.strftime('%Y-%m-%d'),
+            "amount":totalAmountHT,
+            "amounts": [totalAmountHT],
+            "bank_account":3
         }
 
-        r = requests.post(urlReport + "/payments", headers=headers, json=data_payment)
-        if testing and r.status_code == 200:
-            print("Paiement effectué")"""
+        if r.status_code != 200:
+            print('erreur lors du paiement de la note de frais.')
+            print(r.status_code)
+            print(r.text)
+        else :
+            r = requests.post(urlReport + "/setpaid", headers=headers)
 
-    return expenseReportID
 
 
 # TEST
 if __name__ == "__main__":
-    for i in range(2):
-        generate_expense_report(
-            dateCreate=fake.date_this_decade(before_today=True),
-            testing=True,
-        )
-    for i in range(2):
-        generate_expense_report(
-            dateCreate=fake.date_this_year(before_today=True),
-            testing=True,
-        )
+    for  i in range(10):
+        print(
+            generate_expense_report( 
+                dateCreate= fake.date_this_year(before_today=True), testing = True)
+    )
+
+
+# paid => probleme sur les valeurs API

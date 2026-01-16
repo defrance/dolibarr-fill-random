@@ -20,6 +20,7 @@ def generate_user_group(testing = False):
             print("Erreur lors de la création du groupe d'utilisateur.")
             print(r.status_code)
             print(r.text)
+            return None
         
         else :
             if testing:

@@ -1833,11 +1833,10 @@ class ExpenseReport extends CommonObject
 
 		$result = '';
 
-		$baseurl = DOL_URL_ROOT.'/expensereport/card.php';
-		$query = ['id' => $this->id];
+		$url = DOL_URL_ROOT.'/expensereport/card.php?id='.$this->id;
 
 		if ($short) {
-			return dolBuildUrl($baseurl, $query);
+			return $url;
 		}
 
 		$params = [
@@ -1864,10 +1863,9 @@ class ExpenseReport extends CommonObject
 				$add_save_lastsearch_values = 1;
 			}
 			if ($add_save_lastsearch_values) {
-				$query += ['save_lastsearch_values' => 1];
+				$url .= '&save_lastsearch_values=1';
 			}
 		}
-		$url = dolBuildUrl($baseurl, $query);
 
 		$ref = $this->ref;
 		if (empty($ref)) {
@@ -2602,12 +2600,12 @@ class ExpenseReport extends CommonObject
 				$response->warning_delay = $conf->expensereport->approve->warning_delay / 60 / 60 / 24;
 				$response->label = $langs->trans("ExpenseReportsToApprove");
 				$response->labelShort = $langs->trans("ToApprove");
-				$response->url = dolBuildUrl(DOL_URL_ROOT.'/expensereport/list.php', ['mainmenu' => 'hrm', 'statut' => self::STATUS_VALIDATED]);
+				$response->url = DOL_URL_ROOT.'/expensereport/list.php?mainmenu=hrm&amp;statut='.self::STATUS_VALIDATED;
 			} else {
 				$response->warning_delay = $conf->expensereport->payment->warning_delay / 60 / 60 / 24;
 				$response->label = $langs->trans("ExpenseReportsToPay");
 				$response->labelShort = $langs->trans("StatusToPay");
-				$response->url = dolBuildUrl(DOL_URL_ROOT.'/expensereport/list.php', ['mainmenu' => 'hrm', 'statut' => self::STATUS_APPROVED]);
+				$response->url = DOL_URL_ROOT.'/expensereport/list.php?mainmenu=hrm&amp;statut='.self::STATUS_APPROVED;
 			}
 			$response->img = img_object('', "trip");
 

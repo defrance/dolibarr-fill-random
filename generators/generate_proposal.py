@@ -75,6 +75,13 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
 
     # si la date est inférieur à l'année en cours
     if date_finValidite.year < yearNow:
+        # on valide d'abord la propale (pour avoir la bonne ref)
+        url = urlBase + "proposals/" + str(proposalID) + "/validate"
+        data = {
+            "notrigger": 1,
+        }
+        r = requests.post(url, headers=headers, json=data)  
+
         signed = random.choice([2, 3])
         url = urlBase + "proposals/" + str(proposalID) + "/close"
         data = {

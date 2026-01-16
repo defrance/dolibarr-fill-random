@@ -1,7 +1,7 @@
 # dolibarr-fill-random
 Programme python créant de la data dans dolibarr via les api natives, le but étant d'avoir un jeu d'essai consistant pour réaliser des tests
 
-En terme de performance, le programme met environ 1 heure sur un macbook air M1 (et la moitié sur un M4 ^^) pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
+En terme de performance, le programme met 30 mins sur un macbook air M1 (et la moitié sur un M4 ^^) pour créer les éléments définis dans le fichier de paramétrage d'exemple. 
 
 ## paramétrage 
 le fichier param.yml contient le paramétrage du programme avec 3 parties :
@@ -61,6 +61,9 @@ Attention, l'utilisateur doit etre admin
     - les éléments de l'année en cours sont soit brouillon soit validé
 
 - Congés
+	- 	Création aléatoire (en test)
+
+- Note de frais
 	- 	Création aléatoire (en test)
 
 - Contrat
