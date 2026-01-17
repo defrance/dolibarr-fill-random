@@ -22,6 +22,9 @@ def generate_user(dateCreate, testing):
 
     address, zip, town = get_random_address()
     
+    # seul les 5 premiers utilisateurs seront choisis comme responsables hiérarchiques
+    userList = fill_users(5)
+
     data = {
         "login": login,
         "lastname" : lastname,
@@ -33,7 +36,7 @@ def generate_user(dateCreate, testing):
         "phone": fake.phone_number(),
         "email": firstname.lower() + lastname.lower() + "@" +fake.free_email_domain(),
         "thm": random.randint(20, 80),
-        "fk_user": random.randint(1, 3),  # id du responsable hiérarchique
+        "fk_user": random.randint(0, len(userList)),  # id du responsable hiérarchique
     }
 
     r = requests.post(url, headers=headers, json=data)

@@ -150,8 +150,6 @@ def generate_expense_report(dateCreate, testing=False):
     if testing:
         print("Status initial :", status)
 
-    if dateEnd > datetime.today().date():
-
     if dateEnd > datetime.now().date():
         status = 'brouillon'
                 
@@ -273,8 +271,7 @@ def generate_expense_report(dateCreate, testing=False):
 
 
     # PAIEMENT
-
-    """    if status == "paid":
+    if status == "paid":
         r = requests.get(urlDictionary + "payment_types?active=1", headers=headers)
         paymentTypeList = r.json()
 
