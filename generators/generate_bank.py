@@ -6,6 +6,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
 def generate_bank(dateCreate, testing):
     # on boucle sur les lignes
     url = urlBase + "bankaccounts"

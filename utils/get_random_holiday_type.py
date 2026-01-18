@@ -4,6 +4,8 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
+# pour gérer les warnings de certificat SSL
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 def get_random_holiday_type(testing=False):
     url = urlBase + "setup/dictionary/holiday_types?fk_country=" + str(fk_country) + "&active=1"
@@ -39,7 +41,8 @@ def get_random_holiday_type(testing=False):
     
 
     if testing:
-        print("Type aléatoire choisi :", randomType)
+        print("Type aléatoire choisi :")
+        print( randomType)
 
     return randomType
 

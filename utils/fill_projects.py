@@ -6,9 +6,10 @@ import sys, os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-
 from dolibarr_api import *
 
+# pour gérer les warnings de certificat SSL
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 config = load_config()
 fake = Faker('fr_FR')

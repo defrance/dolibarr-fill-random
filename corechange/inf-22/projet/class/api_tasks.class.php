@@ -885,7 +885,7 @@ class Tasks extends DolibarrApi
 
 		$result = $this->task->add_contact($fk_socpeople, $type_contact, $source, $notrigger);
 		if ($result <= 0) {
-			throw new RestException(500, 'Error : ' . $this->task->error);
+			throw new RestException(500, 'Error : ' . $this->task);
 		}
 
 		$result = $this->task->fetch($id);

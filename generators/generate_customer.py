@@ -7,6 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from dolibarr_api import *
 from utils import *
 
+# pour gérer les warnings de certificat SSL
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
 def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, enabledModule, testing):
     # on boucle sur les lignes
     url = urlBase + "thirdparties"

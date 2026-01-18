@@ -1,5 +1,6 @@
 
 import random
+
 import requests
 import datetime
 import sys, os
@@ -8,6 +9,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dolibarr_api import *
 from utils import *
+
+# pour gérer les warnings de certificat SSL
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThirdParties, testing):
     # url de création de projet
@@ -141,8 +145,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         if nbProjectContacts > 0:
             for i in range (nbProjectContacts):
 
-                source = random.choice(['internal','external'])
-                typeContact = random.choice(["PROJECTCONTRIBUTOR","PROJECTLEADER"]) # a randomiser depuis le dictionnaire
+                source = random.choice(['internal', 'external'])
+                if source == 'internal':
+                    typeContact = random.choice(["PROJECTCONTRIBUTOR", "PROJECTLEADER"]) # a randomiser depuis le dictionnaire
+                else:
+                    typeContact = random.choice(["PROJECTCONTRIBUTOR", "PROJECTLEADER"]) # a randomiser depuis le dictionnaire
 
                 # Si contact est interne
                 if source == 'internal':
@@ -270,7 +277,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             if r.status_code !=200:
                                 print(r.status_code, "erreur lors de l'ajout du contact à la tâche")
                                 print(r.text)
-                                print(dataContact)                    
+                                return None
+                                                    
                             else:
                                 if testing:
                                     print("contact ajouté à la tâche.")
@@ -303,6 +311,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
                     # Si la tâche est en cours ou clôturé :
                     if taskStatus > 0:
+
                         urlTasksTime = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
             
                         # on crée des pointages associés à la tâche 
