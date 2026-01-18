@@ -26,7 +26,7 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
         "description": fake.catch_phrase(),
         "fk_project":fk_project
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     interventionID = r.text
 
     urlIntervention = url + "/" + str(interventionID)
@@ -46,7 +46,7 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
             "duree": random.randint(1, 4) * 3600, # en secondes  (ancienne version)
             "duration": random.randint(1, 4) * 3600, # en secondes
         }
-        r = requests.post(urlLine, headers=headers, json=data)
+        r = requests.post(urlLine, headers=headers, json=data, verify=False)
         if testing:
             print ('  Ligne d\'intervention créée ID: ' + r.text)
 
@@ -56,10 +56,10 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data)  
+        r = requests.post(url, headers=headers, json=data, verify=False)  
 
         url = urlIntervention + "/close"
-        r = requests.post(url, headers=headers, json={})
+        r = requests.post(url, headers=headers, json={}, verify=False)
 
         # On met à jour les dates pour les stats
         date_close = nouvelle_date + timedelta(days=jours_a_ajouter)
@@ -67,31 +67,31 @@ def generate_intervention(dateIntervention, retDataThirdParties, enabledModule, 
             "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
             "datet": date_close.strftime('%Y-%m-%d %H:%M:%S'),
         }
-        r = requests.put(urlIntervention, headers=headers, json=data)
+        r = requests.put(urlIntervention, headers=headers, json=data, verify=False)
     else:
         if random.choice([0, 1]) == 1:
             url = urlIntervention + "/validate"
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)  
+            r = requests.post(url, headers=headers, json=data, verify=False)  
 
             # On met à jour les dates pour les stats
         
             data = {
                 "datev": nouvelle_date.strftime('%Y-%m-%d %H:%M:%S'),
             }
-            r = requests.put(urlIntervention, headers=headers, json=data)
+            r = requests.put(urlIntervention, headers=headers, json=data, verify=False)
 
     # On met à jour les dates pour les stats
 
     data = {
         "datec": dateIntervention.strftime('%Y-%m-%d'),
     }
-    r = requests.put(urlIntervention, headers=headers, json=data)
+    r = requests.put(urlIntervention, headers=headers, json=data, verify=False)
     
     if testing:
-        r = requests.get(urlIntervention, headers=headers)
+        r = requests.get(urlIntervention, headers=headers, verify=False)
         print('Intervention créée avec succès ID: ' + str(interventionID))
 
     return 1

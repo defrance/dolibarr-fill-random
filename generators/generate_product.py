@@ -31,7 +31,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
     # recupére les taux de taxes de France par défaut
     
-    r = requests.get(urlDictionary + 'vat?actibr=1&fk_country=-1', headers = headers)
+    r = requests.get(urlDictionary + 'vat?actibr=1&fk_country=-1', headers = headers, verify=False)
     if r.status_code != 200:
         print('erreur lors de la récupération des taux de taxes.')
     vatrateList = r.json()
@@ -71,7 +71,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     if testing:
         print(url,headers,data)
     
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     # on récupère l'id du produit crée
     productId = 0
@@ -100,7 +100,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
     # en php 8 l'action se fait mais on a une erreur et on ne récupère que l'id modifié
     # le format n'est pas le bon sur l'update, on intercepte l'erreur
     try :
-        r = requests.put(urlProduct, headers=headers, json=data)
+        r = requests.put(urlProduct, headers=headers, json=data, verify=False)
     except Exception as e:
         # on continue le traitement
         pass
@@ -150,7 +150,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                     "sellby": "2020-12-12" # dlc.strftime('%Y-%m-%d') if dlc else None # API à modifier.
                     }
 
-                    r = requests.post(urlStockMovements, headers=headers, json=data)
+                    r = requests.post(urlStockMovements, headers=headers, json=data, verify=False)
 
                     dataUpdateBatch = {
                         
@@ -168,7 +168,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "price" : buying_price,
                 }
             
-                r = requests.post(urlStockMovements, headers=headers, json=data)
+                r = requests.post(urlStockMovements, headers=headers, json=data, verify=False)
 
             # on ventile une partie du stock sur un autre entrepot
             qtyMoved = random.randint(10, 50) ,
@@ -182,7 +182,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "datem" : dateCreate.strftime('%Y-%m-%d'),
                 "price" : buying_price,
             }
-            r = requests.post(urlStockMovements, headers=headers, json=data)
+            r = requests.post(urlStockMovements, headers=headers, json=data, verify=False)
 
             # on ventile une partie du stock sur un autre entrepot
             data = {
@@ -195,7 +195,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "datem" : dateCreate.strftime('%Y-%m-%d'),
                 "price" : buying_price,
             }
-            r = requests.post(urlStockMovements, headers=headers, json=data)
+            r = requests.post(urlStockMovements, headers=headers, json=data, verify=False)
 
 
     # gestion des catégories de produit
@@ -205,7 +205,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
             #categories/5/objects/product/100
             url = urlBase + "categories/" + str(random.choice(retDataCategProduct)['id']) + "/objects/product/" + str(productId)
             data = { }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     # gestion historique prix de vente
     
@@ -233,7 +233,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
                 "date_creation": dateUpdate.strftime('%Y-%m-%d'), # fonctionne pas
                 "date_modification": dateUpdate.strftime('%Y-%m-%d') # fonctionne pas
                 }
-            r = requests.put(urlProduct, headers=headers, json=data)
+            r = requests.put(urlProduct, headers=headers, json=data, verify=False)
 
             if r.status_code != 200:
                 if testing : 
@@ -296,7 +296,7 @@ def generate_product(dateCreate, retDataWarehouse, retDataCategProduct, enabledM
 
                 urlPurchasePrice = urlProduct + '/purchase_prices'
 
-                r = requests.post(urlPurchasePrice, headers=headers, json = dataPurchasePrice)
+                r = requests.post(urlPurchasePrice, headers=headers, json = dataPurchasePrice, verify=False)
 
                 if r.status_code != 200 : 
                     if testing : 

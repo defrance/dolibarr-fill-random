@@ -76,7 +76,7 @@ def generate_holiday(dateCreate, testing=False):
         #"date_create": dateCreate.strftime('%Y-%m-%d'),
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print('Erreur lors de la création du congé/absence', r.status_code)
         print (r.text)
@@ -88,7 +88,7 @@ def generate_holiday(dateCreate, testing=False):
         print("Congé/absence créé ID : ", idHoliday)
     
     urlHoliday = urlBase + "holidays/" + idHoliday
-    r_get = requests.get(urlHoliday, headers = headers)
+    r_get = requests.get(urlHoliday, headers = headers, verify=False)
     
     if testing :
         print("Détails : ", r_get.text)
@@ -99,7 +99,7 @@ def generate_holiday(dateCreate, testing=False):
         data = {
             "detail_refuse": "Raison du refus : " + fake.sentence(nb_words=6),
         }
-        r = requests.post(urlHoliday + "/" + str(status), headers=headers, json=data)
+        r = requests.post(urlHoliday + "/" + str(status), headers=headers, json=data, verify=False)
         if r.status_code != 200:
             if testing:
                 print('Erreur lors du refus du congé/absence', r.status_code)
@@ -109,13 +109,13 @@ def generate_holiday(dateCreate, testing=False):
                 print("Détails du congé/absence mis à jour avec succès.")
 
     elif status == "approve":
-        r = requests.post(urlHoliday + "/validate", headers = headers)
+        r = requests.post(urlHoliday + "/validate", headers = headers, verify=False)
         if r.status_code != 200:
             if testing:
                 print('Erreur lors de la validation du congé/absence approuvé', r.status_code)
                 print (r.text)
         else:
-            r = requests.post(urlHoliday + "/" + str(status), headers = headers)
+            r = requests.post(urlHoliday + "/" + str(status), headers = headers, verify=False)
             if r.status_code != 200:
                 if testing:
                     print('Erreur lors de l\'approbation du congé/absence', r.status_code)
@@ -125,7 +125,7 @@ def generate_holiday(dateCreate, testing=False):
                     print("Congé/absence approuvé avec succès.")
 
     else:
-        r = requests.post(urlHoliday + "/" + str(status), headers = headers)
+        r = requests.post(urlHoliday + "/" + str(status), headers = headers, verify=False)
         if r.status_code != 200:
             if testing:
                 print(f'Erreur lors du changement de statut du congé/absence en {status}', r.status_code)
@@ -172,7 +172,7 @@ def generate_holiday(dateCreate, testing=False):
                 "fk_user_create": validatorID
             }
     
-    r_update = requests.put(urlHoliday, headers=headers, json=data)
+    r_update = requests.put(urlHoliday, headers=headers, json=data, verify=False)
     if r_update.status_code != 200:
         if testing:
             print('Erreur lors de la mise à jour du congé/absence après changement de statut', r_update.status_code)

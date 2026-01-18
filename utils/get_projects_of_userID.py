@@ -8,7 +8,7 @@ from dolibarr_api import *
 def get_projects_of_userID(id, testing = False):
  url = urlBase + 'users/'+ str(id) +'/elements?elementType=project'
 
- r = requests.get(url, headers=headers)
+ r = requests.get(url, headers=headers, verify=False)
  if r.status_code != 200:
         if testing:
             print('Erreur lors de la récupération des projets du contactID ' + str(id), r.status_code)

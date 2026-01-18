@@ -27,7 +27,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
         "duree_validite": random.randint(5, 15),
         "fk_project": fk_project
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     proposalID = r.text
 
     # on lie un projet du client à la proposition
@@ -70,7 +70,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             'array_options' : [],
             'fk_unit' : 0,
         }
-        r = requests.post(urlLine, headers=headers, json=data)
+        r = requests.post(urlLine, headers=headers, json=data, verify=False)
 
 
     # si la date est inférieur à l'année en cours
@@ -80,7 +80,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data)  
+        r = requests.post(url, headers=headers, json=data, verify=False)  
 
         signed = random.choice([2, 3])
         url = urlBase + "proposals/" + str(proposalID) + "/close"
@@ -88,20 +88,20 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             "status": signed,
         }
 
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
 
         if signed == 2 and date_finValidite.year == yearNow - 2:
             url = urlBase + "proposals/" + str(proposalID) + "/setinvoiced"
             data = {
             }
-            r = requests.post(url, headers=headers, json=data)  
+            r = requests.post(url, headers=headers, json=data, verify=False)  
     else:
         if random.choice([0, 1]) == 1:
             url = urlBase + "proposals/" + str(proposalID) + "/validate"
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)  
+            r = requests.post(url, headers=headers, json=data, verify=False)  
 
     # ajout de contact interne ou externe
     if nbProposal_contactInt > 0:
@@ -115,7 +115,7 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             userID = get_random_user(retDataUser)['id']
             url = urlBase + "proposals/" + str(proposalID) + "/contact/" + userID +"/"+ str(code) + "/internal"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     if nbProposal_contactExt > 0:
         arrayTypeContactExterne = fill_contact_types("propal", "external")
@@ -128,10 +128,10 @@ def generate_proposal(dateProposal, retDataThirdParties, retDataProduct, retData
             code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
             url = urlBase + "proposals/" + str(proposalID) + "/contact/" + userID +"/"+ str(code) + "/external"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     if testing:
-        r = requests.get(urlBase + "proposals/" + str(proposalID), headers=headers)
+        r = requests.get(urlBase + "proposals/" + str(proposalID), headers=headers, verify=False)
         return r.json()
     return 1
 

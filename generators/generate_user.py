@@ -39,7 +39,7 @@ def generate_user(dateCreate, testing):
         "fk_user": random.randint(0, len(userList)),  # id du responsable hiérarchique
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     if r.status_code != 200:
         print("Erreur lors de la création de l'utilisateur : ", r.status_code)
@@ -48,7 +48,7 @@ def generate_user(dateCreate, testing):
     else:
         idSoc= r.text
         if testing:
-            r = requests.get(url + '/' + str(idSoc), headers=headers)
+            r = requests.get(url + '/' + str(idSoc), headers=headers, verify=False)
         
         GroupsUsersList = fill_groups_users()
 
@@ -58,7 +58,7 @@ def generate_user(dateCreate, testing):
 
             url = urlBase + "users/" + str(idSoc) + "/setGroup/" + str(groupId)
             
-            r = requests.get(url, headers=headers)
+            r = requests.get(url, headers=headers, verify=False)
 
             if r.status_code != 200 :
                 print("Erreur lors de l'ajout du groupe.")

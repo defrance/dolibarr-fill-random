@@ -23,7 +23,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         "date": dateOrder.strftime('%Y-%m-%d'),
         "fk_project" : fk_project
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     orderID = r.text
 
     urlOrder = url + "/" + str(orderID)
@@ -68,7 +68,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             'multicurrency_subprice' : 0,
             'array_options' : [],
         }
-        r = requests.post(urlLine, headers=headers, json=data)
+        r = requests.post(urlLine, headers=headers, json=data, verify=False)
         
         if r.status_code != 200:
             if testing:
@@ -92,13 +92,13 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
 
         url = urlBase + "orders/" + str(orderID) + "/close"
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         orderStatut = random.choice([0, 1])
@@ -107,13 +107,13 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)  
+            r = requests.post(url, headers=headers, json=data, verify=False)  
             # et on ne facture pas toute les commandes
             if random.choice([0, 1]) == 1:
                 url = urlOrder + "/setinvoiced"
                 data = {
                 }
-                r = requests.post(url, headers=headers, json=data)  
+                r = requests.post(url, headers=headers, json=data, verify=False)  
 
     # gestion des expéditions si activé et qu'il y a des produits à expédier
     if nbShipping >0 and len(productRandomList) > 0:
@@ -131,7 +131,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             "origin": 'commande',     # pour les versions antérieures à la 22
             "lines": productRandomList
         }
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
         shippingId = r.text
         if dateOrder.year < yearNow:
             # pour les dates antérieurs à l'année en cours, on valide la commande
@@ -139,20 +139,20 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
             url = urlBase + "shipments/" + str(shippingId) + "/close"
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
         else:
             if orderStatut == 1:
                 url = urlBase + "shipments/" + str(shippingId) + "/validate"
                 data = {
                     "notrigger": 1,
                 }
-                r = requests.post(url, headers=headers, json=data)  
+                r = requests.post(url, headers=headers, json=data, verify=False)  
 
     # ajout de contact interne ou externe
     if nbOrder_contactInt > 0:
@@ -166,7 +166,7 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             userID = get_random_user(retDataUser)['id']
             url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/internal"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     if nbOrder_contactExt > 0:
         arrayTypeContactExterne = fill_contact_types("commande", "external")
@@ -179,10 +179,10 @@ def generate_order(dateOrder, retDataProduct, retDataThirdParties, retDataWareho
             code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
             url = urlBase + "orders/" + str(orderID) + "/contact/" + userID +"/"+ str(code) + "/external"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
     
     if testing:
-        r = requests.get(urlBase + "orders/" + str(orderID), headers=headers)
+        r = requests.get(urlBase + "orders/" + str(orderID), headers=headers, verify=False)
         print('Commande créée avec succès ID: ' + str(orderID))
         return r.json()
     return 1

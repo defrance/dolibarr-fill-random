@@ -88,7 +88,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
         "public" : 1
     }
 
-    r = requests.post(urlProjects, headers=headers, json=data)
+    r = requests.post(urlProjects, headers=headers, json=data, verify=False)
     
     if r.status_code != 200:
         print("Erreur lors de la création du projet", r.status_code)
@@ -118,7 +118,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
             "note_public": fake.text(max_nb_chars=200),
         }
 
-        rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
+        rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate, verify=False)
         if rU.status_code != 200:
             print("Erreur lors de la mise à jour du projet", rU.status_code)
             print (rU.text)
@@ -166,7 +166,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                     if testing:
                         print(urlContactProject)
 
-                    rC = requests.post(urlContactProject, headers=headers,json=dataContact)
+                    rC = requests.post(urlContactProject, headers=headers,json=dataContact, verify=False)
                     if rC.status_code != 200:
                         print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
                         print (rC.text)
@@ -234,7 +234,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                     "status": "0" # initial status draft, will be updated juste après
                 }
 
-                r = requests.post(urlTasks, headers=headers, json=data)
+                r = requests.post(urlTasks, headers=headers, json=data, verify=False)
                 if r.status_code != 200:
                     print("Erreur lors de la création de la tâche n°", i+1,".", r.status_code)
                     print (r.text)
@@ -259,23 +259,18 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
                         for i in range(nc):
                             taskContact = random.choice(projectContacts)
-                            if testing:
-                                print(dataContact)
                             dataContact = {
                                 "fk_socpeople": taskContact["fk_socpeople"],
                                 "type_contact": random.choice(["TASKCONTRIBUTOR", "TASKEXECUTIVE"]),
                                 "source":taskContact["source"]
                             }
 
-                            r = requests.post(urlBase + "tasks/"+ str(taskID)+ "/contacts", headers=headers, json=dataContact)
+                            r = requests.post(urlBase + "tasks/"+ str(taskID)+ "/contacts", headers=headers, json=dataContact, verify=False)
                         
                             if r.status_code !=200:
-                                print("erreur lors de l'ajout du contact à la tâche")
+                                print(r.status_code, "erreur lors de l'ajout du contact à la tâche")
                                 print(r.text)
-                                print(r.status_code)
-                                if testing:
-                                    print(dataContact)
-                        
+                                print(dataContact)                    
                             else:
                                 if testing:
                                     print("contact ajouté à la tâche.")
@@ -294,7 +289,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         "status": taskStatus
                     }
 
-                    r = requests.put(urlBase + "tasks/"+ str(taskID), headers=headers, json=dataUpdate)
+                    r = requests.put(urlBase + "tasks/"+ str(taskID), headers=headers, json=dataUpdate, verify=False)
                     if r.status_code == 403:
                         print("403 : Not allowed to update task", i+1)
                     elif r.status_code != 200:
@@ -308,7 +303,6 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
                     # Si la tâche est en cours ou clôturé :
                     if taskStatus > 0:
-
                         urlTasksTime = urlBase + "tasks/"+ str(taskID) + "/addtimespent"
             
                         # on crée des pointages associés à la tâche 
@@ -344,11 +338,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                     "progress" :fake.random_int(min=0, max=100)  # (integer, optional): Progress percentage (0-100)
                                 }
 
-                                r = requests.post(urlTasksTime, headers=headers, json=data)
+                                r = requests.post(urlTasksTime, headers=headers, json=data, verify=False)
     
                                 if r.status_code != 200:
                                     print("Erreur lors de la création du pointage", r.status_code)
-                                    print (r.json())
+                                    print (r.text)
                                     return None
                                 else:
                                     if testing:
@@ -373,7 +367,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
             "status": projectStatus
         }
 
-        rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate)
+        rU = requests.put(urlBase + "projects/" + str(projectID), headers=headers, json=dataUpdate, verify=False)
         if rU.status_code != 200:
             print("Erreur lors de la mise à jour du projet", rU.status_code)
             print (rU.text)

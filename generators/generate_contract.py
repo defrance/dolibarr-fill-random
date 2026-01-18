@@ -17,7 +17,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
         "commercial_suivi_id": get_random_user(retDataUser)['id'],
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     contractID = r.text
     status = "Draft"
     
@@ -26,13 +26,13 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
         "notrigger": 1,
     }
     if dateContract.year < yearNow :
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
         # pour les dates antiérieurs à l'année en cours, on valide la commande
         status = "Closed"
     else:
         #pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
-            r = requests.post(url, headers=headers, json=data)  
+            r = requests.post(url, headers=headers, json=data, verify=False)  
             # if dateContract.year < yearNow :
             #     status = "Closed"
             # else:
@@ -69,7 +69,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
             "rang": 0,
 
         }
-        r = requests.post(urlLine, headers=headers, json=data)
+        r = requests.post(urlLine, headers=headers, json=data, verify=False)
         lineID = r.text
 
         datestart = dateContract + timedelta(days=random.randint(1, 30)) 
@@ -86,7 +86,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
                     "datestart": datestartTs,
                     "dateend": dateendTs,
                 }
-                r = requests.put(url, headers=headers, json=data)
+                r = requests.put(url, headers=headers, json=data, verify=False)
 
 
         if status == "Closed":
@@ -96,7 +96,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
                 "datestart": datestartTs,
                 "dateend": dateendTs,
             }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, verify=False)
 
             # on ferme le contrat
             url = urlBase + "contracts/" + str(contractID) + "/lines/" + str(lineID) + "/unactivate"
@@ -105,7 +105,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
                 "notrigger": 1,
                 "datestart": datecloseTs,
             }
-            r = requests.put(url, headers=headers, json=data)
+            r = put(url, headers=headers, json=data, verify=False)
 
     if testing:
         print(data)

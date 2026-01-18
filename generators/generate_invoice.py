@@ -26,7 +26,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
         "socid": socId,
         "fk_project" : fk_project
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     invoiceID = r.text
     urlInvoice = url + "/" + str(invoiceID)
 
@@ -47,7 +47,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
             "tva_tx": productRandom['tva_tx'],
             'price_base_type': 'HT',
         }
-        r = requests.post(urlLine, headers=headers, json=data)
+        r = requests.post(urlLine, headers=headers, json=data, verify=False)
 
     if dateFact.year < yearNow:
         # pour les dates antiérieurs à l'année en cours, on valide la commande
@@ -55,7 +55,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
 
         # et on réalise le paiement si on a une banque active
         if len(retDataPayment) > 0 and len(retDataBank) > 0:
@@ -71,7 +71,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
                 "closepaidinvoices" :  'yes',
                 "accountid" : get_random_bank(retDataBank)
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
     else:
         # pour l'année en cours, on ne valide pas toute les commandes
         if random.choice([0, 1]) == 1:
@@ -79,7 +79,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     # ajout de contact interne ou externe
     if nbInvoice_contactInt > 0:
@@ -93,7 +93,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
             userID = get_random_user(retDataUser)['id']
             url = urlBase + "orders/" + str(invoiceID) + "/contact/" + userID +"/"+ str(code) + "/internal"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     if nbInvoice_contactExt > 0:
         arrayTypeContactExterne = fill_contact_types("facture", "external")
@@ -106,7 +106,7 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
             code = arrayTypeContactExterne[random.randint(1, len(arrayTypeContactExterne)-1)]['code']
             url = urlBase + "orders/" + str(invoiceID) + "/contact/" + userID +"/"+ str(code) + "/external"
             data = {}
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
     return 1
 
 # Test unitaire

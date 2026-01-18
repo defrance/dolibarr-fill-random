@@ -18,7 +18,7 @@ def generate_expense_report(dateCreate, testing=False):
     # CONFIG : PREFILL MONTHLY
 
     try:
-        r = requests.get(urlConf, headers=headers)
+        r = requests.get(urlConf, headers=headers, verify=False)
 
         if r.status_code != 200:
             configPrefillActived = "0"
@@ -84,7 +84,7 @@ def generate_expense_report(dateCreate, testing=False):
         "fk_user_validator": validatorID,
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print("Erreur création note de frais", r.status_code)
         print(r.text)
@@ -104,10 +104,10 @@ def generate_expense_report(dateCreate, testing=False):
     maxLines = max(1, nbExpenseReportLineMax)
     nbLines = random.randint(1, maxLines)
 
-    r = requests.get(urlDictionary + "vat?actibr=1&fk_country=-1", headers=headers)
+    r = requests.get(urlDictionary + "vat?actibr=1&fk_country=-1", headers=headers, verify=False)
     vatrateList = r.json()
 
-    r = requests.get(urlDictionary + "expensereport_types?active=1", headers=headers)
+    r = requests.get(urlDictionary + "expensereport_types?active=1", headers=headers, verify=False)
     typefeesList = r.json()
 
     totalAmountHT = 0
@@ -138,7 +138,7 @@ def generate_expense_report(dateCreate, testing=False):
             "date": fake.date_between_dates(dateStart, dateEnd).strftime("%Y-%m-%d"),
         }
 
-        r = requests.post(urlReport + "/line", headers=headers, json=dataLine)
+        r = requests.post(urlReport + "/line", headers=headers, json=dataLine, verify=False)
         if testing and r.status_code == 200:
             print("Ligne de frais ajoutée")
 
@@ -155,7 +155,7 @@ def generate_expense_report(dateCreate, testing=False):
                 
     # validation de la note de frais si elle n'est pas en brouillon
     if status != 'brouillon' :
-        r = requests.post(urlReport + "/validate", headers=headers)
+        r = requests.post(urlReport + "/validate", headers=headers, verify=False)
         if r.status_code != 200 :
             if testing :  
                 print('Erreur lors de la validation de la note de frais', r.status_code)
@@ -172,7 +172,7 @@ def generate_expense_report(dateCreate, testing=False):
                 'user_create': userID
                 }
             
-            r = requests.put(urlReport, headers=headers, json = dataValidate)
+            r = requests.put(urlReport, headers=headers, json = dataValidate, verify=False)
 
         # modification user_validate et date_validate
 
@@ -182,7 +182,7 @@ def generate_expense_report(dateCreate, testing=False):
                 "details": "Raison du refus : " + fake.sentence(nb_words=6),
                 "notrigger" : 0
             }
-            r = requests.post(urlReport + "/deny" , headers=headers, json=data)
+            r = requests.post(urlReport + "/deny" , headers=headers, json=data, verify=False)
 
             if r.status_code != 200 :
                 if testing :  
@@ -197,9 +197,7 @@ def generate_expense_report(dateCreate, testing=False):
                     'date_refuse': dateCreate.strftime('%Y-%m-%d'),
                     'fk_user_refuse': validatorID
                 }
-
-                r = requests.put(urlReport, headers=headers, json=dataDeny)
-
+                r = requests.put(urlReport, headers=headers, json = dataDeny, verify=False)
                 if r.status_code != 200 : 
                     if testing:
                         print('Erreur lors de la mise à jours du refus.')
@@ -211,7 +209,7 @@ def generate_expense_report(dateCreate, testing=False):
             
         # approbation de la note de frais
         if status in ('approve', 'paid'):
-            r = requests.post(urlReport + "/approve" , headers=headers)
+            r = requests.post(urlReport + "/approve" , headers=headers, verify=False)
             if r.status_code != 200 :
                 if testing :  
                     print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)
@@ -236,15 +234,15 @@ def generate_expense_report(dateCreate, testing=False):
 
     # paiements des notes approuvées ??? utile?
     if status == 'paid':
-        r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
+        r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers, verify=False)
 
     if status != "brouillon":
-        r = requests.post(urlReport + "/validate", headers=headers)
+        r = requests.post(urlReport + "/validate", headers=headers, verify=False)
         if r.status_code == 200 and testing:
             print("Note validée")
 
         if status in ("approve", "paid"):
-            r = requests.post(urlReport + "/approve", headers=headers)
+            r = requests.post(urlReport + "/approve", headers=headers, verify=False)
             if r.status_code == 200 and testing:
                 print("Note approuvée")
 
@@ -253,6 +251,7 @@ def generate_expense_report(dateCreate, testing=False):
                 urlReport + "/deny",
                 headers=headers,
                 json={"details": fake.sentence(), "notrigger": 0},
+                verify=False
             )
             if r.status_code == 200 and testing:
                 print("Note refusée")
@@ -262,6 +261,7 @@ def generate_expense_report(dateCreate, testing=False):
                 urlReport + "/cancel",
                 headers=headers,
                 json={"detail": fake.text()},
+                verify=False
             )
             if r.status_code == 200 and testing:
                 print("Note annulée")
@@ -269,7 +269,7 @@ def generate_expense_report(dateCreate, testing=False):
 
     # PAIEMENT
     if status == "paid":
-        r = requests.get(urlDictionary + "payment_types?active=1", headers=headers)
+        r = requests.get(urlDictionary + "payment_types?active=1", headers=headers, verify=False)
         paymentTypeList = r.json()
 
         try:
@@ -288,14 +288,14 @@ def generate_expense_report(dateCreate, testing=False):
             "accountid":3
         }
 
-        r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
+        r = requests.post(urlReport + "/payments", headers = headers, json = data_payment, verify=False)
 
         if r.status_code != 200:
             print('erreur lors du paiement de la note de frais.')
             print(r.status_code)
             print(r.text)
         else :
-            r = requests.post(urlReport + "/setpaid", headers=headers)
+            r = requests.post(urlReport + "/setpaid", headers=headers, verify=False)
 
 
 

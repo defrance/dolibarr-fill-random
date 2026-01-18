@@ -22,7 +22,7 @@ def generate_warehouse(dateCreate, testing):
         "country_id": 1,
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print("Erreur lors de la création de l'entrepot", r.status_code)
         print (r.text)

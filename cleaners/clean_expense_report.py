@@ -17,7 +17,7 @@ def clean_expense_report(testing):
 
     for report in retDataExpenseReports :
         try:
-            r = requests.delete(url + "/" + report['id'], headers=headers)
+            r = requests.delete(url + "/" + report['id'], headers=headers, verify=False)
             if testing:
                 print("note de frais supprimée : ", report['id'])
             

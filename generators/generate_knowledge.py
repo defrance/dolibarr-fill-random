@@ -18,11 +18,11 @@ def generate_knowledge(dateKnowledge, testing):
         "date_creation": dateKnowledgeTs,
         "status": 0,
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     knowledgeID = r.text
 
     if testing :
-        print("Création Knowledge :", data)
+        print("Création Knowledge :", data, verify=False)
         print("ID retourné :", knowledgeID)
     
 
@@ -32,7 +32,7 @@ def generate_knowledge(dateKnowledge, testing):
         data = {
             "notrigger": 1,
         }
-        r = requests.post(url, headers=headers, json=data) 
+        r = requests.post(url, headers=headers, json=data, verify=False) 
 
         status = random.choice([0, 1])
         if status != 0:
@@ -40,7 +40,7 @@ def generate_knowledge(dateKnowledge, testing):
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data) 
+            r = requests.post(url, headers=headers, json=data, verify=False) 
     else:
         status = random.choice([0, 1])
         if status != 0:
@@ -48,7 +48,7 @@ def generate_knowledge(dateKnowledge, testing):
             data = {
                 "notrigger": 1,
             }
-            r = requests.post(url, headers=headers, json=data)
+            r = requests.post(url, headers=headers, json=data, verify=False)
 
     if testing :
         print("Statut final :", status)

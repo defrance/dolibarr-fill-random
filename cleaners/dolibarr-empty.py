@@ -29,7 +29,7 @@ def delete_customers():
         # "proprietaire": df['proprietaire'][index],
     }
     #print (data)
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     return 1
 
@@ -53,7 +53,7 @@ def delete_socpeoples():
         # "proprietaire": df['proprietaire'][index],
     }
     #print (data)
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     return 1
 
@@ -73,7 +73,7 @@ def delete_warehouses():
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
     }
     #print (data)
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print('Erreur lors de la création du tiers', r.status_code)
         print (r.text)
@@ -99,7 +99,7 @@ def delete_products():
         "price_min_ttc" : 13,
     }
 
-    r = requests.post(urlProduct, headers=headers, json=data)
+    r = requests.post(urlProduct, headers=headers, json=data, verify=False)
 
     return 1
 
@@ -111,7 +111,7 @@ def delete_bills():
         "date" :datefacture.strftime('%Y-%m-%d'),
         "socid": get_random_client(retDataThirdParties),
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
  
     return 1
 
@@ -122,7 +122,7 @@ def delete_orders():
         "socid": get_random_client(retDataThirdParties),
         "date": dateorder.strftime('%Y-%m-%d'),
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     return 1
 
@@ -137,7 +137,7 @@ def delete_proposals():
         "fin_validite": date_finvalidite.strftime('%Y-%m-%d'),
         # "duree_validite": random.randint(5, 15),
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     return 1
 
 def delete_interventionals():
@@ -149,7 +149,7 @@ def delete_interventionals():
         "description": fake.catch_phrase(),
         #"date": dateintervention.strftime('%Y-%m-%d'),
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
 
     return 1
 

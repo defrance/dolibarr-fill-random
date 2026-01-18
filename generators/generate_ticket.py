@@ -35,7 +35,7 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
         "datec": dateTicketTs,
         "fk_project" : fk_project
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     ticketID = r.text
 
     # on lie un projet du client au ticket
@@ -57,7 +57,7 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
             "progress" : 100,
             "date_close" : date_close.strftime('%Y-%m-%d %H:%M:%S'),
         }
-        r = requests.put(url, headers=headers, json=data) 
+        r = requests.put(url, headers=headers, json=data, verify=False) 
     else:
         status = random.choice([0, 1, 2, 3, 5, 7])
         if status != 0:
@@ -69,7 +69,7 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
                 "progress" : random.randint(0, 100),
                 "fk_user_assign": userAssign['id'],
             }
-            r = requests.put(url, headers=headers, json=data)
+            r = requests.put(url, headers=headers, json=data, verify=False)
 
     # gestion des catégories, pas opérationnelle sur les tickets
     # if newCategoryTicket > 0:
@@ -79,9 +79,9 @@ def generate_ticket(dateTicket, retDataThirdParties, testing):
     #         data = {
     #             "id": random.choice(retDataCategTicket)['id'],
     #         }
-    #         r = requests.post(url, headers=headers, json=data)
+    #         r = requests.post(url, headers=headers, json=data, verify=False)
     if testing:
-        r= requests.get(urlBase + "tickets/" + str(ticketID), headers=headers)
+        r= requests.get(urlBase + "tickets/" + str(ticketID), headers=headers, verify=False)
         if r.status_code != 200:
             print("Erreur lors de la récupération du ticket n° " + str(ticketID))
             print("Status code: " + str(r.status_code))

@@ -14,7 +14,7 @@ def generate_user_group(testing = False):
             "name":fake.company(),
         }
 
-        r = requests.post( url, headers=headers, json=data)
+        r = requests.post( url, headers=headers, json=data, verify=False)
 
         if r.status_code != 200 :
             print("Erreur lors de la création du groupe d'utilisateur.")

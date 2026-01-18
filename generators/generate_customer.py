@@ -34,7 +34,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
         # "dateupdate": df['dateupdate'][index],
         # "proprietaire": df['proprietaire'][index],
     }
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print('Erreur lors de la création du tiers', r.status_code)
         print (r.text)
@@ -48,7 +48,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
         # on rajoute un utilisateur référent 
         userRandom = get_random_user(fill_users())
         data = { }
-        r = requests.post(url + userRandom['id'], headers=headers, json=data)
+        r = requests.post(url + userRandom['id'], headers=headers, json=data, verify=False)
         if r.status_code != 200:
             print("erreur sur l'ajout d'un utilisateur référent. ")
         
@@ -73,7 +73,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
 
             "country_id": 1,
         }
-        r = requests.post(url, headers=headers, json=data)
+        r = requests.post(url, headers=headers, json=data, verify=False)
         if r.status_code != 200:
             print("erreur sur l'ajout de contact externe. ")
             print (r.text)
@@ -88,7 +88,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
                 # on rajoute une catégorie aléatoire
                 url = urlBase + "categories/" + str(random.choice(retDataCategContact)['id']) + "/objects/contact/" + str(idContact)
                 data = { }
-                r = requests.post(url, headers=headers, json=data)
+                r = requests.post(url, headers=headers, json=data, verify=False)
                 if r.status_code != 200:
                     print("erreur ajout catégorie aléatoire Socpeople ")
                     print (r.text)
@@ -101,7 +101,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
             #categories/5/objects/product/100
             url = urlBase + "categories/" + str(random.choice(retDataCategCustomer)['id']) + "/objects/customer/" + str(idSoc)
             data = { }
-            r = requests.post(url, headers=headers, json=data)
+            r = post(url, headers=headers, json=data, verify=False)
             if r.status_code != 200:
                 print("erreur ajout catégorie aléatoire customer ")
     return 1

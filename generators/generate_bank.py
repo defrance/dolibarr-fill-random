@@ -22,7 +22,7 @@ def generate_bank(dateCreate, testing):
         "address": fake.address(), 
     }
 
-    r = requests.post(url, headers=headers, json=data)
+    r = requests.post(url, headers=headers, json=data, verify=False)
     if r.status_code != 200:
         print("Erreur lors de la création de la bank", r.status_code)
         print (r.text)
