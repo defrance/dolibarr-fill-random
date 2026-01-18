@@ -234,14 +234,11 @@ def generate_expense_report(dateCreate, testing=False):
                 if testing:
                     print('note de frais passée au statut : ' , status)
 
-    # paiements des notes approuvées
-
+    # paiements des notes approuvées ??? utile?
     if status == 'paid':
-
         r = requests.get( urlDictionary + 'payment_types?active=1', headers=headers)
 
     if status != "brouillon":
-
         r = requests.post(urlReport + "/validate", headers=headers)
         if r.status_code == 200 and testing:
             print("Note validée")
@@ -282,14 +279,16 @@ def generate_expense_report(dateCreate, testing=False):
         except:
             print('erreur lors du choix du types de paiement.')
     
-    # Prévoir récupération du total de la note de frais.
+        # Prévoir récupération du total de la note de frais.
         data_payment = {
             "fk_typepayment":fkTypePayment,
             "datep":dateValidate.strftime('%Y-%m-%d'),
             "amount":totalAmountHT,
             "amounts": [totalAmountHT],
-            "bank_account":3
+            "accountid":3
         }
+
+        r = requests.post(urlReport + "/payments", headers = headers, json = data_payment)
 
         if r.status_code != 200:
             print('erreur lors du paiement de la note de frais.')
