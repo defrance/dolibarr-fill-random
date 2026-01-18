@@ -223,7 +223,7 @@ def generate_expense_report(dateCreate, testing=False):
             data_cancel ={
                 'detail': fake.text(max_nb_chars=200)
             }
-            r = requests.post(urlReport + "/" + str(status), headers=headers, json = data_cancel)
+            r = requests.post(urlReport + "/" + str(status), headers=headers, json = data_cancel, verify=False)
             if r.status_code != 200 :
                 if testing :  
                     print('Erreur lors du changement de statut de la note de frais en :', status, r.status_code)

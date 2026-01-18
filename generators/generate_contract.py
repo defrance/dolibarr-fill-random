@@ -105,7 +105,7 @@ def generate_contract(dateContract, retDataThirdParties, retDataProduct, retData
                 "notrigger": 1,
                 "datestart": datecloseTs,
             }
-            r = put(url, headers=headers, json=data, verify=False)
+            r = requests.put(url, headers=headers, json=data, verify=False)
 
     if testing:
         print(data)

@@ -101,7 +101,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
             #categories/5/objects/product/100
             url = urlBase + "categories/" + str(random.choice(retDataCategCustomer)['id']) + "/objects/customer/" + str(idSoc)
             data = { }
-            r = post(url, headers=headers, json=data, verify=False)
+            r = requests.post(url, headers=headers, json=data, verify=False)
             if r.status_code != 200:
                 print("erreur ajout catégorie aléatoire customer ")
     return 1
