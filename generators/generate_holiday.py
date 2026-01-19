@@ -96,9 +96,7 @@ def generate_holiday(dateCreate, testing=False):
     if testing :
         print("Détails : ", r_get.text)
 
-
     if status == "refuse":
-
         data = {
             "detail_refuse": "Raison du refus : " + fake.sentence(nb_words=6),
         }
@@ -137,8 +135,7 @@ def generate_holiday(dateCreate, testing=False):
             if testing:
                 print(f'Statut du congé/absence changé avec succès en {status}.')
     
-    # update congés/absences utilisateur après acceptation/refus
-    
+    # update congés/absences utilisateur après acceptation/refus  
     match status:
         case "refuse":
             data = {

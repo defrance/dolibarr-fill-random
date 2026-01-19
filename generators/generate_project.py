@@ -324,8 +324,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         if ntt == 0:
                             if testing:
                                 print("Aucun pointage créé pour cette tâche.")
-                        
                         else:
+                            print("Nb pointage créé pour cette tâche :", ntt)
                             for j in range (ntt):
                                 if testing:
                                     print("Création du pointage n°", j+1,"sur task ", taskID)
@@ -341,8 +341,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
                                 data = {
                                     "date" : randomDate.strftime("%Y-%m-%d %H:%M:%S"),
-                                    "duration": fake.random_int(min=60*5, max=3600), #  (integer): Duration in seconds (3600 = 1h) ,
+                                    "duration": fake.random_int(min=1800, max=3600*5, step=60*10), #  (integer): Duration in seconds (3600 = 1h) ,
                                     "user_id" : userId, # (integer, optional): User (Use 0 for connected user).
+                                    "fk_product" : 0, # pour la V23 (integer, optional): Product ,
                                     "note" : fake.sentence(nb_words=10), # (string, optional): Note
                                     "progress" :fake.random_int(min=0, max=100)  # (integer, optional): Progress percentage (0-100)
                                 }
@@ -350,9 +351,10 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                 r = requests.post(urlTasksTime, headers=headers, json=data, verify=False)
     
                                 if r.status_code != 200:
+                                    print (data)
                                     print("Erreur lors de la création du pointage", r.status_code)
                                     print (r.text)
-                                    return None
+                                    exit(1)
                                 else:
                                     if testing:
                                         print("Création du pointage :  ", data)
