@@ -334,7 +334,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                         
                                 # Gestion de l'user associé au pointage
                                 if len(taskContacts) > 0:
-                                    userId = random.choice(taskContacts)['fk_socpeople']
+                                    userId = int(random.choice(taskContacts)['fk_socpeople'])
                                 else:
                                     # Si pas de contact associé à la tâche alors le pointage est attribué à l'user connecté
                                     userId = 0
@@ -343,7 +343,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                     "date" : randomDate.strftime("%Y-%m-%d %H:%M:%S"),
                                     "duration": fake.random_int(min=1800, max=3600*5, step=60*10), #  (integer): Duration in seconds (3600 = 1h) ,
                                     "user_id" : userId, # (integer, optional): User (Use 0 for connected user).
-                                    "fk_product" : 0, # pour la V23 (integer, optional): Product ,
+                                    "product_id" : 0, # pour la V23 (integer, optional): Product ,
                                     "note" : fake.sentence(nb_words=10), # (string, optional): Note
                                     "progress" :fake.random_int(min=0, max=100)  # (integer, optional): Progress percentage (0-100)
                                 }
@@ -358,6 +358,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                 else:
                                     if testing:
                                         print("Création du pointage :  ", data)
+                                        print (r.text)
                     continue
     else:
         print("Nombre de tâches incorrect. Aucune tâche créée.")
