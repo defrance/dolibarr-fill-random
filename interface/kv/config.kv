@@ -1,0 +1,28 @@
+<ConfigScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 10
+
+        TextInput:
+            id: token_input
+            hint_text: "API Token"
+            multiline: False
+
+        TextInput:
+            id: version_input
+            hint_text: "Version Dolibarr"
+            multiline: False
+
+        TextInput:
+            id: url_input
+            hint_text: "URL Base API"
+            multiline: False
+
+        Button:
+            text: "Tester la connexion"
+            on_press: root.test_connection()
+
+        Label:
+            text: root.status_text
+            color: (0, 1, 0, 1)

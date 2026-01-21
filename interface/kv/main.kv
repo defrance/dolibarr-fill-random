@@ -1,0 +1,66 @@
+<MainScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Configuration des éléments"
+            font_size: "20sp"
+            size_hint_y: None
+            height: 40
+
+        ScrollView:
+            GridLayout:
+                cols: 2
+                spacing: 10
+                padding: 10
+                size_hint_y: None
+                height: self.minimum_height
+
+                Label:
+                    text: "new_user"
+                TextInput:
+                    text: "10"
+                    multiline: False
+                    input_filter: "int"
+
+                Label:
+                    text: "new_user_group"
+                TextInput:
+                    text: "10"
+                    multiline: False
+                    input_filter: "int"
+
+                Label:
+                    text: "new_product"
+                TextInput:
+                    text: "0"
+                    multiline: False
+                    input_filter: "int"
+
+                Label:
+                    text: "new_project"
+                TextInput:
+                    text: "0"
+                    multiline: False
+                    input_filter: "int"
+
+                Label:
+                    text: "new_expense_report"
+                TextInput:
+                    text: "0"
+                    multiline: False
+                    input_filter: "int"
+
+                Label:
+                    text: "new_ticket"
+                TextInput:
+                    text: "0"
+                    multiline: False
+                    input_filter: "int"
+
+        Button:
+            text: "Lancer la génération (soon)"
+            size_hint_y: None
+            height: 50
