@@ -1,18 +1,15 @@
 connection:
-  apitoken: 12D5lTwfF8MqhPR7CJmJe546cRHs23yx
+  apitoken: B5fgSE1oiRoM38A896nN3wj5mSET
   dol_version: 22
   urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
-
 connection-test2:
   apitoken: cRduhj3B0b15diN04MN95rOvnC9ZV3yO
   dol_version: 22
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
-
 categories:
-  new_category: 10
-  new_category_customer: 3
-  new_category_product: 3
-  new_category_socpeople: 3
+  new_category_customer: 0
+  new_category_product: 0
+  new_category_socpeople: 0
 
 contacts:
   invoice_externe: 1
@@ -23,6 +20,7 @@ contacts:
   proposal_interne: 1
 
 elements:
+  new_category: 0
   new_bank: 0
   new_bill: 0
   new_client: 0
@@ -33,8 +31,8 @@ elements:
   new_product: 0
   new_proposal: 0
   new_stock_movement: 0
-  new_ticket: 0
-  new_user: 0
+  new_ticket: 10
+  new_user: 10
   new_user_group: 10
   new_warehouse: 0
   new_opportunity: 0
@@ -42,40 +40,38 @@ elements:
   new_supplier_bill: 0
   new_supplier_order: 0
   new_holiday: 0
-  new_expense_report: 10
+  new_expense_report: 0
 
 others:
   date_interval: 3
   nb_country: 3
   nb_shipping: 1
-  year_to_fill: 2023
-  max_workers: 20  # Nombre de requêtes HTTP simultanées (ajuster selon les capacités du serveur: 10-50)
-  lang: fr_FR # es_ES
-  fk_country : 1 # France
-  tests: False
+  year_to_fill: 2024
+  max_workers: 10
+  lang: fr_FR
+  fk_country: 1
+  tests: true
 
 project:
-  new_opportunity: 0
-  new_project: 0
   new_max_task: 0
   new_max_task_time: 0
   new_max_contact: 0
 
 supplier:
-  create_supplier: 0  # active la création de fournisseurs
-  nb_supplier_product: 0 # nombre max de fournisseur par produit
-  nb_supplier_product_price: 0 # nombre max de prix d'achat par fournisseur d'un produit
+  create_supplier: 1
+  nb_supplier_product: 0
+  nb_supplier_product_price: 0
+  new_supplier_bill: 0
+  new_supplier_order: 0
 
 hrm:
-  nb_holiday: 0
-  nb_expense_report: 10
   nb_expense_report_line_max: 5
+  nb_holiday: 0
+  nb_expense_report: 0
 
 products:
   nb_sale_price_history_max: 0
   pourcentage_aug_price_max: 0
-
-productlots:
-  nb_lot_by_product_max : 0
-
-
+  new_product: 0
+  new_stock_movement: 0
+  nb_lot_by_product_max: 0
