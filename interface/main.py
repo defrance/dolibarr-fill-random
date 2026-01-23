@@ -56,6 +56,48 @@ class ConfigScreen(Screen):
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = conn.get("urlbase", "")
 
+    def save_config(self):
+        """Sauvegarde la configuration sans tester la connexion"""
+        token = self.ids.token_input.text.strip()
+        version = self.ids.version_input.text.strip()
+        urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
+
+        if not token or not version or not urlbase:
+            self.status_text = "Tous les champs sont obligatoires"
+            return
+
+        try:
+            params = load_params()
+            params["connection"] = {
+                "apitoken": token,
+                "dol_version": int(version),
+                "urlbase": urlbase
+            }
+            save_params(params)
+            self.status_text = "Configuration sauvegardée"
+        except Exception as e:
+            self.status_text = f"Erreur de sauvegarde : {e}"
+
+    def reset_config(self):
+        """Remet à zéro tous les champs de configuration"""
+        self.ids.token_input.text = ""
+        self.ids.version_input.text = ""
+        self.ids.url_input.text = ""
+        self.status_text = "Champs réinitialisés"
+
+    def load_default_config(self):
+        """Charge les valeurs par défaut depuis param-sample.yml"""
+        defaults = load_default_params()
+        if not defaults:
+            self.status_text = "Aucun fichier de configuration par défaut trouvé"
+            return
+
+        conn = defaults.get("connection", {})
+        self.ids.token_input.text = conn.get("apitoken", "")
+        self.ids.version_input.text = str(conn.get("dol_version", ""))
+        self.ids.url_input.text = conn.get("urlbase", "")
+        self.status_text = "Valeurs par défaut chargées"
+
     def test_connection(self):
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
@@ -149,7 +191,7 @@ class MainScreen(Screen):
         scroll.add_widget(container)
         return scroll
 
-    # SAVE NEW VALUE IN PARAM.YML
+    # SAVE NEW VALUE IN PARAM.
     def save_elements(self):
         params = load_params()
         for name, ti in self.inputs.items():
