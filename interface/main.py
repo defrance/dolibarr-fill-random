@@ -189,7 +189,6 @@ class MainScreen(Screen):
         main_container.bind(pos=lambda inst, val: setattr(rect, 'pos', inst.pos))
         main_container.bind(size=lambda inst, val: setattr(rect, 'size', inst.size))
 
-        # Créer 3 colonnes
         columns = []
         for i in range(3):
             column = GridLayout(cols=3, spacing=5, size_hint_y=None, size_hint_x=0.33)
@@ -197,12 +196,12 @@ class MainScreen(Screen):
             columns.append(column)
             main_container.add_widget(column)
 
-        # Répartir les éléments sur les 3 colonnes
         items = list(data_dict.items())
         for idx, (name, value) in enumerate(items):
             col_idx = idx % 3  # Distribuer de manière équilibrée sur les 3 colonnes
             
-            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.6)
+            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.6, halign='right', valign='middle')
+            lbl.bind(size=lbl.setter('text_size'))  # Nécessaire pour que halign fonctionne
             ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30, size_hint_x=0.15)
             btn = Button(text="Reset", size_hint_y=None, height=30, size_hint_x=0.25, font_size='12sp')
             btn.bind(on_release=lambda b, n=name: self.reset_field(n))
