@@ -12,6 +12,7 @@ from kivy.clock import Clock
 import requests
 import os
 import yaml
+from translations import get_translation
 
 # PATHS
 
@@ -190,6 +191,10 @@ class MainScreen(Screen):
         from kivy.uix.scrollview import ScrollView
         scroll = ScrollView(do_scroll_x=False)
         
+        # Récupérer la langue depuis les paramètres
+        params = load_params()
+        lang = params.get("others", {}).get("lang", "fr_FR")
+        
         # Conteneur principal avec 3 colonnes
         main_container = BoxLayout(orientation='horizontal', spacing=10, size_hint_y=None)
         main_container.bind(minimum_height=main_container.setter("height"))
@@ -211,14 +216,20 @@ class MainScreen(Screen):
             main_container.add_widget(column)
 
         # Répartir les éléments sur les 3 colonnes
+        row_height = 40
         items = list(data_dict.items())
         for idx, (name, value) in enumerate(items):
             col_idx = idx % 3  # Distribuer de manière équilibrée sur les 3 colonnes
             
-            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.5, halign='right', valign='middle')
-            lbl.bind(size=lbl.setter('text_size'))  # Nécessaire pour que halign fonctionne
-            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30, size_hint_x=0.25)
-            btn = Button(text="Reset", size_hint_y=None, height=30, size_hint_x=0.25, font_size='12sp')
+            # Utiliser la traduction si disponible
+            translated_name = get_translation(name, lang)
+            
+            lbl = Label(text=translated_name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.6, halign='right', valign='middle', text_size=(0, row_height))
+            lbl.bind(width=lambda inst, val: setattr(inst, 'text_size', (val, row_height)))
+
+            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=row_height, size_hint_x=0.15, halign = "center")
+
+            btn = Button(text="Reset", size_hint_y=None, height=row_height, size_hint_x=0.25, font_size='12sp')
             btn.bind(on_release=lambda b, n=name: self.reset_field(n))
             
             columns[col_idx].add_widget(lbl)
