@@ -1,5 +1,5 @@
 connection:
-  apitoken: B5fgSE1oiRoM38A896nN3wj5mSET
+  apitoken: B5fgSE1oiRoM38A896nN3wj5mSE
   dol_version: 22
   urlbase: http://127.0.0.1/dolibarr/htdocs/api/index.php/
 connection-test2:

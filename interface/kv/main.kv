@@ -1,7 +1,7 @@
 <MainScreen>:
     canvas.before:
         Color:
-            rgba: 1,1,1,1  # fond blanc
+            rgba: 1,1,1,1
         Rectangle:
             pos: self.pos
             size: self.size
@@ -11,19 +11,23 @@
         padding: 10
         spacing: 10
 
-        # Conteneur pour les tabs dynamiques
         BoxLayout:
             id: main_container
             orientation: "vertical"
-            size_hint_y: 1
 
         BoxLayout:
             size_hint_y: None
             height: 50
             spacing: 10
+
+            Button:
+                text: "Default"
+                on_release: root.load_defaults()
+
             Button:
                 text: "Reset tout"
                 on_release: root.reset_all()
+
             Button:
                 text: "Sauvegarder"
                 on_release: root.save_elements()

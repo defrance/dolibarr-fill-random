@@ -16,6 +16,7 @@ import yaml
 # PATHS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PARAM_SAMPLE_FILE = os.path.join(BASE_DIR, "param-sample.yml")
 PARAM_FILE = os.path.join(BASE_DIR, "param.yml")
 KV_DIR = os.path.join(os.path.dirname(__file__), "kv")
 Builder.load_file(os.path.join(KV_DIR, "config.kv"))
@@ -33,6 +34,12 @@ def save_params(data: dict):
     with open(PARAM_FILE, "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, sort_keys=False)
 
+def load_default_params():
+    if not os.path.exists(PARAM_SAMPLE_FILE):
+        return {}
+    with open(PARAM_SAMPLE_FILE, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
 
 # CONFIG SCREEN
 
@@ -48,6 +55,48 @@ class ConfigScreen(Screen):
         self.ids.token_input.text = conn.get("apitoken", "")
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = conn.get("urlbase", "")
+
+    def save_config(self):
+        """Sauvegarde la configuration sans tester la connexion"""
+        token = self.ids.token_input.text.strip()
+        version = self.ids.version_input.text.strip()
+        urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
+
+        if not token or not version or not urlbase:
+            self.status_text = "Tous les champs sont obligatoires"
+            return
+
+        try:
+            params = load_params()
+            params["connection"] = {
+                "apitoken": token,
+                "dol_version": int(version),
+                "urlbase": urlbase
+            }
+            save_params(params)
+            self.status_text = "Configuration sauvegardée"
+        except Exception as e:
+            self.status_text = f"Erreur de sauvegarde : {e}"
+
+    def reset_config(self):
+        """Remet à zéro tous les champs de configuration"""
+        self.ids.token_input.text = ""
+        self.ids.version_input.text = ""
+        self.ids.url_input.text = ""
+        self.status_text = "Champs réinitialisés"
+
+    def load_default_config(self):
+        """Charge les valeurs par défaut depuis param-sample.yml"""
+        defaults = load_default_params()
+        if not defaults:
+            self.status_text = "Aucun fichier de configuration par défaut trouvé"
+            return
+
+        conn = defaults.get("connection", {})
+        self.ids.token_input.text = conn.get("apitoken", "")
+        self.ids.version_input.text = str(conn.get("dol_version", ""))
+        self.ids.url_input.text = conn.get("urlbase", "")
+        self.status_text = "Valeurs par défaut chargées"
 
     def test_connection(self):
         token = self.ids.token_input.text.strip()
@@ -142,6 +191,7 @@ class MainScreen(Screen):
         scroll.add_widget(container)
         return scroll
 
+    # SAVE NEW VALUE IN PARAM.
     def save_elements(self):
         params = load_params()
         for name, ti in self.inputs.items():
@@ -157,16 +207,39 @@ class MainScreen(Screen):
                     params["categories"][name] = 0
         save_params(params)
 
+    # RAZ 
     def reset_field(self, name):
         if name in self.inputs:
             self.inputs[name].text = "0"
             self.save_elements()
 
+    # RAZ ALL
     def reset_all(self):
         for ti in self.inputs.values():
             ti.text = "0"
         self.save_elements()
 
+    # PARAM-DEFAULT
+
+    def load_defaults(self):
+        defaults = load_default_params()
+        if not defaults:
+            return
+
+        params = load_params()
+
+    
+        connection = params.get("connection", {})
+
+   
+        params["elements"] = defaults.get("elements", {})
+        params["categories"] = defaults.get("categories", {})
+        params["connection"] = connection
+
+        save_params(params)
+
+        self.inputs.clear()
+        self.build_tabs()
 
 # APP
 
