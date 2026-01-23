@@ -52,15 +52,18 @@ class ConfigScreen(Screen):
     def load_config(self):
         params = load_params()
         conn = params.get("connection", {})
+        others = params.get("others", {})
         self.ids.token_input.text = conn.get("apitoken", "")
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = conn.get("urlbase", "")
+        self.ids.lang_input.text = others.get("lang", "fr_FR")
 
     def save_config(self):
         """Sauvegarde la configuration sans tester la connexion"""
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
         urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
+        lang = self.ids.lang_input.text.strip()
 
         if not token or not version or not urlbase:
             self.status_text = "Tous les champs sont obligatoires"
@@ -73,6 +76,9 @@ class ConfigScreen(Screen):
                 "dol_version": int(version),
                 "urlbase": urlbase
             }
+            if "others" not in params:
+                params["others"] = {}
+            params["others"]["lang"] = lang
             save_params(params)
             self.status_text = "Configuration sauvegardée"
         except Exception as e:
@@ -83,6 +89,7 @@ class ConfigScreen(Screen):
         self.ids.token_input.text = ""
         self.ids.version_input.text = ""
         self.ids.url_input.text = ""
+        self.ids.lang_input.text = "fr_FR"
         self.status_text = "Champs réinitialisés"
 
     def load_default_config(self):
@@ -93,15 +100,18 @@ class ConfigScreen(Screen):
             return
 
         conn = defaults.get("connection", {})
+        others = defaults.get("others", {})
         self.ids.token_input.text = conn.get("apitoken", "")
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = conn.get("urlbase", "")
+        self.ids.lang_input.text = others.get("lang", "fr_FR")
         self.status_text = "Valeurs par défaut chargées"
 
     def test_connection(self):
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
         urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
+        lang = self.ids.lang_input.text.strip()
 
         if not token or not version or not urlbase:
             self.status_text = "Tous les champs sont obligatoires"
@@ -124,6 +134,9 @@ class ConfigScreen(Screen):
                     "dol_version": int(version),
                     "urlbase": urlbase
                 }
+                if "others" not in params:
+                    params["others"] = {}
+                params["others"]["lang"] = lang
                 save_params(params)
 
                 # Passage au MainScreen
@@ -189,6 +202,7 @@ class MainScreen(Screen):
         main_container.bind(pos=lambda inst, val: setattr(rect, 'pos', inst.pos))
         main_container.bind(size=lambda inst, val: setattr(rect, 'size', inst.size))
 
+        # Créer 3 colonnes
         columns = []
         for i in range(3):
             column = GridLayout(cols=3, spacing=5, size_hint_y=None, size_hint_x=0.33)
@@ -196,13 +210,14 @@ class MainScreen(Screen):
             columns.append(column)
             main_container.add_widget(column)
 
+        # Répartir les éléments sur les 3 colonnes
         items = list(data_dict.items())
         for idx, (name, value) in enumerate(items):
             col_idx = idx % 3  # Distribuer de manière équilibrée sur les 3 colonnes
             
-            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.6, halign='right', valign='middle')
+            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.5, halign='right', valign='middle')
             lbl.bind(size=lbl.setter('text_size'))  # Nécessaire pour que halign fonctionne
-            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30, size_hint_x=0.15)
+            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30, size_hint_x=0.25)
             btn = Button(text="Reset", size_hint_y=None, height=30, size_hint_x=0.25, font_size='12sp')
             btn.bind(on_release=lambda b, n=name: self.reset_field(n))
             
