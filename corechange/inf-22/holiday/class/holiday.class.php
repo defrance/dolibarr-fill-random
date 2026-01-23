@@ -772,7 +772,9 @@ class Holiday extends CommonObject
 
 		if ($checkBalance > 0) {
 			$balance = $this->getCPforUser($this->fk_user, $this->fk_type);
-			if ($balance < 0) {
+			$daysAsked = num_open_day($this->date_debut, $this->date_fin, 0, 1);
+
+			if (($balance - $daysAsked) < 0 && getDolGlobalString('HOLIDAY_DISALLOW_NEGATIVE_BALANCE')) {
 				$this->error = 'LeaveRequestCreationBlockedBecauseBalanceIsNegative';
 				return -1;
 			}
@@ -894,10 +896,9 @@ class Holiday extends CommonObject
 
 		if ($checkBalance > 0) {
 			$balance = $this->getCPforUser($this->fk_user, $this->fk_type);
+			$daysAsked = num_open_day($this->date_debut, $this->date_fin, 0, 1);
 
-			$days = num_open_day($this->date_debut, $this->date_fin);
-
-			if ((($balance - $days) < 0) && getDolGlobalString('HOLIDAY_DISALLOW_NEGATIVE_BALANCE')) {
+			if (($balance - $daysAsked) < 0 && getDolGlobalString('HOLIDAY_DISALLOW_NEGATIVE_BALANCE')) {
 				$this->error = 'LeaveRequestCreationBlockedBecauseBalanceIsNegative';
 				return -1;
 			}
@@ -1024,8 +1025,9 @@ class Holiday extends CommonObject
 
 		if ($checkBalance > 0 && $this->status != self::STATUS_DRAFT) {
 			$balance = $this->getCPforUser($this->fk_user, $this->fk_type);
+			$daysAsked = num_open_day($this->date_debut, $this->date_fin, 0, 1);
 
-			if ($balance < 0) {
+			if (($balance - $daysAsked) < 0 && getDolGlobalString('HOLIDAY_DISALLOW_NEGATIVE_BALANCE')) {
 				$this->error = 'LeaveRequestCreationBlockedBecauseBalanceIsNegative';
 				return -1;
 			}
@@ -1046,6 +1048,12 @@ class Holiday extends CommonObject
 		} else {
 			$error++;
 		}
+		if (!empty($this->date_create)) {
+			$sql .= " date_create = '".$this->db->idate($this->date_create)."',";
+		} else {
+			$error++;
+		}
+
 		$sql .= " halfday = ".((int) $this->halfday).",";
 		if (!empty($this->status) && is_numeric($this->status)) {
 			$sql .= " statut = ".((int) $this->status).",";
@@ -1111,7 +1119,7 @@ class Holiday extends CommonObject
 		$resql = $this->db->query($sql);
 		if (!$resql) {
 			$error++;
-			$this->errors[] = "Error ".$this->db->lasterror();
+			$this->errors[] = "Error ".$sql. " ".$this->db->lasterror();
 		}
 
 		if (!$error) {

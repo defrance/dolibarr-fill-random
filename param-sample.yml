@@ -6,7 +6,6 @@ connection-test2:
   apitoken: cRduhj3B0b15diN04MN95rOvnC9ZV3yO
   dol_version: 22
   urlbase: http://127.0.0.1/dolibarr-dev/htdocs/api/index.php/
-
 categories:
   new_category_customer: 0
   new_category_product: 0
@@ -43,6 +42,29 @@ elements:
   new_holiday: 0
   new_expense_report: 0
 
+columngrid:
+  new_user: 1
+  new_user_group: 1
+  new_client: 1
+  new_product: 2
+  new_warehouse: 2
+  new_stock_movement: 2
+  new_bank: 0
+  new_bill: 3
+  new_order: 3
+  new_proposal: 3
+  new_contract: 2
+  new_fichinter: 2
+  new_ticket: 2
+  new_knowledge: 2
+  new_project: 3
+  new_opportunity: 3
+  new_supplier_bill: 0
+  new_supplier_order: 0
+  new_holiday: 1
+  new_expense_report: 1
+
+
 others:
   date_interval: 3
   nb_country: 3
@@ -69,7 +91,7 @@ hrm:
   nb_expense_report_line_max: 5
   nb_holiday: 0
   nb_expense_report: 0
-  
+
 products:
   nb_sale_price_history_max: 0
   pourcentage_aug_price_max: 0
