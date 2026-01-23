@@ -16,6 +16,7 @@ import yaml
 # PATHS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PARAM_SAMPLE_FILE = os.path.join(BASE_DIR, "param-sample.yml")
 PARAM_FILE = os.path.join(BASE_DIR, "param.yml")
 KV_DIR = os.path.join(os.path.dirname(__file__), "kv")
 Builder.load_file(os.path.join(KV_DIR, "config.kv"))
@@ -32,6 +33,12 @@ def load_params():
 def save_params(data: dict):
     with open(PARAM_FILE, "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, sort_keys=False)
+
+def load_default_params():
+    if not os.path.exists(PARAM_SAMPLE_FILE):
+        return {}
+    with open(PARAM_SAMPLE_FILE, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
 
 
 # CONFIG SCREEN
@@ -142,6 +149,7 @@ class MainScreen(Screen):
         scroll.add_widget(container)
         return scroll
 
+    # SAVE NEW VALUE IN PARAM.YML
     def save_elements(self):
         params = load_params()
         for name, ti in self.inputs.items():
@@ -157,16 +165,39 @@ class MainScreen(Screen):
                     params["categories"][name] = 0
         save_params(params)
 
+    # RAZ 
     def reset_field(self, name):
         if name in self.inputs:
             self.inputs[name].text = "0"
             self.save_elements()
 
+    # RAZ ALL
     def reset_all(self):
         for ti in self.inputs.values():
             ti.text = "0"
         self.save_elements()
 
+    # PARAM-DEFAULT
+
+    def load_defaults(self):
+        defaults = load_default_params()
+        if not defaults:
+            return
+
+        params = load_params()
+
+    
+        connection = params.get("connection", {})
+
+   
+        params["elements"] = defaults.get("elements", {})
+        params["categories"] = defaults.get("categories", {})
+        params["connection"] = connection
+
+        save_params(params)
+
+        self.inputs.clear()
+        self.build_tabs()
 
 # APP
 
