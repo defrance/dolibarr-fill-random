@@ -150,61 +150,89 @@ class MainScreen(Screen):
         tabs = TabbedPanel(do_default_tab=False)
         tabs.background_color = (0.9, 0.9, 0.9, 1)  # fond clair des tabs
 
-        # Elements Tab
-        elements_tab = TabbedPanelItem(text="Elements")
-        elements_scroll = self.build_scroll_container(params.get("elements", {}))
-        elements_tab.add_widget(elements_scroll)
-        tabs.add_widget(elements_tab)
+        # Liste des sections à afficher
+        sections = [
+            ("Elements", "elements"),
+            ("Categories", "categories"),
+            ("Contacts", "contacts"),
+            ("Others", "others"),
+            ("Project", "project"),
+            ("Supplier", "supplier"),
+            ("HRM", "hrm"),
+            ("Products", "products")
+        ]
 
-        # Categories Tab
-        categories_tab = TabbedPanelItem(text="Categories")
-        categories_scroll = self.build_scroll_container(params.get("categories", {}))
-        categories_tab.add_widget(categories_scroll)
-        tabs.add_widget(categories_tab)
+        # Créer un onglet pour chaque section
+        for tab_name, section_key in sections:
+            section_data = params.get(section_key, {})
+            if section_data:  # Seulement si la section contient des données
+                tab = TabbedPanelItem(text=tab_name)
+                scroll = self.build_scroll_container(section_data)
+                tab.add_widget(scroll)
+                tabs.add_widget(tab)
 
         self.ids.main_container.add_widget(tabs)
 
     def build_scroll_container(self, data_dict):
         from kivy.uix.scrollview import ScrollView
         scroll = ScrollView(do_scroll_x=False)
-        container = GridLayout(cols=3, spacing=5, size_hint_y=None)
-        container.bind(minimum_height=container.setter("height"))
-
+        
+        # Conteneur principal avec 3 colonnes
+        main_container = BoxLayout(orientation='horizontal', spacing=10, size_hint_y=None)
+        main_container.bind(minimum_height=main_container.setter("height"))
+        
         # Fond gris clair
-        with container.canvas.before:
+        with main_container.canvas.before:
             from kivy.graphics import Color, Rectangle
             Color(0.95, 0.95, 0.95, 1)  # gris clair
-            rect = Rectangle(pos=container.pos, size=container.size)
-        container.bind(pos=lambda inst, val: setattr(rect, 'pos', inst.pos))
-        container.bind(size=lambda inst, val: setattr(rect, 'size', inst.size))
+            rect = Rectangle(pos=main_container.pos, size=main_container.size)
+        main_container.bind(pos=lambda inst, val: setattr(rect, 'pos', inst.pos))
+        main_container.bind(size=lambda inst, val: setattr(rect, 'size', inst.size))
 
-        for name, value in data_dict.items():
-            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30)
-            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30)
-            btn = Button(text="Reset", size_hint_y=None, height=30)
+        # Créer 3 colonnes
+        columns = []
+        for i in range(3):
+            column = GridLayout(cols=3, spacing=5, size_hint_y=None, size_hint_x=0.33)
+            column.bind(minimum_height=column.setter("height"))
+            columns.append(column)
+            main_container.add_widget(column)
+
+        # Répartir les éléments sur les 3 colonnes
+        items = list(data_dict.items())
+        for idx, (name, value) in enumerate(items):
+            col_idx = idx % 3  # Distribuer de manière équilibrée sur les 3 colonnes
+            
+            lbl = Label(text=name, color=(0, 0, 0, 1), size_hint_y=None, height=30, size_hint_x=0.6)
+            ti = TextInput(text=str(value), multiline=False, input_filter="int", size_hint_y=None, height=30, size_hint_x=0.15)
+            btn = Button(text="Reset", size_hint_y=None, height=30, size_hint_x=0.25, font_size='12sp')
             btn.bind(on_release=lambda b, n=name: self.reset_field(n))
-            container.add_widget(lbl)
-            container.add_widget(ti)
-            container.add_widget(btn)
+            
+            columns[col_idx].add_widget(lbl)
+            columns[col_idx].add_widget(ti)
+            columns[col_idx].add_widget(btn)
+            
             self.inputs[name] = ti
 
-        scroll.add_widget(container)
+        scroll.add_widget(main_container)
         return scroll
 
     # SAVE NEW VALUE IN PARAM.
     def save_elements(self):
         params = load_params()
+        
+        # Parcourir tous les inputs et les sauvegarder dans la bonne section
         for name, ti in self.inputs.items():
             try:
-                if "elements" in params and name in params["elements"]:
-                    params["elements"][name] = int(ti.text)
-                elif "categories" in params and name in params["categories"]:
-                    params["categories"][name] = int(ti.text)
+                value = int(ti.text) if ti.text.strip() else 0
             except ValueError:
-                if "elements" in params and name in params["elements"]:
-                    params["elements"][name] = 0
-                elif "categories" in params and name in params["categories"]:
-                    params["categories"][name] = 0
+                value = 0
+            
+            # Chercher dans quelle section se trouve ce paramètre
+            for section in ["elements", "categories", "contacts", "others", "project", "supplier", "hrm", "products"]:
+                if section in params and name in params[section]:
+                    params[section][name] = value
+                    break
+        
         save_params(params)
 
     # RAZ 
@@ -228,12 +256,15 @@ class MainScreen(Screen):
 
         params = load_params()
 
-    
+        # Conserver la connexion
         connection = params.get("connection", {})
 
-   
-        params["elements"] = defaults.get("elements", {})
-        params["categories"] = defaults.get("categories", {})
+        # Charger toutes les sections par défaut
+        for section in ["elements", "categories", "contacts", "others", "project", "supplier", "hrm", "products", "columngrid"]:
+            if section in defaults:
+                params[section] = defaults[section]
+        
+        # Restaurer la connexion
         params["connection"] = connection
 
         save_params(params)
