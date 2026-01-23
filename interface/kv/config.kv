@@ -1,35 +1,113 @@
 <ConfigScreen>:
     canvas.before:
         Color:
-            rgba: 1,1,1,1
+            rgba: 1, 1, 1, 1  # Fond blanc
         Rectangle:
             pos: self.pos
             size: self.size
-
+    
     BoxLayout:
-        orientation: "vertical"
-        padding: 20
+        orientation: 'vertical'
+        padding: 10
         spacing: 10
-
-        TextInput:
-            id: token_input
-            hint_text: "API Token"
-            multiline: False
-
-        TextInput:
-            id: version_input
-            hint_text: "Version Dolibarr"
-            multiline: False
-
-        TextInput:
-            id: url_input
-            hint_text: "URL Base API"
-            multiline: False
-
-        Button:
-            text: "Tester la connexion"
-            on_press: root.test_connection()
-
+        
         Label:
+            text: 'Configuration de connexion'
+            size_hint_y: None
+            height: 40
+            font_size: '20sp'
+            color: 0, 0, 0, 1  # Texte noir
+        
+        GridLayout:
+            cols: 2
+            spacing: 10
+            size_hint_y: None
+            height: 200
+            
+            Label:
+                text: 'API Token:'
+                size_hint_x: 0.3
+                color: 0, 0, 0, 1  # Texte noir
+            TextInput:
+                id: token_input
+                multiline: False
+                size_hint_x: 0.7
+                background_color: 1, 1, 1, 1  # Fond blanc
+                foreground_color: 0, 0, 0, 1  # Texte noir
+            
+            Label:
+                text: 'Version Dolibarr:'
+                size_hint_x: 0.3
+                color: 0, 0, 0, 1  # Texte noir
+            TextInput:
+                id: version_input
+                multiline: False
+                input_filter: 'int'
+                size_hint_x: 0.7
+                background_color: 1, 1, 1, 1  # Fond blanc
+                foreground_color: 0, 0, 0, 1  # Texte noir
+            
+            Label:
+                text: 'URL de base:'
+                size_hint_x: 0.3
+                color: 0, 0, 0, 1  # Texte noir
+            TextInput:
+                id: url_input
+                multiline: False
+                size_hint_x: 0.7
+                background_color: 1, 1, 1, 1  # Fond blanc
+                foreground_color: 0, 0, 0, 1  # Texte noir
+            
+            Label:
+                text: 'Langue:'
+                size_hint_x: 0.3
+                color: 0, 0, 0, 1  # Texte noir
+            TextInput:
+                id: lang_input
+                multiline: False
+                size_hint_x: 0.7
+                text: 'fr_FR'
+                background_color: 1, 1, 1, 1  # Fond blanc
+                foreground_color: 0, 0, 0, 1  # Texte noir
+        
+        # Boutons d'action
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+            size_hint_y: None
+            height: 50
+            
+            Button:
+                text: 'Valeurs par défaut'
+                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
+                color: 0, 0, 0, 1  # Texte noir
+                on_release: root.load_default_config()
+            
+            Button:
+                text: 'Remise à zéro'
+                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
+                color: 0, 0, 0, 1  # Texte noir
+                on_release: root.reset_config()
+            
+            Button:
+                text: 'Sauvegarder'
+                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
+                color: 0, 0, 0, 1  # Texte noir
+                on_release: root.save_config()
+            
+            Button:
+                text: 'Tester la connexion'
+                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
+                color: 0, 0, 0, 1  # Texte noir
+                on_release: root.test_connection()
+        
+        # Status label
+        Label:
+            id: status_label
             text: root.status_text
-            color: (0, 1, 0, 1)
+            size_hint_y: None
+            height: 40
+            color: 0, 0, 0, 1  # Texte noir
+        
+        Widget:
+            # Spacer
