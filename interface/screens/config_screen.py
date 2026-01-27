@@ -41,13 +41,12 @@ class ConfigScreen(Screen):
         params = self.load_params()
         conn = params.get("connection", {})
         others = params.get("others", {})
-        self.ids.token_input.text = conn.get("apitoken", "")
+        self.ids.token_input.text = str(conn.get("apitoken", ""))
         self.ids.version_input.text = str(conn.get("dol_version", ""))
-        self.ids.url_input.text = conn.get("urlbase", "")
-        self.ids.lang_input.text = others.get("lang", "fr_FR")
+        self.ids.url_input.text = str(conn.get("urlbase", ""))
+        self.ids.lang_input.text = str(others.get("lang", "fr_FR"))
 
     def save_config(self):
-
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
         urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
@@ -87,10 +86,10 @@ class ConfigScreen(Screen):
 
         conn = defaults.get("connection", {})
         others = defaults.get("others", {})
-        self.ids.token_input.text = conn.get("apitoken", "")
+        self.ids.token_input.text = str(conn.get("apitoken", ""))
         self.ids.version_input.text = str(conn.get("dol_version", ""))
-        self.ids.url_input.text = conn.get("urlbase", "")
-        self.ids.lang_input.text = others.get("lang", "fr_FR")
+        self.ids.url_input.text = str(conn.get("urlbase", ""))
+        self.ids.lang_input.text = str(others.get("lang", "fr_FR"))
         self.status_text = "Valeurs par défaut chargées"
 
     def test_connection(self):

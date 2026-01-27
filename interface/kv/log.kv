@@ -1,61 +1,78 @@
 <LogScreen>:
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1  # Fond blanc
+            rgba: 0.97, 0.97, 0.97, 1  # Fond gris très clair
         Rectangle:
             pos: self.pos
             size: self.size
     
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
-        spacing: 10
+        padding: 20
+        spacing: 15
         
         # En-tête
         Label:
             text: 'Logs'
             size_hint_y: None
-            height: 40
-            font_size: '20sp'
-            color: 0, 0, 0, 1
+            height: 50
+            font_size: '22sp'
+            color: 0.2, 0.2, 0.2, 1
             bold: True
         
         # Zone de logs avec scroll
-        ScrollView:
-            id: log_scroll
-            do_scroll_x: False
-            bar_width: 10
-            bar_color: 0.5, 0.5, 0.5, 1
+        BoxLayout:
+            orientation: 'vertical'
+            canvas.before:
+                Color:
+                    rgba: 0.15, 0.15, 0.15, 1  # Fond noir pour console
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [8,]
+            padding: 5
             
-            Label:
-                id: log_label
-                text: root.log_text
-                size_hint_y: None
-                height: self.texture_size[1]
-                text_size: self.width, None
-                color: 0, 0, 0, 1
-                font_name: 'RobotoMono-Regular'
-                font_size: '12sp'
-                halign: 'left'
-                valign: 'top'
-                padding: 10, 10
-                markup: True
+            ScrollView:
+                id: log_scroll
+                do_scroll_x: False
+                bar_width: 10
+                bar_color: 0.4, 0.7, 0.4, 1  # Vert pour la scrollbar
+                
+                Label:
+                    id: log_label
+                    text: root.log_text
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width - 20, None
+                    color: 0.9, 0.9, 0.9, 1  # Texte clair sur fond sombre
+                    font_name: 'RobotoMono-Regular'
+                    font_size: '13sp'
+                    halign: 'left'
+                    valign: 'top'
+                    padding: 15, 10
+                    markup: True
         
         # Boutons d'action
         BoxLayout:
             orientation: 'horizontal'
             size_hint_y: None
-            height: 50
-            spacing: 10
+            height: 60
+            spacing: 12
+            padding: 10, 0
             
             Button:
                 text: 'Effacer les logs'
-                background_color: 0.9, 0.9, 0.9, 1
-                color: 0, 0, 0, 1
+                background_color: 0.9, 0.5, 0.3, 1  # Orange
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
                 on_release: root.clear_logs()
             
             Button:
-                text: 'Retour'
-                background_color: 0.3, 0.5, 0.9, 1
+                text: 'Retour au menu'
+                background_color: 0.4, 0.6, 0.9, 1  # Bleu
+                background_normal: ''
                 color: 1, 1, 1, 1
+                font_size: '14sp'
+                bold: True
                 on_release: root.go_back()
