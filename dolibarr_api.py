@@ -58,13 +58,13 @@ nbNewKnowledge=config['elements']['new_knowledge']
 nbNewProduct=config['elements']['new_product']
 nbSalePriceHistoryMax = config['products']['nb_sale_price_history_max']
 pourcentageAugPriceMax = config['products']['pourcentage_aug_price_max']
-nbNewStockMovement=config['elements']['new_stock_movement']
+nbNewStockMovement=config['products']['new_stock_movement']
 
 # Lots
-nbMaxLotByProduct = config['productlots']['nb_lot_by_product_max']
+nbMaxLotByProduct = config['products']['nb_lot_by_product_max']
 
 # Catégories
-newCategory=config['categories']['new_category']
+newCategory=config['elements']['new_category']
 newCategoryProduct=config['categories']['new_category_product']
 newCategoryCustomer=config['categories']['new_category_customer']
 newCategorySocpeople=config['categories']['new_category_socpeople']

@@ -11,9 +11,9 @@ connection-test2:
 
 
 categories:
-  new_category_customer: 0
-  new_category_product: 0
-  new_category_socpeople: 0
+  new_category_customer: 3
+  new_category_product: 3
+  new_category_socpeople: 3
 
 contacts:
   invoice_externe: 1
@@ -24,61 +24,56 @@ contacts:
   proposal_interne: 1
 
 elements:
-  new_category: 0
-  new_bank: 0
-  new_bill: 0
-  new_client: 0
-  new_contract: 0
-  new_fichinter: 0
-  new_knowledge: 0
-  new_order: 0
-  new_product: 0
-  new_proposal: 0
-  new_stock_movement: 0
-  new_ticket: 10
-  new_user: 10
+  new_category: 10
+  new_bank: 3
+  new_bill: 100
+  new_client: 30
+  new_contract: 100
+  new_fichinter: 100
+  new_knowledge: 10
+  new_order: 100
+  new_product: 100
+  new_proposal: 100
+  new_ticket: 100
+  new_user: 30
   new_user_group: 10
-  new_warehouse: 0
+  new_warehouse: 3
   new_opportunity: 0
-  new_project: 0
-  new_supplier_bill: 0
-  new_supplier_order: 0
-  new_holiday: 0
-  new_expense_report: 0
+  new_project: 100
+  new_supplier_bill: 100
+  new_supplier_order: 100
+  new_holiday: 100
+  new_expense_report: 100
 
 others:
   date_interval: 3
   nb_country: 3
   nb_shipping: 1
-  year_to_fill: 2024
+  year_to_fill: 2023
   max_workers: 10
   lang: fr_FR
   fk_country: 1
   tests: false
 
 project:
-  new_max_task: 0
-  new_max_task_time: 0
-  new_max_contact: 0
+  new_max_task: 10
+  new_max_task_time: 10
+  new_max_contact: 10
 
 supplier:
   create_supplier: 1
-  nb_supplier_product: 0
-  nb_supplier_product_price: 0
-  new_supplier_bill: 0
-  new_supplier_order: 0
+  nb_supplier_product: 10
+  nb_supplier_product_price: 10
 
 hrm:
   nb_expense_report_line_max: 5
-  nb_holiday: 0
-  nb_expense_report: 0
+
 
 products:
-  nb_sale_price_history_max: 0
-  pourcentage_aug_price_max: 0
-  new_product: 0
-  new_stock_movement: 0
-  nb_lot_by_product_max: 0
+  nb_sale_price_history_max: 10
+  pourcentage_aug_price_max: 10
+  new_stock_movement: 3
+  nb_lot_by_product_max: 3
 
 
   
