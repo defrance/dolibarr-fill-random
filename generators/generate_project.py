@@ -282,8 +282,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             else:
                                 if testing:
                                     print("contact ajouté à la tâche.")
-                                #  Stock les contacts associés à la tâche
-                                taskContacts.append(dataContact)
+                                #  Stock les contacts associés à la tâche / seulement les internes pour les pointages
+                                if taskContact["source"] == "internal" :
+                                    taskContacts.append(dataContact)
 
                         if testing:
                             print("contacts associés à la tâche :")
