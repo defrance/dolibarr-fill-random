@@ -1,33 +1,49 @@
 <MainScreen>:
     canvas.before:
         Color:
-            rgba: 1,1,1,1
+            rgba: 0.97, 0.97, 0.97, 1  # Fond gris très clair
         Rectangle:
             pos: self.pos
             size: self.size
-
     BoxLayout:
         orientation: "vertical"
-        padding: 10
-        spacing: 10
-
+        padding: 20
+        spacing: 15
         BoxLayout:
             id: main_container
             orientation: "vertical"
-
         BoxLayout:
             size_hint_y: None
-            height: 50
-            spacing: 10
-
+            height: 60
+            spacing: 12
+            padding: 10, 0
             Button:
-                text: "Default"
+                text: "Charger valeurs par défaut"
+                background_color: 0.4, 0.6, 0.9, 1  # Bleu clair
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
                 on_release: root.load_defaults()
-
             Button:
-                text: "Reset tout"
+                text: "Tout réinitialiser"
+                background_color: 0.9, 0.5, 0.3, 1  # Orange
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
                 on_release: root.reset_all()
-
             Button:
                 text: "Sauvegarder"
+                background_color: 0.3, 0.7, 0.4, 1  # Vert
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
+                bold: True
                 on_release: root.save_elements()
+            Button:
+                text: "Lancer alimentation"
+                background_color: 0.2, 0.6, 0.3, 1  # Vert foncé
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '15sp'
+                bold: True
+                on_release: root.execute_script()

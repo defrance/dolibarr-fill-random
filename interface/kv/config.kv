@@ -8,97 +8,127 @@
     
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
-        spacing: 10
+        padding: 20
+        spacing: 15
         
         Label:
             text: 'Configuration de connexion'
             size_hint_y: None
-            height: 40
-            font_size: '20sp'
-            color: 0, 0, 0, 1  # Texte noir
+            height: 50
+            font_size: '22sp'
+            color: 0.2, 0.2, 0.2, 1
+            bold: True
         
         GridLayout:
             cols: 2
-            spacing: 10
+            spacing: 15
             size_hint_y: None
-            height: 200
+            height: 220
+            padding: 10, 0
             
             Label:
                 text: 'API Token:'
                 size_hint_x: 0.3
-                color: 0, 0, 0, 1  # Texte noir
+                color: 0.3, 0.3, 0.3, 1
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
             TextInput:
                 id: token_input
                 multiline: False
                 size_hint_x: 0.7
-                background_color: 1, 1, 1, 1  # Fond blanc
-                foreground_color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.98, 0.98, 0.98, 1
+                foreground_color: 0.2, 0.2, 0.2, 1
+                padding: 10, 10
             
             Label:
                 text: 'Version Dolibarr:'
                 size_hint_x: 0.3
-                color: 0, 0, 0, 1  # Texte noir
+                color: 0.3, 0.3, 0.3, 1
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
             TextInput:
                 id: version_input
                 multiline: False
                 input_filter: 'int'
                 size_hint_x: 0.7
-                background_color: 1, 1, 1, 1  # Fond blanc
-                foreground_color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.98, 0.98, 0.98, 1
+                foreground_color: 0.2, 0.2, 0.2, 1
+                padding: 10, 10
             
             Label:
                 text: 'URL de base:'
                 size_hint_x: 0.3
-                color: 0, 0, 0, 1  # Texte noir
+                color: 0.3, 0.3, 0.3, 1
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
             TextInput:
                 id: url_input
                 multiline: False
                 size_hint_x: 0.7
-                background_color: 1, 1, 1, 1  # Fond blanc
-                foreground_color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.98, 0.98, 0.98, 1
+                foreground_color: 0.2, 0.2, 0.2, 1
+                padding: 10, 10
             
             Label:
                 text: 'Langue:'
                 size_hint_x: 0.3
-                color: 0, 0, 0, 1  # Texte noir
+                color: 0.3, 0.3, 0.3, 1
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
             TextInput:
                 id: lang_input
                 multiline: False
                 size_hint_x: 0.7
                 text: 'fr_FR'
-                background_color: 1, 1, 1, 1  # Fond blanc
-                foreground_color: 0, 0, 0, 1  # Texte noir
+                disabled: True
+                background_color: 0.92, 0.92, 0.92, 1
+                foreground_color: 0.5, 0.5, 0.5, 1
+                padding: 10, 10
         
         # Boutons d'action
         BoxLayout:
             orientation: 'horizontal'
-            spacing: 10
+            spacing: 12
             size_hint_y: None
-            height: 50
+            height: 55
+            padding: 10, 0
             
             Button:
                 text: 'Valeurs par défaut'
-                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
-                color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.4, 0.6, 0.9, 1  # Bleu clair
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
                 on_release: root.load_default_config()
             
             Button:
                 text: 'Remise à zéro'
-                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
-                color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.9, 0.5, 0.3, 1  # Orange
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
                 on_release: root.reset_config()
             
             Button:
                 text: 'Sauvegarder'
-                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
-                color: 0, 0, 0, 1  # Texte noir
+                background_color: 0.3, 0.7, 0.4, 1  # Vert
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
+                bold: True
                 on_release: root.save_config()
             
             Button:
-                text: 'Tester la connexion'
-                background_color: 0.9, 0.9, 0.9, 1  # Gris clair
-                color: 0, 0, 0, 1  # Texte noir
+                text: 'Connexion'
+                background_color: 0.2, 0.5, 0.8, 1  # Bleu foncé
+                background_normal: ''
+                color: 1, 1, 1, 1
+                font_size: '14sp'
+                bold: True
                 on_release: root.test_connection()
         
         # Status label
@@ -106,8 +136,9 @@
             id: status_label
             text: root.status_text
             size_hint_y: None
-            height: 40
-            color: 0, 0, 0, 1  # Texte noir
+            height: 50
+            color: 0.3, 0.3, 0.3, 1
+            font_size: '13sp'
         
         Widget:
             # Spacer
