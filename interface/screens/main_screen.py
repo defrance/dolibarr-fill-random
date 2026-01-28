@@ -86,8 +86,9 @@ class MainScreen(Screen):
         main_container.bind(size=lambda inst, val: setattr(rect, 'size', inst.size))
 
         columns = []
-        for i in range(3):
-            column = GridLayout(cols=3, spacing=5, size_hint_y=None, size_hint_x=0.33)
+        nbCol =2
+        for i in range(nbCol):
+            column = GridLayout(cols=3, spacing=10, size_hint_y=None, size_hint_x=0.33)
             column.bind(minimum_height=column.setter("height"))
             columns.append(column)
             main_container.add_widget(column)
@@ -95,7 +96,7 @@ class MainScreen(Screen):
         row_height = 40
         items = list(data_dict.items())
         for idx, (name, value) in enumerate(items):
-            col_idx = idx % 3
+            col_idx = idx % nbCol
             
             translated_name = get_translation(name, lang)
             
