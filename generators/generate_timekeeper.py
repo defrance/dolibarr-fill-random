@@ -31,7 +31,7 @@ def to_date(value):
     return None
 
 
-def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enabledModule, testing):
+def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpentByIntervention, maxTimePlannedByIntervention, testing):
     url = urlBase + "timekeeprapi/"
     urlPlanned = url + "planned/"
     urlSpent = url + "spent/"
@@ -78,6 +78,39 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enable
     except Exception as e:
         print(e)
         return
+
+    # Création temps plannifiés pour chaque Tickets
+    if maxTimePlannedByTicket > 0 and dataTickets:
+
+        for t in dataTickets:
+            for i in range(random.randint(1, maxTimePlannedByTicket)):
+                data = {
+                    "fk_element": t.get('id'),
+                    "elementtype": "ticket",
+                    "element_duration": random.choice([
+                                                        1800,   # 30 min
+                                                        2700,   # 45 min
+                                                        3600,   # 1h
+                                                        5400,   # 1h30
+                                                        7200,   # 2h
+                                                        9000,   # 2h30
+                                                        10800,  # 3h
+                                                        12600,  # 3h30
+                                                        14400   # 4h
+                                                        ]),
+                }
+
+            try:
+                r = requests.post(urlPlanned, headers=headers, json=data)
+
+                if testing:
+                    print(f"temps plannifié créé pour ticket {t.get('id')}")
+                    print(r.text)
+
+            except Exception as e:
+                print(r.status_code)
+                print(r.text)
+                print(e)
 
     # Création temps consommées pour chaque Tickets
     if maxTimeSpentByTicket > 0 and dataTickets:
@@ -145,7 +178,7 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enable
                     r = requests.post(urlSpent, headers=headers, json=data)
 
                     if testing:
-                        print(f"temps créé pour ticket {t.get('id')}")
+                        print(f"temps consommé créé pour ticket {t.get('id')}")
 
                 except Exception as e:
                     print(r.status_code)
@@ -155,10 +188,12 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enable
 
 if __name__ == "__main__":
     generate_timekeeper(
-        maxTimeSpentByTicket=3,
-        maxTimeSpentByIntervention=3,
-        enabledModule=get_enabled_modules(),
-        testing=True
+        maxTimeSpentByTicket = 1,
+        maxTimePlannedByTicket = 1,
+        maxTimeSpentByIntervention = 3,
+        maxTimePlannedByIntervention = 3,
+        testing = True
     )
 
 # pas possible de changer le userId du temps consommé.
+# probleme affichage des temps plannifié sur les tickets (mais ils sont bien créés)
