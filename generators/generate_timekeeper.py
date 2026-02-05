@@ -1,17 +1,37 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, date
 import random
 import string
 import requests
 import sys, os
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 # pour gérer les warnings de certificat SSL
-requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(
+    requests.packages.urllib3.exceptions.InsecureRequestWarning
+)
 
 from dolibarr_api import *
 from utils import *
 
-def generate_timekeeper(testing):
+
+def to_date(value):
+    """Convertit une date Dolibarr (int / str / datetime / date) en datetime.date"""
+    if isinstance(value, int):
+        return datetime.fromtimestamp(value).date()
+    if isinstance(value, str) and value:
+        try:
+            return datetime.fromisoformat(value.split(" ")[0]).date()
+        except ValueError:
+            return None
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return None
+
+
+def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enabledModule, testing):
     url = urlBase + "timekeeprapi/"
     urlPlanned = url + "planned/"
     urlSpent = url + "spent/"
@@ -20,48 +40,105 @@ def generate_timekeeper(testing):
 
     # Récupération des Tickets
     try:
-      r =requests.get(urlTickets, headers = headers)
-      dataTickets = r.json()
-      
-      if testing :
+        r = requests.get(urlTickets, headers=headers)
+        dataTickets = r.json()
+
+        if testing:
             print("Nombre de tickets :")
             print(len(dataTickets))
-    
+
     except Exception as e:
-       print(r.status_code)
-       print(r.text)
-       print(e)
+        print(r.status_code)
+        print(r.text)
+        print(e)
+        return
 
     # Récupération des interventions
-
     try:
-        r = requests.get(urlInterventions, headers = headers)
+        r = requests.get(urlInterventions, headers=headers)
         dataInterventions = r.json()
 
-        if testing :
+        if testing:
             print("Nombre d'interventations :")
             print(len(dataInterventions))
-    
+
     except Exception as e:
-       print(r.status_code)
-       print(r.text)
-       print(e)
+        print(r.status_code)
+        print(r.text)
+        print(e)
+
+    # Récupération users
+    try:
+        dataUsers = fill_users()
+
+        if testing:
+            print("Nombre d'utilisateurs :")
+            print(len(dataUsers))
+
+    except Exception as e:
+        print(e)
+        return
+
+    # Création temps consommées pour chaque Tickets
+    if maxTimeSpentByTicket > 0 and dataTickets:
+
+        for t in dataTickets:
+            rawDateCreate = t.get('datec')
+            rawDateEnd = t.get('date_close')
+
+            dateCreate = to_date(rawDateCreate)
+            dateEnd = to_date(rawDateEnd) or datetime.now().date()
+
+            if not dateCreate:
+                continue
+
+            # sécurité ordre des dates
+            if dateCreate > dateEnd:
+                dateCreate, dateEnd = dateEnd, dateCreate
+
+            # génération date Faker
+            if dateCreate == dateEnd:
+                dateTimeSpentPython = dateEnd
+            else:
+                dateTimeSpentPython = fake.date_between_dates(
+                    date_start=dateCreate,
+                    date_end=dateEnd
+                )
+
+            # conversion pour Dolibarr (timestamp)
+            elementDateApi = int(
+                datetime.combine(
+                    dateTimeSpentPython,
+                    datetime.min.time()
+                ).timestamp()
+            )
+
+            for i in range(random.randint(1, maxTimeSpentByTicket)):
+
+                data = {
+                    "fk_element": t.get('id'),
+                    "elementtype": "ticket",
+                    "element_duration": 4680,
+                    "fk_user": get_random_user_id(dataUsers),
+                    "element_date": elementDateApi
+                }
+
+                try:
+                    r = requests.post(urlSpent, headers=headers, json=data)
+
+                    if testing:
+                        print(f"temps créé pour ticket {t.get('id')}")
+
+                except Exception as e:
+                    print(r.status_code)
+                    print(r.text)
+                    print(e)
 
 
-
-        
 if __name__ == "__main__":
-    print( 
-        generate_timekeeper(testing = True
-                              ))
-    
-"""
-{
-"fk_element" : 1,
-"elementtype": "ticket" "
-	ficheinter",
-"element_duration": 4680,
-"fk_user": 1,
-"element_date": 1770249600
-}
-"""
+    generate_timekeeper(
+        maxTimeSpentByTicket=3,
+        maxTimeSpentByIntervention=3,
+        enabledModule=get_enabled_modules(),
+        testing=True
+    )
