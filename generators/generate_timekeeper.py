@@ -38,6 +38,8 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
     urlTickets = urlBase + "tickets"
     urlInterventions = urlBase + "interventions"
 
+    today = datetime.now().date()
+
     # Récupération des Tickets
     try:
         r = requests.get(urlTickets, headers=headers)
@@ -120,25 +122,29 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
             rawDateEnd = t.get('date_close')
 
             dateCreate = to_date(rawDateCreate)
-            dateEnd = to_date(rawDateEnd) or datetime.now().date()
+            dateEnd = to_date(rawDateEnd) or today
 
             if not dateCreate:
                 continue
 
-            # sécurité ordre des dates
-            if dateCreate > dateEnd:
-                dateCreate, dateEnd = dateEnd, dateCreate
+        # limite date de fin à aujourd’hui
+            dateEndEffective = min(dateEnd, today)
 
-            # génération date Faker
-            if dateCreate == dateEnd:
-                dateTimeSpentPython = dateEnd
+        # sécurité ordre des dates
+            if dateCreate > dateEndEffective:
+                dateCreate, dateEndEffective = dateEndEffective, dateCreate
+
+        # génération date Faker
+            if dateCreate == dateEndEffective:
+                dateTimeSpentPython = dateEndEffective
+
             else:
                 dateTimeSpentPython = fake.date_between_dates(
                     date_start=dateCreate,
-                    date_end=dateEnd
-                )
+                    date_end=dateEndEffective
+            )
 
-            # conversion pour Dolibarr (timestamp)
+            # conversion timestamp
             elementDateApi = int(
                 datetime.combine(
                     dateTimeSpentPython,

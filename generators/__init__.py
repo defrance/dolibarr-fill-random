@@ -15,6 +15,7 @@ from .generate_category import generate_category
 from .generate_holiday import generate_holiday
 from .generate_expense_report import generate_expense_report
 from .generate_user_group import generate_user_group
+from .generate_timekeeper import generate_timekeeper
 
 __all__ = [
     "generate_project",
@@ -33,5 +34,6 @@ __all__ = [
     "generate_category",
     "generate_holiday",
     "generate_expense_report",
-    "generate_user_group"
+    "generate_user_group",
+    "generate_timekeeper"
 ]

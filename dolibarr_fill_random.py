@@ -386,6 +386,21 @@ start_stop = datetime.now()
 duration = start_stop - start_prev
 print("Durée Alimentation Knowledge, Congés et Notes de frais (en parallèle) : ", duration)
 
+
+# Alimentation des temps consommés et plannifiés
+start_prev = datetime.now()
+
+start_stop = datetime.now()
+
+if 'timekeepr' in enabledModule :
+    generate_timekeeper(nbMaxNewTimeSpentByTicket = nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket=nbMaxNewTimePlannedByTicket, NbMaxNewTimeSpentByIntervention = NbMaxNewTimeSpentByIntervention,nbMaxNewTimePlannedByIntervention = nbMaxNewTimePlannedByIntervention, testing = testToggle)
+
+
+duration = start_stop - start_prev
+
+print("Durée Alimentation temps consommés et planifiés (Ticket et Intervention) : ", duration)
+
+
 # On affiche la durée de l'alimentation totale
 print("Fin de l'alimentation à ", start_stop.strftime('%Y-%m-%d %H:%M:%S'))
 # on affiche la durée
