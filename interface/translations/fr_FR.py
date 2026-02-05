@@ -1,7 +1,7 @@
 # Traductions des labels de l'interface
 
-TRANSLATIONS = {
-    "fr_FR": {
+fr_FR = {
+    "label": {
         # Elements
         "new_category": "Nouvelles catégories",
         "new_bank": "Nouveaux comptes bancaires",
@@ -68,11 +68,8 @@ TRANSLATIONS = {
         "pourcentage_aug_price_max": "Pourcentage max d'augmentation prix",
         "nb_lot_by_product_max": "Lots max par produit",
     },
-   #"en_US": {
-        # Pour plus tard si besoin
-    #   "new_client": "New customers",
-    #   "new_product": "New products",
-        # etc...
+   #"tabs": {
+    #"others" : "paramétrage",
     #}
 }
 
