@@ -21,7 +21,6 @@ def generate_timekeeper(testing):
     # Récupération des Tickets
     try:
       r =requests.get(urlTickets, headers = headers)
-      print(r.status_code)
       dataTickets = r.json()
       
       if testing :
@@ -35,6 +34,22 @@ def generate_timekeeper(testing):
 
     # Récupération des interventions
 
+    try:
+        r = requests.get(urlInterventions, headers = headers)
+        dataInterventions = r.json()
+
+        if testing :
+            print("Nombre d'interventations :")
+            print(len(dataInterventions))
+    
+    except Exception as e:
+       print(r.status_code)
+       print(r.text)
+       print(e)
+
+
+
+        
 if __name__ == "__main__":
     print( 
         generate_timekeeper(testing = True
