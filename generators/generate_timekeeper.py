@@ -113,13 +113,31 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimeSpentByIntervention, enable
                 ).timestamp()
             )
 
+
             for i in range(random.randint(1, maxTimeSpentByTicket)):
+
+            # Définition userId
+
+                fkUser = get_random_user_id(dataUsers)
+
+                if testing:
+                    print(f"IdUser : {fkUser['id']}")
 
                 data = {
                     "fk_element": t.get('id'),
                     "elementtype": "ticket",
-                    "element_duration": 4680,
-                    "fk_user": get_random_user_id(dataUsers),
+                    "element_duration": random.choice([
+                                                        1800,   # 30 min
+                                                        2700,   # 45 min
+                                                        3600,   # 1h
+                                                        5400,   # 1h30
+                                                        7200,   # 2h
+                                                        9000,   # 2h30
+                                                        10800,  # 3h
+                                                        12600,  # 3h30
+                                                        14400   # 4h
+                                                        ]),
+                    "fk_user": fkUser,
                     "element_date": elementDateApi
                 }
 
@@ -142,3 +160,5 @@ if __name__ == "__main__":
         enabledModule=get_enabled_modules(),
         testing=True
     )
+
+# pas possible de changer le userId du temps consommé.
