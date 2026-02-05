@@ -31,7 +31,7 @@ def to_date(value):
     return None
 
 
-def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpentByIntervention, maxTimePlannedByIntervention, testing):
+def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, NbMaxNewTimeSpentByIntervention, nbMaxNewTimePlannedByIntervention, testing):
     url = urlBase + "timekeeprapi/"
     urlPlanned = url + "planned/"
     urlSpent = url + "spent/"
@@ -80,10 +80,10 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpe
         return
 
     # Création temps plannifiés pour chaque Tickets
-    if maxTimePlannedByTicket > 0 and dataTickets:
+    if nbMaxNewTimePlannedByTicket > 0 and dataTickets:
 
         for t in dataTickets:
-            for i in range(random.randint(1, maxTimePlannedByTicket)):
+            for i in range(random.randint(1, nbMaxNewTimePlannedByTicket)):
                 data = {
                     "fk_element": t.get('id'),
                     "elementtype": "ticket",
@@ -113,7 +113,7 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpe
                 print(e)
 
     # Création temps consommées pour chaque Tickets
-    if maxTimeSpentByTicket > 0 and dataTickets:
+    if nbMaxNewTimeSpentByTicket > 0 and dataTickets:
 
         for t in dataTickets:
             rawDateCreate = t.get('datec')
@@ -147,7 +147,7 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpe
             )
 
 
-            for i in range(random.randint(1, maxTimeSpentByTicket)):
+            for i in range(random.randint(1, nbMaxNewTimeSpentByTicket)):
 
             # Définition userId
 
@@ -188,10 +188,10 @@ def generate_timekeeper(maxTimeSpentByTicket, maxTimePlannedByTicket, maxTimeSpe
 
 if __name__ == "__main__":
     generate_timekeeper(
-        maxTimeSpentByTicket = 1,
-        maxTimePlannedByTicket = 1,
-        maxTimeSpentByIntervention = 3,
-        maxTimePlannedByIntervention = 3,
+        nbMaxNewTimeSpentByTicket = 1,
+        nbMaxNewTimePlannedByTicket = 1,
+        NbMaxNewTimeSpentByIntervention = 3,
+        nbMaxNewTimePlannedByIntervention = 3,
         testing = True
     )
 

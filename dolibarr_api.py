@@ -107,6 +107,12 @@ fk_country = config['others']['fk_country']
 testing =config['others']['tests']
 lang = config['others']['lang']
 
+#TimeKeeper
+nbMaxNewTimeSpentByTicket = config['timekeeper']['nb_max_new_timespent_by_ticket']
+nbMaxNewTimePlannedByTicket = config['timekeeper']['nb_max_new_timeplanned_by_ticket']
+NbMaxNewTimeSpentByIntervention = config['timekeeper']['nb_max_new_timespent_by_intervention']
+nbMaxNewTimePlannedByIntervention = config['timekeeper']['nb_max_new_timeplanned_by_intervention']
+
 # 
 fake = Faker(lang)
 yearNow = datetime.now().year
