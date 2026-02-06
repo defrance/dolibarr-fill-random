@@ -191,7 +191,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                         /!\ API renvoie de l'HTML (sur swagger ok)         
                         timeSpentId = r.text.strip()
                         print("id temps crée :")
-                        print(timeSpentId)
+                        print(timeSpentId) """
 
                 except Exception as e:
                     print(r.status_code)
@@ -199,7 +199,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     print(e)
                 
                 # Update userId
-
+                """
 
                 if timeSpentId :
                     try:
@@ -217,7 +217,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                         print(r.status_code)
                         print(r.text)
                         print(e)
-"""
+                """
 
     # Création temps consommés Tickets
     if nbMaxNewTimeSpentByTicket > 0 and dataTickets :
@@ -256,7 +256,8 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
             else:
                 generate_timeSpent(d)
             
-            
+    # Création temps plannifiés Ticket
+    # Création temps plannifiés Interventions        
 
 
 if __name__ == "__main__":
