@@ -82,14 +82,13 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
         print(e)
         return
 
-    # Création temps plannifiés pour chaque Tickets
-    if nbMaxNewTimePlannedByTicket > 0 and dataTickets:
-
-        for t in dataTickets:
-            for i in range(random.randint(0, nbMaxNewTimePlannedByTicket)):
+    # Générateur temps plannifiés 
+    def generate_timePlanned(d) :
+            
+        for i in range(random.randint(0, nbMaxTimePlanned)):
                 data = {
-                    "fk_element": t.get('id'),
-                    "elementtype": "ticket",
+                    "fk_element": d.get('id'),
+                    "elementtype": elementType,
                     "element_duration": random.choice([
                                                         1800,   # 30 min
                                                         2700,   # 45 min
@@ -107,7 +106,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     r = requests.post(urlPlanned, headers=headers, json=data)
 
                     if testing:
-                        print(f"temps plannifié créé pour ticket {t.get('id')}")
+                        print(f"temps plannifié créé pour {elementType} : {d.get('ref')}")
                         print(r.text)
 
                 except Exception as e:
@@ -185,10 +184,10 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     r = requests.post(urlSpent, headers=headers, json=data)
 
                     if testing:
-                        print(f"temps consommé créé pour {elementType} {d.get('id')}")
+                        print(f"temps consommé créé pour {elementType} {d.get('ref')}")
 
-                        """     
-                        /!\ API renvoie de l'HTML (sur swagger ok)         
+                    """     
+                        API renvoie de l'HTML (sur swagger ok)         
                         timeSpentId = r.text.strip()
                         print("id temps crée :")
                         print(timeSpentId) """
@@ -239,10 +238,6 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                 try:
                     r = requests.post(urlInterventions + d['id'] + '/reopen', headers = headers)
 
-                    print('reouverture')
-                    print(urlInterventions + d['id'] + '/reopen')
-
-        
                     generate_timeSpent(d)
 
                     r = requests.post(urlInterventions + d['id'] + '/validate', headers = headers)
@@ -257,17 +252,29 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                 generate_timeSpent(d)
             
     # Création temps plannifiés Ticket
-    # Création temps plannifiés Interventions        
+    if nbMaxNewTimePlannedByTicket > 0 and dataTickets:
+        for d in dataTickets:
+            elementType = "ticket"
+            nbMaxTimePlanned = nbMaxNewTimePlannedByTicket
+            generate_timePlanned(d)
+
+    # Création temps plannifiés Interventions
+    if nbMaxNewTimePlannedByIntervention > 0 and dataInterventions:
+        for d in dataInterventions:
+            elementType = "fichinterdet"
+            nbMaxTimePlanned = nbMaxNewTimePlannedByIntervention
+            # Prévoir gestion création par rapport aux status comme pour timespent
+            generate_timePlanned(d)        
 
 
 if __name__ == "__main__":
     generate_timekeeper(
-        nbMaxNewTimeSpentByTicket = 3,
+        nbMaxNewTimeSpentByTicket = 0,
         nbMaxNewTimePlannedByTicket = 0,
         NbMaxNewTimeSpentByIntervention = 0,
-        nbMaxNewTimePlannedByIntervention = 0,
+        nbMaxNewTimePlannedByIntervention = 3,
         testing = True
     )
 
-# pas possible de changer le userId du temps consommé.
-# probleme affichage des temps plannifié sur les tickets (mais ils sont bien créés)
+# impossible de changer le userId du temps consommé.
+# probleme affichage des temps plannifié sur les tickets et les interventions (mais ils sont bien créés)
