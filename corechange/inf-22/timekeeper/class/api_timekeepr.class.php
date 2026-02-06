@@ -174,7 +174,7 @@ class Timekeeprapi extends DolibarrApi
      */
     public function planned_post($request_data = null)
     {
-        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'saisir')) {
+        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'write')) {
             throw new RestException(403, "Insufficient rights. Required: timekeepr/saisir");
         }
 
@@ -219,7 +219,7 @@ class Timekeeprapi extends DolibarrApi
      */
     public function planned_put($id, $request_data = null)
     {
-        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'saisir')) {
+        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'write')) {
             throw new RestException(403, "Insufficient rights. Required: timekeepr/saisir");
         }
 
@@ -260,7 +260,7 @@ class Timekeeprapi extends DolibarrApi
      */
     public function planned_delete($id)
     {
-        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'saisir')) {
+        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'write')) {
             throw new RestException(403, "Insufficient rights. Required: timekeepr/saisir");
         }
 
@@ -480,7 +480,7 @@ class Timekeeprapi extends DolibarrApi
      */
     public function spent_put($id, $request_data = null)
     {
-        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'saisir')) {
+        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'write')) {
             throw new RestException(403, "Insufficient rights. Required: timekeepr/saisir");
         }
 
@@ -521,7 +521,7 @@ class Timekeeprapi extends DolibarrApi
      */
     public function spent_delete($id)
     {
-        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'saisir')) {
+        if (!DolibarrApiAccess::$user->hasRight('timekeepr', 'write')) {
             throw new RestException(403, "Insufficient rights. Required: timekeepr/saisir");
         }
         

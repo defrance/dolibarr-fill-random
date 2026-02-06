@@ -35,8 +35,9 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
     url = urlBase + "timekeeprapi/"
     urlPlanned = url + "planned/"
     urlSpent = url + "spent/"
-    urlTickets = urlBase + "tickets"
-    urlInterventions = urlBase + "interventions"
+    urlTickets = urlBase + "tickets/"
+    urlInterventions = urlBase + "interventions/"
+    timeSpentId = None
 
     today = datetime.now().date()
 
@@ -116,16 +117,13 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
 
     # generateur temps consommées 
 
-    def generate_timeSpent():
-        for d in dataList:
+    def generate_timeSpent(d):
+
             rawDateCreate = d.get('datec')
             rawDateEnd = d.get('date_close')
 
             dateCreate = to_date(rawDateCreate)
             dateEnd = to_date(rawDateEnd) or today
-
-            if not dateCreate:
-                continue
 
         # limite date de fin à aujourd’hui
             dateEndEffective = min(dateEnd, today)
@@ -137,6 +135,9 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
         # génération date Faker
             if dateCreate == dateEndEffective:
                 dateTimeSpentPython = dateEndEffective
+
+            if not dateCreate:
+                return
 
             else:
                 dateTimeSpentPython = fake.date_between_dates(
@@ -186,32 +187,85 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     if testing:
                         print(f"temps consommé créé pour {elementType} {d.get('id')}")
 
+                        """     
+                        /!\ API renvoie de l'HTML (sur swagger ok)         
+                        timeSpentId = r.text.strip()
+                        print("id temps crée :")
+                        print(timeSpentId) """
+
                 except Exception as e:
                     print(r.status_code)
                     print(r.text)
                     print(e)
+                
+                # Update userId
+                """
+
+                if timeSpentId :
+                    try:
+
+                        dataUpdate = {
+                            "fk_user": fkUser
+                            }
+
+                        r = requests.put(urlSpent + timeSpentId, headers = headers, json = dataUpdate)
+
+                        if testing:
+                            print('user id update')
+
+                    except Exception as e:
+                        print(r.status_code)
+                        print(r.text)
+                        print(e)
+                """
 
     # Création temps consommés Tickets
     if nbMaxNewTimeSpentByTicket > 0 and dataTickets :
-        elementType = "ticket"
-        dataList = dataTickets
-        nbMaxTimeSpent = nbMaxNewTimeSpentByTicket
-        generate_timeSpent()
+        for d in dataTickets :
+            elementType = "ticket"
+            nbMaxTimeSpent = nbMaxNewTimeSpentByTicket
+            generate_timeSpent(d)
 
     # Création temps consommés Interventions
     if NbMaxNewTimeSpentByIntervention > 0 and dataInterventions :
-        elementType = "ficheinter"
-        dataList = dataInterventions
-        nbMaxTimeSpent = NbMaxNewTimeSpentByIntervention
-        generate_timeSpent()
+        for d in dataInterventions :
+            elementType = "fichinterdet"
+            nbMaxTimeSpent = NbMaxNewTimeSpentByIntervention
+
+            # AJOUTER LINES ALEATOIRE
+            
+            # Si intervention cloturée la rouvre pour ajouter les temps
+            if d['statut'] == "3":
+                try:
+                    r = requests.post(urlInterventions + d['id'] + '/reopen', headers = headers)
+
+                    print('reouverture')
+                    print(urlInterventions + d['id'] + '/reopen')
+
+        
+                    generate_timeSpent(d)
+
+                    r = requests.post(urlInterventions + d['id'] + '/validate', headers = headers)
+
+                    r = requests.post(urlInterventions + d['id'] + '/close', headers = headers)
+
+                except Exception as e:
+                    print(r.status_code)
+                    print(e)
+            
+            else:
+                generate_timeSpent(d)
+            
+    # Création temps plannifiés Ticket
+    # Création temps plannifiés Interventions        
 
 
 if __name__ == "__main__":
     generate_timekeeper(
         nbMaxNewTimeSpentByTicket = 3,
-        nbMaxNewTimePlannedByTicket = 1,
-        NbMaxNewTimeSpentByIntervention = 3,
-        nbMaxNewTimePlannedByIntervention = 3,
+        nbMaxNewTimePlannedByTicket = 0,
+        NbMaxNewTimeSpentByIntervention = 0,
+        nbMaxNewTimePlannedByIntervention = 0,
         testing = True
     )
 
