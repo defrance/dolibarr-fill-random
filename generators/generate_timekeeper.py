@@ -269,10 +269,10 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
 
 if __name__ == "__main__":
     generate_timekeeper(
-        nbMaxNewTimeSpentByTicket = 0,
-        nbMaxNewTimePlannedByTicket = 0,
-        NbMaxNewTimeSpentByIntervention = 0,
-        nbMaxNewTimePlannedByIntervention = 3,
+        nbMaxNewTimeSpentByTicket = 10,
+        nbMaxNewTimePlannedByTicket = 10,
+        NbMaxNewTimeSpentByIntervention = 10,
+        nbMaxNewTimePlannedByIntervention = 10,
         testing = True
     )
 
