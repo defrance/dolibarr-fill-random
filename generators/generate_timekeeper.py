@@ -152,7 +152,17 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                 ).timestamp()
             )
 
+            # récupération des lignes
+            """            line_id = None
+            lines = d.get("lines",[])
 
+            if not lines:
+                return
+
+            random_line = random.choice(lines)
+            line_id = random_line.get("id")
+            """
+            
             for i in range(random.randint(0,  nbMaxTimeSpent)):
 
             # Définition userId
@@ -177,7 +187,8 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                                                         14400   # 4h
                                                         ]),
                     "fk_user": fkUser,
-                    "element_date": elementDateApi
+                    "element_date": elementDateApi,
+                    #"intervention_line_id" : line_id
                 }
 
                 try:
@@ -230,8 +241,6 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
         for d in dataInterventions :
             elementType = "fichinterdet"
             nbMaxTimeSpent = NbMaxNewTimeSpentByIntervention
-
-            # AJOUTER LINES ALEATOIRE
             
             # Si intervention cloturée la rouvre pour ajouter les temps
             if d['statut'] == "3":
