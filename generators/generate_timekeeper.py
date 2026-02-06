@@ -263,8 +263,23 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
         for d in dataInterventions:
             elementType = "fichinterdet"
             nbMaxTimePlanned = nbMaxNewTimePlannedByIntervention
-            # Prévoir gestion création par rapport aux status comme pour timespent
-            generate_timePlanned(d)        
+            # Si intervention cloturée la rouvre pour ajouter les temps
+            if d['statut'] == "3":
+                try:
+                    r = requests.post(urlInterventions + d['id'] + '/reopen', headers = headers)
+
+                    generate_timePlanned(d)
+
+                    r = requests.post(urlInterventions + d['id'] + '/validate', headers = headers)
+
+                    r = requests.post(urlInterventions + d['id'] + '/close', headers = headers)
+
+                except Exception as e:
+                    print(r.status_code)
+                    print(e)
+            
+            else:
+                generate_timePlanned(d)     
 
 
 if __name__ == "__main__":
