@@ -75,5 +75,11 @@ products:
   new_stock_movement: 3
   nb_lot_by_product_max: 3
 
+timekeeper:
+  nb_max_new_timespent_by_ticket : 3
+  nb_max_new_timeplanned_by_ticket : 3
+  nb_max_new_timespent_by_intervention : 3
+  nb_max_new_timeplanned_by_intervention : 3
+
 
   
