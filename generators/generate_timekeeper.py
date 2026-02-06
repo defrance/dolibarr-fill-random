@@ -85,7 +85,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
     if nbMaxNewTimePlannedByTicket > 0 and dataTickets:
 
         for t in dataTickets:
-            for i in range(random.randint(1, nbMaxNewTimePlannedByTicket)):
+            for i in range(random.randint(0, nbMaxNewTimePlannedByTicket)):
                 data = {
                     "fk_element": t.get('id'),
                     "elementtype": "ticket",
@@ -153,7 +153,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
             )
 
 
-            for i in range(random.randint(1, nbMaxNewTimeSpentByTicket)):
+            for i in range(random.randint(0, nbMaxNewTimeSpentByTicket)):
 
             # Définition userId
 
@@ -190,6 +190,9 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     print(r.status_code)
                     print(r.text)
                     print(e)
+
+
+    # Création temps consommées pour chaque interventions
 
 
 if __name__ == "__main__":
