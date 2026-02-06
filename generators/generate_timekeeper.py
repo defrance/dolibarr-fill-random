@@ -85,7 +85,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
     if nbMaxNewTimePlannedByTicket > 0 and dataTickets:
 
         for t in dataTickets:
-            for i in range(random.randint(1, nbMaxNewTimePlannedByTicket)):
+            for i in range(random.randint(0, nbMaxNewTimePlannedByTicket)):
                 data = {
                     "fk_element": t.get('id'),
                     "elementtype": "ticket",
@@ -102,24 +102,24 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                                                         ]),
                 }
 
-            try:
-                r = requests.post(urlPlanned, headers=headers, json=data)
+                try:
+                    r = requests.post(urlPlanned, headers=headers, json=data)
 
-                if testing:
-                    print(f"temps plannifié créé pour ticket {t.get('id')}")
+                    if testing:
+                        print(f"temps plannifié créé pour ticket {t.get('id')}")
+                        print(r.text)
+
+                except Exception as e:
+                    print(r.status_code)
                     print(r.text)
+                    print(e)
 
-            except Exception as e:
-                print(r.status_code)
-                print(r.text)
-                print(e)
+    # generateur temps consommées 
 
-    # Création temps consommées pour chaque Tickets
-    if nbMaxNewTimeSpentByTicket > 0 and dataTickets:
-
-        for t in dataTickets:
-            rawDateCreate = t.get('datec')
-            rawDateEnd = t.get('date_close')
+    def generate_timeSpent():
+        for d in dataList:
+            rawDateCreate = d.get('datec')
+            rawDateEnd = d.get('date_close')
 
             dateCreate = to_date(rawDateCreate)
             dateEnd = to_date(rawDateEnd) or today
@@ -153,7 +153,7 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
             )
 
 
-            for i in range(random.randint(1, nbMaxNewTimeSpentByTicket)):
+            for i in range(random.randint(0,  nbMaxTimeSpent)):
 
             # Définition userId
 
@@ -163,8 +163,8 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     print(f"IdUser : {fkUser['id']}")
 
                 data = {
-                    "fk_element": t.get('id'),
-                    "elementtype": "ticket",
+                    "fk_element": d.get('id'),
+                    "elementtype": elementType,
                     "element_duration": random.choice([
                                                         1800,   # 30 min
                                                         2700,   # 45 min
@@ -184,17 +184,31 @@ def generate_timekeeper(nbMaxNewTimeSpentByTicket, nbMaxNewTimePlannedByTicket, 
                     r = requests.post(urlSpent, headers=headers, json=data)
 
                     if testing:
-                        print(f"temps consommé créé pour ticket {t.get('id')}")
+                        print(f"temps consommé créé pour {elementType} {d.get('id')}")
 
                 except Exception as e:
                     print(r.status_code)
                     print(r.text)
                     print(e)
 
+    # Création temps consommés Tickets
+    if nbMaxNewTimeSpentByTicket > 0 and dataTickets :
+        elementType = "ticket"
+        dataList = dataTickets
+        nbMaxTimeSpent = nbMaxNewTimeSpentByTicket
+        generate_timeSpent()
+
+    # Création temps consommés Interventions
+    if NbMaxNewTimeSpentByIntervention > 0 and dataInterventions :
+        elementType = "ficheinter"
+        dataList = dataInterventions
+        nbMaxTimeSpent = NbMaxNewTimeSpentByIntervention
+        generate_timeSpent()
+
 
 if __name__ == "__main__":
     generate_timekeeper(
-        nbMaxNewTimeSpentByTicket = 1,
+        nbMaxNewTimeSpentByTicket = 3,
         nbMaxNewTimePlannedByTicket = 1,
         NbMaxNewTimeSpentByIntervention = 3,
         nbMaxNewTimePlannedByIntervention = 3,
