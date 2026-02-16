@@ -50,14 +50,15 @@ class MainScreen(Screen):
         tabs.background_color = (0.9, 0.9, 0.9, 1)
 
         sections = [
+            ("Configuration", "others"),
             ("Elements", "elements"),
             ("Categories", "categories"),
             ("Contacts", "contacts"),
-            ("Others", "others"),
-            ("Project", "project"),
-            ("Supplier", "supplier"),
+            ("Projets", "project"),
+            ("Fournisseurs", "supplier"),
             ("HRM", "hrm"),
-            ("Products", "products")
+            ("Produits", "products"),
+            ("TimeKeepr", "timekeepr")
         ]
 
         for tab_name, section_key in sections:
