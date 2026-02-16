@@ -67,6 +67,13 @@ TRANSLATIONS = {
         "nb_sale_price_history_max": "Historique max de prix de vente",
         "pourcentage_aug_price_max": "Pourcentage max d'augmentation prix",
         "nb_lot_by_product_max": "Lots max par produit",
+
+        # TimeKeepr
+        "nb_max_new_timespent_by_ticket": "Nombre max temps consommés par ticket",
+        "nb_max_new_timeplanned_by_ticket": "Nombre max temps plannifiés par ticket",
+        "nb_max_new_timespent_by_intervention": "Nombre max temps consommés par intervention",
+        "nb_max_new_timeplanned_by_intervention": "Nombre max temps plannifiés par intervention",
+
     },
    #"en_US": {
         # Pour plus tard si besoin
