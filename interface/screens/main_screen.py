@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from translations.get_translation import get_translation
 
-# Langues disponibles : code interne -> nom affiché
+# Langues disponibles : 
 AVAILABLE_LANGUAGES = {
     "fr_FR": "Français",
     "en_US": "English",
@@ -83,9 +83,7 @@ class MainScreen(Screen):
             lang = "fr_FR"
         return get_translation(key, lang)
 
-    # ------------------------------------------------------------------
     # Construction des onglets
-    # ------------------------------------------------------------------
 
     def build_tabs(self):
         self.ids.main_container.clear_widgets()
@@ -177,7 +175,6 @@ class MainScreen(Screen):
                     color=(1, 1, 1, 1),
                 )
 
-            # --- Champ standard : TextInput entier ---
             else:
                 widget = TextInput(
                     text=str(value),
@@ -207,9 +204,8 @@ class MainScreen(Screen):
         scroll.add_widget(main_container)
         return scroll
 
-    # ------------------------------------------------------------------
+
     # Sauvegarde / Reset
-    # ------------------------------------------------------------------
 
     def _get_widget_value(self, name, widget):
         """Lit la valeur d'un widget (TextInput ou Spinner) et la convertit."""
