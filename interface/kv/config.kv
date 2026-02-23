@@ -1,38 +1,39 @@
 <ConfigScreen>:
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1  # Fond blanc
+            rgba: 1, 1, 1, 1
         Rectangle:
             pos: self.pos
             size: self.size
-    
+
     BoxLayout:
         orientation: 'vertical'
         padding: 20
         spacing: 15
-        
+
         Label:
-            text: 'Configuration de connexion'
+            text: root.tr("config_title")
             size_hint_y: None
             height: 50
             font_size: '22sp'
             color: 0.2, 0.2, 0.2, 1
             bold: True
-        
+
         GridLayout:
             cols: 2
             spacing: 15
             size_hint_y: None
             height: 220
             padding: 10, 0
-            
+
             Label:
-                text: 'API Token:'
+                text: root.tr("api_token")
                 size_hint_x: 0.3
                 color: 0.3, 0.3, 0.3, 1
                 halign: 'right'
                 valign: 'middle'
                 text_size: self.size
+
             TextInput:
                 id: token_input
                 multiline: False
@@ -40,14 +41,15 @@
                 background_color: 0.98, 0.98, 0.98, 1
                 foreground_color: 0.2, 0.2, 0.2, 1
                 padding: 10, 10
-            
+
             Label:
-                text: 'Version Dolibarr:'
+                text: root.tr("dolibarr_version")
                 size_hint_x: 0.3
                 color: 0.3, 0.3, 0.3, 1
                 halign: 'right'
                 valign: 'middle'
                 text_size: self.size
+
             TextInput:
                 id: version_input
                 multiline: False
@@ -56,14 +58,15 @@
                 background_color: 0.98, 0.98, 0.98, 1
                 foreground_color: 0.2, 0.2, 0.2, 1
                 padding: 10, 10
-            
+
             Label:
-                text: 'URL de base:'
+                text: root.tr("base_url")
                 size_hint_x: 0.3
                 color: 0.3, 0.3, 0.3, 1
                 halign: 'right'
                 valign: 'middle'
                 text_size: self.size
+
             TextInput:
                 id: url_input
                 multiline: False
@@ -71,14 +74,15 @@
                 background_color: 0.98, 0.98, 0.98, 1
                 foreground_color: 0.2, 0.2, 0.2, 1
                 padding: 10, 10
-            
+
             Label:
-                text: 'Langue:'
+                text: root.tr("language")
                 size_hint_x: 0.3
                 color: 0.3, 0.3, 0.3, 1
                 halign: 'right'
                 valign: 'middle'
                 text_size: self.size
+
             TextInput:
                 id: lang_input
                 multiline: False
@@ -88,50 +92,48 @@
                 background_color: 0.92, 0.92, 0.92, 1
                 foreground_color: 0.5, 0.5, 0.5, 1
                 padding: 10, 10
-        
-        # Boutons d'action
+
         BoxLayout:
             orientation: 'horizontal'
             spacing: 12
             size_hint_y: None
             height: 55
             padding: 10, 0
-            
+
             Button:
-                text: 'Valeurs par défaut'
-                background_color: 0.4, 0.6, 0.9, 1  # Bleu clair
+                text: root.tr("btn_defaults")
+                background_color: 0.4, 0.6, 0.9, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 on_release: root.load_default_config()
-            
+
             Button:
-                text: 'Remise à zéro'
-                background_color: 0.9, 0.5, 0.3, 1  # Orange
+                text: root.tr("btn_reset")
+                background_color: 0.9, 0.5, 0.3, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 on_release: root.reset_config()
-            
+
             Button:
-                text: 'Sauvegarder'
-                background_color: 0.3, 0.7, 0.4, 1  # Vert
+                text: root.tr("btn_save")
+                background_color: 0.3, 0.7, 0.4, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 bold: True
                 on_release: root.save_config()
-            
+
             Button:
-                text: 'Connexion'
-                background_color: 0.2, 0.5, 0.8, 1  # Bleu foncé
+                text: root.tr("btn_connect")
+                background_color: 0.2, 0.5, 0.8, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 bold: True
                 on_release: root.test_connection()
-        
-        # Status label
+
         Label:
             id: status_label
             text: root.status_text
@@ -139,6 +141,5 @@
             height: 50
             color: 0.3, 0.3, 0.3, 1
             font_size: '13sp'
-        
+
         Widget:
-            # Spacer

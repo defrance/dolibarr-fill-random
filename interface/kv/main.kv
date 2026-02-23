@@ -1,47 +1,54 @@
 <MainScreen>:
     canvas.before:
         Color:
-            rgba: 0.97, 0.97, 0.97, 1  # Fond gris très clair
+            rgba: 0.97, 0.97, 0.97, 1
         Rectangle:
             pos: self.pos
             size: self.size
+
     BoxLayout:
         orientation: "vertical"
         padding: 20
         spacing: 15
+
         BoxLayout:
             id: main_container
             orientation: "vertical"
+
         BoxLayout:
             size_hint_y: None
             height: 60
             spacing: 12
             padding: 10, 0
+
             Button:
-                text: "Charger valeurs par défaut"
-                background_color: 0.4, 0.6, 0.9, 1  # Bleu clair
+                text: root.tr("btn_defaults")
+                background_color: 0.4, 0.6, 0.9, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 on_release: root.load_defaults()
+
             Button:
-                text: "Tout réinitialiser"
-                background_color: 0.9, 0.5, 0.3, 1  # Orange
+                text: root.tr("btn_reset_all")
+                background_color: 0.9, 0.5, 0.3, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 on_release: root.reset_all()
+
             Button:
-                text: "Sauvegarder"
-                background_color: 0.3, 0.7, 0.4, 1  # Vert
+                text: root.tr("btn_save")
+                background_color: 0.3, 0.7, 0.4, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '14sp'
                 bold: True
                 on_release: root.save_elements()
+
             Button:
-                text: "Lancer alimentation"
-                background_color: 0.2, 0.6, 0.3, 1  # Vert foncé
+                text: root.tr("btn_launch")
+                background_color: 0.2, 0.6, 0.3, 1
                 background_normal: ''
                 color: 1, 1, 1, 1
                 font_size: '15sp'
