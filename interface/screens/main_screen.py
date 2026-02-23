@@ -158,7 +158,7 @@ class MainScreen(Screen):
         connection = params.get("connection", {})
 
         for section in ["elements", "categories", "contacts", "others", "project", 
-                       "supplier", "hrm", "products", "columngrid"]:
+                       "supplier", "hrm", "products"]:
             if section in defaults:
                 params[section] = defaults[section]
         
