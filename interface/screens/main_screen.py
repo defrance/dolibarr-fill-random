@@ -23,7 +23,6 @@ AVAILABLE_LANGUAGES = {
 }
 
 # Champs spéciaux qui utilisent un Spinner au lieu d'un TextInput
-# clé yaml -> (valeurs affichées, mapping affiché->valeur yaml)
 SPINNER_FIELDS = {
     "lang": {
         "values": list(AVAILABLE_LANGUAGES.values()),
@@ -44,17 +43,22 @@ SPINNER_FIELDS = {
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.inputs = {}        # name -> TextInput  ou  Spinner
+        self.inputs = {}
         self.param_file = None
         self.param_sample_file = None
+        self._current_lang = None  # langue au moment du dernier build
 
     def set_paths(self, param_file, param_sample_file):
         self.param_file = param_file
         self.param_sample_file = param_sample_file
 
     def on_enter(self):
-        Clock.schedule_once(lambda dt: self.build_tabs(), 0.1)
-
+        # Recharge les tabs seulement si la langue a changé depuis le dernier build
+        params = self.load_params()
+        lang = params.get("others", {}).get("lang", "fr_FR")
+        if lang != self._current_lang:
+            Clock.schedule_once(lambda dt: self.build_tabs(), 0.1)
+        
     def load_params(self):
         if not self.param_file or not os.path.exists(self.param_file):
             return {}
@@ -87,6 +91,9 @@ class MainScreen(Screen):
         self.ids.main_container.clear_widgets()
         self.inputs.clear()
         params = self.load_params()
+
+        # Mémorise la langue utilisée pour ce build
+        self._current_lang = params.get("others", {}).get("lang", "fr_FR")
 
         tabs = TabbedPanel(do_default_tab=False)
         tabs.background_color = (0.9, 0.9, 0.9, 1)
@@ -169,6 +176,7 @@ class MainScreen(Screen):
                     background_color=(0.4, 0.6, 0.9, 1),
                     color=(1, 1, 1, 1),
                 )
+
             # --- Champ standard : TextInput entier ---
             else:
                 widget = TextInput(
@@ -234,7 +242,6 @@ class MainScreen(Screen):
         widget = self.inputs[name]
         if name in SPINNER_FIELDS:
             spec = SPINNER_FIELDS[name]
-            # Valeur par défaut du spinner = premier choix
             widget.text = spec["values"][0]
         else:
             widget.text = "0"
