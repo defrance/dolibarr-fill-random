@@ -8,9 +8,12 @@ from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
 from kivy.graphics import Color, Rectangle
-import os
+
 import yaml
-from translations import get_translation
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from translations.get_translation import get_translation
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
@@ -101,11 +104,24 @@ class MainScreen(Screen):
             
             translated_name = get_translation(name, lang)
             
-            lbl = Label(text=translated_name, color=(0, 0, 0, 1), size_hint_y=None, 
-                       height=30, size_hint_x=0.6, halign='right', valign='middle', 
-                       text_size=(0, row_height))
-            lbl.bind(width=lambda inst, val: setattr(inst, 'text_size', (val, row_height)))
+            lbl = Label(
+                text=translated_name,
+                color=(0, 0, 0, 1),
+                size_hint_y=None,
+                size_hint_x=0.6,
+                halign='right',
+                valign='middle',
+                text_size=(None, None)
+            )
 
+            lbl.bind(
+                width=lambda instance, value: setattr(instance, 'text_size', (value, None))
+            )
+
+            lbl.bind(
+                texture_size=lambda instance, value: setattr(instance, 'height', value[1] + 10)
+            )
+            
             ti = TextInput(text=str(value), multiline=False, input_filter="int", 
                           size_hint_y=None, height=row_height, size_hint_x=0.15, halign="center")
 
