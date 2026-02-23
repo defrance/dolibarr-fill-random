@@ -8,6 +8,12 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from translations.get_translation import get_translation
 
+# Langues disponibles : code interne -> nom affiché
+AVAILABLE_LANGUAGES = {
+    "fr_FR": "Français",
+    "en_US": "English",
+}
+
 
 class ConfigScreen(Screen):
     status_text = StringProperty("")
@@ -24,7 +30,13 @@ class ConfigScreen(Screen):
         self.param_sample_file = param_sample_file
 
     def on_enter(self):
+        self._populate_lang_spinner()
         self.load_config()
+
+    def _populate_lang_spinner(self):
+        """Remplit le spinner avec les noms de langues affichables."""
+        spinner = self.ids.lang_spinner
+        spinner.values = list(AVAILABLE_LANGUAGES.values())
 
     def load_params(self):
         if not self.param_file or not os.path.exists(self.param_file):
@@ -50,6 +62,19 @@ class ConfigScreen(Screen):
             lang = "fr_FR"
         return get_translation(key, lang)
 
+    def get_lang_code(self):
+        """Retourne le code langue (ex: fr_FR) depuis la valeur affichée du spinner."""
+        displayed = self.ids.lang_spinner.text
+        for code, label in AVAILABLE_LANGUAGES.items():
+            if label == displayed:
+                return code
+        return "fr_FR"
+
+    def set_lang_spinner(self, lang_code):
+        """Positionne le spinner sur le nom affiché correspondant au code."""
+        label = AVAILABLE_LANGUAGES.get(lang_code, "Français")
+        self.ids.lang_spinner.text = label
+
     def load_config(self):
         params = self.load_params()
         conn = params.get("connection", {})
@@ -57,13 +82,13 @@ class ConfigScreen(Screen):
         self.ids.token_input.text = str(conn.get("apitoken", ""))
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = str(conn.get("urlbase", ""))
-        self.ids.lang_input.text = str(others.get("lang", "fr_FR"))
+        self.set_lang_spinner(others.get("lang", "fr_FR"))
 
     def save_config(self):
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
         urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
-        lang = self.ids.lang_input.text.strip()
+        lang = self.get_lang_code()
 
         if not token or not version or not urlbase:
             self.status_text = self.tr("error_fields_required")
@@ -88,7 +113,7 @@ class ConfigScreen(Screen):
         self.ids.token_input.text = ""
         self.ids.version_input.text = ""
         self.ids.url_input.text = ""
-        self.ids.lang_input.text = "fr_FR"
+        self.set_lang_spinner("fr_FR")
         self.status_text = self.tr("status_reset")
 
     def load_default_config(self):
@@ -102,14 +127,14 @@ class ConfigScreen(Screen):
         self.ids.token_input.text = str(conn.get("apitoken", ""))
         self.ids.version_input.text = str(conn.get("dol_version", ""))
         self.ids.url_input.text = str(conn.get("urlbase", ""))
-        self.ids.lang_input.text = str(others.get("lang", "fr_FR"))
+        self.set_lang_spinner(others.get("lang", "fr_FR"))
         self.status_text = self.tr("status_defaults_loaded")
 
     def test_connection(self):
         token = self.ids.token_input.text.strip()
         version = self.ids.version_input.text.strip()
         urlbase = self.ids.url_input.text.strip().rstrip("/") + "/"
-        lang = self.ids.lang_input.text.strip()
+        lang = self.get_lang_code()
 
         if not token or not version or not urlbase:
             self.status_text = self.tr("error_fields_required")

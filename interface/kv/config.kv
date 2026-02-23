@@ -23,7 +23,9 @@
             cols: 2
             spacing: 15
             size_hint_y: None
-            height: 220
+            row_default_height: 48
+            row_force_default: True
+            height: self.minimum_height
             padding: 10, 0
 
             Label:
@@ -83,15 +85,15 @@
                 valign: 'middle'
                 text_size: self.size
 
-            TextInput:
-                id: lang_input
-                multiline: False
+            Spinner:
+                id: lang_spinner
+                text: 'Français'
+                values: []
                 size_hint_x: 0.7
-                text: 'fr_FR'
-                disabled: True
-                background_color: 0.92, 0.92, 0.92, 1
-                foreground_color: 0.5, 0.5, 0.5, 1
-                padding: 10, 10
+                size_hint_y: None
+                height: 40
+                background_color: 0.4, 0.6, 0.9, 1
+                color: 1, 1, 1, 1
 
         BoxLayout:
             orientation: 'horizontal'

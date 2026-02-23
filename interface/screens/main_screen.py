@@ -4,6 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
+from kivy.uix.spinner import Spinner
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 from kivy.uix.scrollview import ScrollView
 from kivy.clock import Clock
@@ -15,11 +16,35 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from translations.get_translation import get_translation
 
+# Langues disponibles : code interne -> nom affiché
+AVAILABLE_LANGUAGES = {
+    "fr_FR": "Français",
+    "en_US": "English",
+}
+
+# Champs spéciaux qui utilisent un Spinner au lieu d'un TextInput
+# clé yaml -> (valeurs affichées, mapping affiché->valeur yaml)
+SPINNER_FIELDS = {
+    "lang": {
+        "values": list(AVAILABLE_LANGUAGES.values()),
+        "to_display": lambda v: AVAILABLE_LANGUAGES.get(str(v), str(v)),
+        "to_yaml": lambda displayed: next(
+            (code for code, label in AVAILABLE_LANGUAGES.items() if label == displayed),
+            "fr_FR"
+        ),
+    },
+    "tests": {
+        "values": ["True", "False"],
+        "to_display": lambda v: "True" if str(v).lower() in ("true", "1") else "False",
+        "to_yaml": lambda displayed: True if displayed == "True" else False,
+    },
+}
+
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.inputs = {}
+        self.inputs = {}        # name -> TextInput  ou  Spinner
         self.param_file = None
         self.param_sample_file = None
 
@@ -54,8 +79,13 @@ class MainScreen(Screen):
             lang = "fr_FR"
         return get_translation(key, lang)
 
+    # ------------------------------------------------------------------
+    # Construction des onglets
+    # ------------------------------------------------------------------
+
     def build_tabs(self):
         self.ids.main_container.clear_widgets()
+        self.inputs.clear()
         params = self.load_params()
 
         tabs = TabbedPanel(do_default_tab=False)
@@ -126,15 +156,30 @@ class MainScreen(Screen):
             lbl.bind(width=lambda instance, value: setattr(instance, 'text_size', (value, None)))
             lbl.bind(texture_size=lambda instance, value: setattr(instance, 'height', value[1] + 10))
 
-            ti = TextInput(
-                text=str(value),
-                multiline=False,
-                input_filter="int",
-                size_hint_y=None,
-                height=row_height,
-                size_hint_x=0.15,
-                halign="center"
-            )
+            # --- Champ spécial : Spinner ---
+            if name in SPINNER_FIELDS:
+                spec = SPINNER_FIELDS[name]
+                displayed_value = spec["to_display"](value)
+                widget = Spinner(
+                    text=displayed_value,
+                    values=spec["values"],
+                    size_hint_y=None,
+                    height=row_height,
+                    size_hint_x=0.15,
+                    background_color=(0.4, 0.6, 0.9, 1),
+                    color=(1, 1, 1, 1),
+                )
+            # --- Champ standard : TextInput entier ---
+            else:
+                widget = TextInput(
+                    text=str(value),
+                    multiline=False,
+                    input_filter="int",
+                    size_hint_y=None,
+                    height=row_height,
+                    size_hint_x=0.15,
+                    halign="center"
+                )
 
             btn = Button(
                 text=self.tr("btn_field_reset"),
@@ -146,22 +191,34 @@ class MainScreen(Screen):
             btn.bind(on_release=lambda b, n=name: self.reset_field(n))
 
             columns[col_idx].add_widget(lbl)
-            columns[col_idx].add_widget(ti)
+            columns[col_idx].add_widget(widget)
             columns[col_idx].add_widget(btn)
 
-            self.inputs[name] = ti
+            self.inputs[name] = widget
 
         scroll.add_widget(main_container)
         return scroll
 
+    # ------------------------------------------------------------------
+    # Sauvegarde / Reset
+    # ------------------------------------------------------------------
+
+    def _get_widget_value(self, name, widget):
+        """Lit la valeur d'un widget (TextInput ou Spinner) et la convertit."""
+        if name in SPINNER_FIELDS:
+            spec = SPINNER_FIELDS[name]
+            return spec["to_yaml"](widget.text)
+        else:
+            try:
+                return int(widget.text) if widget.text.strip() else 0
+            except ValueError:
+                return 0
+
     def save_elements(self):
         params = self.load_params()
 
-        for name, ti in self.inputs.items():
-            try:
-                value = int(ti.text) if ti.text.strip() else 0
-            except ValueError:
-                value = 0
+        for name, widget in self.inputs.items():
+            value = self._get_widget_value(name, widget)
 
             for section in ["elements", "categories", "contacts", "others", "project",
                             "supplier", "hrm", "products", "timekeepr"]:
@@ -172,13 +229,24 @@ class MainScreen(Screen):
         self.save_params(params)
 
     def reset_field(self, name):
-        if name in self.inputs:
-            self.inputs[name].text = "0"
-            self.save_elements()
+        if name not in self.inputs:
+            return
+        widget = self.inputs[name]
+        if name in SPINNER_FIELDS:
+            spec = SPINNER_FIELDS[name]
+            # Valeur par défaut du spinner = premier choix
+            widget.text = spec["values"][0]
+        else:
+            widget.text = "0"
+        self.save_elements()
 
     def reset_all(self):
-        for ti in self.inputs.values():
-            ti.text = "0"
+        for name, widget in self.inputs.items():
+            if name in SPINNER_FIELDS:
+                spec = SPINNER_FIELDS[name]
+                widget.text = spec["values"][0]
+            else:
+                widget.text = "0"
         self.save_elements()
 
     def load_defaults(self):
