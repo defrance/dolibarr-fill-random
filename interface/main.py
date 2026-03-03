@@ -15,7 +15,6 @@ KV_DIR = os.path.join(os.path.dirname(__file__), "kv")
 SCRIPT_PATH = os.path.join(BASE_DIR, "dolibarr_fill_random.py")
 
 # Charger les fichiers KV
-Builder.load_file(os.path.join(KV_DIR, "config.kv"))
 Builder.load_file(os.path.join(KV_DIR, "main.kv"))
 Builder.load_file(os.path.join(KV_DIR, "log.kv"))
 
