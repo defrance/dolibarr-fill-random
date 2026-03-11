@@ -326,7 +326,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             if testing:
                                 print("Aucun pointage créé pour cette tâche.")
                         else:
-                            print("Nb pointage créé pour cette tâche :", ntt)
+                            #print("Nb pointage créé pour cette tâche :", ntt)
                             for j in range (ntt):
                                 if testing:
                                     print("Création du pointage n°", j+1,"sur task ", taskID)
