@@ -33,6 +33,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
         "code_client": "auto",
         "fournisseur": typeFourn,
         "code_fournisseur": "auto",
+        "typent_id": random.choice([1, 2, 3, 4]),  # TE_SMALL, TE_GROUP, TE_MEDIUM, TE_ADMIN
         "country_id": random.randint(1, nbCountry),
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
         # "useraffected": df['useraffected'][index],
