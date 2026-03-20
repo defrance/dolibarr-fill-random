@@ -175,10 +175,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
 
                     rC = requests.post(urlContactProject, headers=headers,json=dataContact, verify=False)
                     if rC.status_code != 200:
-                        print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
-                        print (rC.text)
-                        return None 
-                    
+                        if testing:
+                            print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
+                            print (rC.text)
+                        continue
+
                     else:
                         if testing:
                             print("Ajout du contact ", source, " terminée.")
@@ -189,8 +190,9 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             print(dataContact)
 
                 except Exception as e:
-                    print("Erreur lors de l'ajout du contact ", source," au projet :", str(e))
-                    return None   
+                    if testing:
+                        print("Erreur lors de l'ajout du contact ", source," au projet :", str(e))
+                    continue
 
             if testing:
                 print("contacts du projet :")
@@ -273,11 +275,12 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                             }
 
                             r = requests.post(urlBase + "tasks/"+ str(taskID)+ "/contacts", headers=headers, json=dataContact, verify=False)
-                        
+
                             if r.status_code !=200:
-                                print(r.status_code, "erreur lors de l'ajout du contact à la tâche")
-                                print(r.text)
-                                return None
+                                if testing:
+                                    print(r.status_code, "erreur lors de l'ajout du contact à la tâche")
+                                    print(r.text)
+                                continue
                                                     
                             else:
                                 if testing:
@@ -352,10 +355,11 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                                 r = requests.post(urlTasksTime, headers=headers, json=data, verify=False)
     
                                 if r.status_code != 200:
-                                    print (data)
-                                    print("Erreur lors de la création du pointage", r.status_code)
-                                    print (r.text)
-                                    exit(1)
+                                    if testing:
+                                        print (data)
+                                        print("Erreur lors de la création du pointage", r.status_code)
+                                        print (r.text)
+                                    continue
                                 else:
                                     if testing:
                                         print("Création du pointage :  ", data)
