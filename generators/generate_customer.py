@@ -21,12 +21,27 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
     address, zip, town = get_random_address()
     state_id = get_state_id_from_zip(zip)
 
+    # Codes APE courants
+    codes_ape = [
+        '6201Z', '6202A', '6202B', '6209Z', '6311Z', '6312Z',
+        '4511Z', '4519Z', '4520A', '4520B', '4531Z', '4532Z',
+        '4711A', '4711B', '4711C', '4711D', '4719A', '4719B',
+        '4321A', '4322A', '4329A', '4331Z', '4332A', '4333Z',
+        '5610A', '5610B', '5610C', '5621Z', '5629A', '5629B',
+        '6910Z', '6920Z', '7010Z', '7021Z', '7022Z', '7111Z',
+        '8559A', '8559B', '8560Z', '8610Z', '8621Z', '8622A',
+        '4641Z', '4642Z', '4643Z', '4644Z', '4645Z', '4646Z',
+        '2511Z', '2529Z', '2561Z', '2562A', '2562B', '2573A',
+        '4910Z', '4920Z', '4941A', '4941B', '4941C', '4942Z',
+    ]
+
     data = {
         "name": fake.company(),
         "address": address,
         "zip": zip,
         "town": town,
         "state_id": state_id,
+        "idprof3": random.choice(codes_ape),
         "phone": fake.phone_number(),
         "email": fake.email(),
         # "contact name": df['contact name'][index],
