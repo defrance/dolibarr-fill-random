@@ -19,12 +19,14 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
         typeFourn = random.choice([0, 1])
 
     address, zip, town = get_random_address()
+    state_id = get_state_id_from_zip(zip)
 
     data = {
         "name": fake.company(),
         "address": address,
         "zip": zip,
         "town": town,
+        "state_id": state_id,
         "phone": fake.phone_number(),
         "email": fake.email(),
         # "contact name": df['contact name'][index],
