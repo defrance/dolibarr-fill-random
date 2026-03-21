@@ -173,7 +173,7 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                     if testing:
                         print(urlContactProject)
 
-                    rC = requests.post(urlContactProject, headers=headers,json=dataContact, verify=False)
+                    rC = requests.post(urlContactProject, headers=headers, json=dataContact, verify=False)
                     if rC.status_code != 200:
                         print("Erreur lors de l'ajout du contact", source ," : ", rC.status_code)
                         print (rC.text)
@@ -197,7 +197,8 @@ def generate_project(dateCreate, nbTasks, nbtasksTime, retDataUser, retDataThird
                 print(projectContacts)
         
         else:
-            print("pas de contact associé au projet.")
+            if testing:
+                print("pas de contact associé au projet.")
 
     # Création des tâches associées au projet si le nombre de tâches est correct
     if nbTasks >= 0:

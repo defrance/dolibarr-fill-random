@@ -18,20 +18,33 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
     if createSupplier == 1:
         typeFourn = random.choice([0, 1])
 
-    address, zip, town = get_random_address()
+    address, zipcode, town = get_random_address()
+    country_id = random.randint(1, nbCountry)
+    state_id = get_state_id_from_zipcode(zipcode, country_id)
+
+    ape_code = None
+    if country_id == 1: # France
+        ape_code = fake.providers.company.fr_FR.Provider.ape_code()
+    elif country_id == 6: # Suisse
+        ape_code = fake.providers.company.fr_CH.Provider.ape_code()
 
     data = {
         "name": fake.company(),
         "address": address,
-        "zip": zip,
+        "zip": zipcode,
         "town": town,
+        "state_id": state_id,
         "phone": fake.phone_number(),
         "email": fake.email(),
+        "idprof3": ape_code,
         # "contact name": df['contact name'][index],
         # "emailcontact": df['emailcontact'][index],
         "client": typeTiers,
+        "code_client": "auto",
+        "typent_id": random.choice([1, 2, 3, 4]),  # TE_SMALL, TE_GROUP, TE_MEDIUM, TE_ADMIN
         "fournisseur": typeFourn,
-        "country_id": random.randint(1, nbCountry),
+        "code_fournisseur": "auto",
+        "country_id": country_id,
         "date_creation": dateCreate.strftime('%Y-%m-%d'),
         # "useraffected": df['useraffected'][index],
         # "dateupdate": df['dateupdate'][index],
@@ -62,7 +75,7 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
     for i in range(random.randint(0, 3)):
         url = urlBase + "contacts/"
         # on rajoute des contacts externes
-        address, zip, town = get_random_address()
+        address, zipcode, town = get_random_address()
 
         data = {
             "lastname" : fake.last_name(),
@@ -70,11 +83,10 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
             "socid" : idSoc,
             "address": address,
             "email": fake.email(),
-            "zip": zip,
+            "zip": zipcode,
             "town": town,
             "phone": fake.phone_number(),
-
-            "country_id": 1,
+            "country_id": country_id,
         }
         r = requests.post(url, headers=headers, json=data, verify=False)
         if r.status_code != 200:

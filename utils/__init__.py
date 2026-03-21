@@ -20,6 +20,7 @@ from .get_random_address import get_random_address
 from .get_random_holiday_type import get_random_holiday_type
 from .get_random_project_id import get_random_project_id
 from .get_random_user_id import get_random_user_id
+from .get_state_id_from_zipcode import get_state_id_from_zipcode
 
 
 
@@ -38,5 +39,6 @@ __all__ = [
     "get_random_holiday_type",
     "get_random_project_id",
     "get_random_user_id",
-    "get_realistic_qty_price"
+    "get_realistic_qty_price",
+    "get_state_id_from_zipcode"
 ]
