@@ -16,10 +16,12 @@ def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDa
     paye = random.choice([0, 1])
     socId = get_random_client(retDataThirdParties)
 
-    # fk_project = 0
-    # if 'project' in enabledModule:
-    retDataProject = fill_projects(socId)
-    fk_project = get_random_project_id(retDataProject)
+    fk_project = 0
+    enabledModule = get_enabled_modules()
+    if 'project' in enabledModule:
+        print ('dxdddd')
+        retDataProject = fill_projects(socId)
+        fk_project = get_random_project_id(retDataProject)
 
 
     data = {

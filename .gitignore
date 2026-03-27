@@ -1,5 +1,6 @@
 # on n'envoie pas le fichier param.yml
 param.yml
+param copie.yml
 __pycache__
 .DS_Store
 .venv

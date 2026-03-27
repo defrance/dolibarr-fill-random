@@ -24,9 +24,8 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
 
     ape_code = None
     if country_id == 1: # France
-        ape_code = fake.providers.company.fr_FR.Provider.ape_code()
-    elif country_id == 6: # Suisse
-        ape_code = fake.providers.company.fr_CH.Provider.ape_code()
+        # Code APE/NACE simplifie: 4 chiffres + 1 lettre
+        ape_code = f"{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
 
     data = {
         "name": fake.company(),

@@ -135,13 +135,14 @@ print(f"Durée Alimentation Tiers et produits : {datetime.now() - start_prev}", 
 
 start_prev = datetime.now()
 
+#retDataProjects = []
 if nbNewProject > 0 and 'projet' in enabledModule:
     print(f"Création de {nbNewProject} projet(s)...", flush=True)
     for dateProject in gen_random_following_date(yearToFill, nbNewProject, max_interval=dateinterval):
         generate_project(dateProject, nbNewMaxTask, nbNewMaxTaskTime, retDataUser, retDataThirdParties, testToggle)
 
-retDataProjects = fill_projects()
-print(f"Durée Alimentation Projets et tâches : {datetime.now() - start_prev}", flush=True)
+    #retDataProjects = fill_projects()
+    print(f"Durée Alimentation Projets et tâches : {datetime.now() - start_prev}", flush=True)
 
 # Factures, commandes, devis, contrats (parallèle)
 
