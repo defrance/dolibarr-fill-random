@@ -26,6 +26,8 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
     if country_id == 1: # France
         # Code APE/NACE simplifie: 4 chiffres + 1 lettre
         ape_code = f"{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
+        siren = fake.siren()
+        tva_intra = fake.company_vat(siren)
 
     data = {
         "name": fake.company(),

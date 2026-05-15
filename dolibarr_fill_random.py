@@ -244,7 +244,7 @@ with ThreadPoolExecutor(max_workers=max_workers) as executor:
 
     for dateExpenseReport in listExpenseReportGen:
         all_futures.append({'future': executor.submit(
-            generate_with_error_handling, generate_expense_report, dateExpenseReport, testToggle
+            generate_with_error_handling, generate_expense_report, dateExpenseReport, retDataPayment, retDataBank, testToggle
         ), 'type': 'expense'})
 
     if all_futures:

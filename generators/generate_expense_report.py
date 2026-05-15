@@ -12,7 +12,7 @@ from utils import *
 # pour gérer les warnings de certificat SSL
 requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
-def generate_expense_report(dateCreate, testing=False):
+def generate_expense_report(dateCreate, retDataPayment, retDataBank, testing=False):
     url = urlBase + "expensereports"
     urlConf = urlBase + "setup/conf/EXPENSEREPORT_PREFILL_DATES_WITH_CURRENT_MONTH"
 
@@ -167,7 +167,6 @@ def generate_expense_report(dateCreate, testing=False):
                 print('note de frais validée.')
 
             # probleme API
-            dateValidate = fake.date_between_dates(date_start= dateEnd, date_end= dateEnd + timedelta(days=7))
             dataValidate = {
                 'fk_user_valid': validatorID,
                 'date_valid': dateCreate.strftime('%Y-%m-%d'),
@@ -270,24 +269,27 @@ def generate_expense_report(dateCreate, testing=False):
 
 
     # PAIEMENT
-    if status == "paid":
-        r = requests.get(urlDictionary + "payment_types?active=1", headers=headers, verify=False)
-        paymentTypeList = r.json()
+    if status == "paid" and len(retDataPayment) > 0 and len(retDataBank) > 0:
+        dateValidate = fake.date_between_dates(date_start= dateEnd, date_end= dateEnd + timedelta(days=7))
 
         try:
-          fkTypePayment = paymentTypeList[random.randint(0, len(paymentTypeList)-1)]['id']
-          if testing:
-            print('id type de paiement :', fkTypePayment)
+            if len(retDataPayment) == 1:
+                PaymentTypeId = retDataPayment[0]['id']
+            else:
+                PaymentTypeId = retDataPayment[random.randint(0, len(retDataPayment)-1)]['id']
+            if testing:
+                print('id type de paiement :', PaymentTypeId)
         except:
             print('erreur lors du choix du types de paiement.')
     
         # Prévoir récupération du total de la note de frais.
         data_payment = {
-            "fk_typepayment":fkTypePayment,
+            "fk_typepayment":PaymentTypeId,
+            "datepaid":dateValidate.strftime('%Y-%m-%d'), # ancienne version (bug API) : datep à la place de datepaid
             "datep":dateValidate.strftime('%Y-%m-%d'),
             "amount":totalAmountHT,
             "amounts": [totalAmountHT],
-            "accountid":3
+            "accountid": get_random_bank(retDataBank)
         }
 
         r = requests.post(urlReport + "/payments", headers = headers, json = data_payment, verify=False)
@@ -297,6 +299,7 @@ def generate_expense_report(dateCreate, testing=False):
             print(r.status_code)
             print(r.text)
         else :
+            # présent à partir de la version 24
             r = requests.post(urlReport + "/setpaid", headers=headers, verify=False)
 
 
@@ -306,8 +309,8 @@ if __name__ == "__main__":
     for  i in range(10):
         print(
             generate_expense_report( 
-                dateCreate= fake.date_this_year(before_today=True), testing = True)
+                dateCreate= fake.date_this_year(before_today=True),
+                retDataPayment= fill_payement_types(),
+                retDataBank= fill_banks(),
+                testing = True)
     )
-
-
-# paid => probleme sur les valeurs API

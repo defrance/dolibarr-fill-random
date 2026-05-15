@@ -1,5 +1,7 @@
 import random
 import requests
+
+
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -12,14 +14,12 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 def generate_invoice(dateFact,retDataPayment, retDataBank, retDataProduct, retDataThirdParties, retDataUser, testing):
     url = urlBase + "invoices"
 
-
     paye = random.choice([0, 1])
     socId = get_random_client(retDataThirdParties)
 
     fk_project = 0
     enabledModule = get_enabled_modules()
     if 'project' in enabledModule:
-        print ('dxdddd')
         retDataProject = fill_projects(socId)
         fk_project = get_random_project_id(retDataProject)
 
