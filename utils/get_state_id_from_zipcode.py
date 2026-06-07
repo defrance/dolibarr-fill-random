@@ -13,7 +13,7 @@ def get_state_id_from_zipcode(zip_code, fk_country=1):
         # pour les département français, on bricole un peu
         dept_code = zip_code[:3] if zip_code[:2] == '97' else zip_code[:2]
         
-    url = urlBase + "setup/dictionary/states?country=" + str(fk_country) + "&sqlfilters=(t.code_departement:=:" + str(dept_code) + ")&active=1"
+    url = urlBase + "setup/dictionary/states?country=" + str(fk_country) + "&sqlfilters=(t.code_departement:=:'" + str(dept_code) + "')&active=1"
     r = requests.get(url, headers=headers, verify=False)
     if r.status_code != 200:
         print('Erreur lors de la récupération des états pour le code postal ' + zip_code, r.status_code)

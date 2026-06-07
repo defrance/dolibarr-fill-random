@@ -26,9 +26,15 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
     if country_id == 1: # France
         # Code APE/NACE simplifie: 4 chiffres + 1 lettre
         ape_code = f"{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
-        siren = fake.siren()
-        tva_intra = fake.company_vat(siren)
 
+        siren = fake.siren().replace(" ", "")
+        # Calcul de la clé TVA FR
+        cle = (12 + 3 * (int(siren) % 97)) % 97
+        numero_tva = f"FR{cle:02d}{siren}"
+    else :
+        ape_code = f"{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}"
+        siren = None
+        numero_tva = None
     data = {
         "name": fake.company(),
         "address": address,
@@ -38,6 +44,8 @@ def generate_customer(dateCreate, retDataCategContact, retDataCategCustomer, ena
         "phone": fake.phone_number(),
         "email": fake.email(),
         "idprof3": ape_code,
+        "idprof1": siren,
+        "tva_intra": numero_tva,
         # "contact name": df['contact name'][index],
         # "emailcontact": df['emailcontact'][index],
         "client": typeTiers,
